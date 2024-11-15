@@ -1,13 +1,21 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use function Livewire\Volt\{state};
 
-//
+$signOut = function (Request $request) {
+    Auth::logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+    $this->redirectRoute('home', navigate: true);
+
+};
 
 ?>
 
 <div class="h-full bg-black py-8">
-    <div class="h-min grid grid-cols-1 gap-10">
+    <div class="h-full flex flex-col gap-10">
         <div class="text-center text-white text-2xl">Pottery CRM</div>
         <div class="h-min grid grid-cols-1 gap-8 pr-4">
             <div class="text-white pl-8 tracking-wide">MENU</div>
@@ -20,6 +28,16 @@ use function Livewire\Volt\{state};
                     <div class="text-white">Products</div>
                 </div>
             </div>
+        </div>
+        <div class="mt-auto px-4">
+            <button wire:click="signOut" class="flex justify-start items-center gap-4 w-full p-2 rounded-md hover:bg-white/40 transition-colors duration-300">
+                <div>
+                    <svg class="w-6 h-6 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 12H8m12 0-4 4m4-4-4-4M9 4H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h2" />
+                    </svg>
+                </div>
+                <div class="text-white">Sign out</div>
+            </button>
         </div>
     </div>
 </div>

@@ -14,7 +14,7 @@ mount(function () {
     if ($isAuth && in_array($this->path, ['/'])) {
         $this->redirectRoute('dashboard', navigate: true);
     } elseif (!$isAuth && in_array($this->path, ['dashboard'])) {
-        $this->redirectRoute('/', navigate: true);
+        $this->redirectRoute('home', navigate: true);
     }
 });
 ?>
