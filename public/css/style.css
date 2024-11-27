@@ -1,0 +1,4 @@
+trix-toolbar .trix-button--icon-link,
+trix-toolbar .trix-button--icon-attach {
+    display: none;
+}

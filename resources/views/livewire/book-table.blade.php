@@ -4,17 +4,14 @@ use App\Http\Controllers\SmsController;
 use App\Models\User;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 use function Livewire\Volt\{state, rules, with};
 
-state(['name', 'email', 'phoneno', 'country', 'otp', 'generatedOtp', 'noofpeople']);
+state(['first_name', 'last_name', 'email', 'phoneno', 'otp', 'generatedOtp', 'noofpeople']);
 
-rules(['name' => 'required', 'email' => 'required|email', 'country' => 'required', 'phoneno' => 'required']);
-
-with(fn() => ['codes' => json_decode(File::get('phoneCountryCodes/CountryCodes.json'))]);
+rules(['first_name' => 'required', 'last_name' => 'required', 'email' => 'required|email', 'phoneno' => 'required']);
 
 $verifyOtp = function (Request $request) {
 
@@ -29,7 +26,8 @@ $verifyOtp = function (Request $request) {
                 'phoneno' => $this->phoneno
             ],
             [
-                'name' => $this->name,
+                'first_name' => $this->first_name,
+                'last_name' => $this->last_name,
                 'email' => $this->email,
                 'password' => Hash::make('12345678'),
             ]
@@ -41,16 +39,16 @@ $verifyOtp = function (Request $request) {
             ])
         ) {
             $request->session()->regenerate();
-            $this->redirectRoute('dashboard', navigate: true);
+            $this->redirectRoute('booking', navigate: true);
         }
     } else {
-        $this->addError('otp', 'Otp is invalid');
+        $this->addError('otp', 'Confirmation Code is invalid');
     }
 };
 
 $submit = function () {
     $this->validate();
-
+    
     if (User::where('phoneno', $this->phoneno)->exists() && User::where('phoneno', $this->phoneno)->first()->email != $this->email) {
         $this->addError('phoneno', 'This phone no is already taken with another email.');
         return;
@@ -60,7 +58,7 @@ $submit = function () {
     }
 
     $this->generatedOtp = App::call([SmsController::class, 'generateOtp']);
-    App::call([SmsController::class, 'send'], ['phoneno' => $this->country . $this->phoneno, 'message' => 'Your otp is ' . $this->generatedOtp->otp . '.']);
+    // App::call([SmsController::class, 'send'], ['phoneno' => $this->country . $this->phoneno, 'message' => 'Your otp is ' . $this->generatedOtp->otp . '.']);
     $this->dispatch('start-countdown');
 };
 
@@ -73,22 +71,32 @@ $submit = function () {
                 <div class="text-4xl text-center">Book a Table</div>
                 <div class="flex justify-between gap-4">
                     <div class="h-min grid grid-cols-1 gap-2 w-full">
-                        <input wire:model="name" class="bg-white/20 p-2 w-full rounded-md outline-none" placeholder="Name">
+                        <input wire:model="first_name" class="bg-white/20 p-2 w-full rounded-md outline-none" placeholder="First name">
                         <div>
-                            @error('name')
+                            @error('first_name')
                             <span wire:transition.in.duration.500ms="scale-y-100"
                                 wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
                             @enderror
                         </div>
                     </div>
                     <div class="h-min grid grid-cols-1 gap-2 w-full">
-                        <input wire:model="email" class="bg-white/20 p-2 w-full rounded-md outline-none" placeholder="Email">
+                        <input wire:model="last_name" class="bg-white/20 p-2 w-full rounded-md outline-none" placeholder="Last name">
                         <div>
-                            @error('email')
+                            @error('last_name')
                             <span wire:transition.in.duration.500ms="scale-y-100"
                                 wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
                             @enderror
                         </div>
+                    </div>
+
+                </div>
+                <div class="h-min grid grid-cols-1 gap-2 w-full">
+                    <input wire:model="email" class="bg-white/20 p-2 w-full rounded-md outline-none" placeholder="Email">
+                    <div>
+                        @error('email')
+                        <span wire:transition.in.duration.500ms="scale-y-100"
+                            wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
+                        @enderror
                     </div>
                 </div>
                 <div class="flex justify-between gap-4">
@@ -116,23 +124,7 @@ $submit = function () {
                     </div>
                 </div>
                 <div class="h-min grid grid-cols-1 gap-2">
-                    <select wire:model="country" class="bg-white/20 p-2 w-full rounded-md outline-none">
-                        <option value="">Select a Country</option>
-                        @foreach($codes as $code)
-                        <option value="{{$code->dial_code}}">
-                            {{$code->name}}
-                        </option>
-                        @endforeach
-                    </select>
-                    <div>
-                        @error('country')
-                        <span wire:transition.in.duration.500ms="scale-y-100"
-                            wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-                <div class="h-min grid grid-cols-1 gap-2">
-                    <input @input="verifyOtp" wire:model="otp" x-mask="999999" class="@if(!$generatedOtp) pointer-events-none opacity-50 @endif bg-white/20 p-2 w-1/2 mx-auto rounded-md outline-none" placeholder="OTP">
+                    <input @input="verifyOtp" wire:model="otp" x-mask="999999" class="@if(!$generatedOtp) pointer-events-none opacity-50 @endif bg-white/20 p-2 w-1/2 mx-auto rounded-md outline-none" placeholder="Confirmation Code">
                     <div class="w-1/2 mx-auto">
                         @error('otp')
                         <span wire:transition.in.duration.500ms="scale-y-100"

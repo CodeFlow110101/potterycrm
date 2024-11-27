@@ -4,7 +4,6 @@ function otp() {
     isActive: false, // Whether the countdown is active or not
     interval: null,
     verifyOtp() {
-      console.log();
       if (this.$wire.otp.length == 6) {
         this.$wire.verifyOtp();
       }
@@ -32,6 +31,30 @@ function otp() {
         2,
         "0"
       )}`;
+    }
+  };
+}
+
+function imageUploader() {
+  return {
+    preview: "",
+    imageTextField: this.$wire.entangle("thumbnail"),
+    previewImage(event) {
+      this.imageTextField = "";
+      const file = event.target.files[0];
+      if (file) {
+        this.imageTextField = Math.floor(file.size / 1024);
+      }
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          this.preview = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        this.preview = "";
+      }
     }
   };
 }
