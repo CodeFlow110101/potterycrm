@@ -1,28 +1,39 @@
 <?php
 
-use function Livewire\Volt\{state};
+use App\Models\Booking;
+use Carbon\Carbon;
 
+use function Livewire\Volt\{mount, state, with, on};
 
+with(fn() => ['bookings' => Booking::with(['user', 'status'])->get()]);
+
+on([
+    'reset' => function () {
+        $this->reset();
+    }
+]);
 ?>
 
 <div class="grow flex flex-col">
-    <div class="grow w-full grid grid-cols-4 p-6">
-        <div class="border border-black/60 shadow-lg group hover:bg-black transition-colors duration-300 size-full rounded-xl text-white p-4 flex flex-col justify-around">
-            <div>
-                <svg class="w-12 h-12 text-black/60 group-hover:text-white transition-colors duration-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h16m-8-3V4M7 7V4m10 3V4M5 20h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Zm3-7h.01v.01H8V13Zm4 0h.01v.01H12V13Zm4 0h.01v.01H16V13Zm-8 4h.01v.01H8V17Zm4 0h.01v.01H12V17Zm4 0h.01v.01H16V17Z" />
-                </svg>
-            </div>
-            <div class="text-2xl text-black/60 group-hover:text-white transition-colors duration-300">Total Bookings</div>
-            <div class="text-green-500 text-2xl">23</div>
-        </div>
+    <div class="w-full p-6">
+        <div class="text-black/60 font-semibold text-xl border border-black/30 rounded-full w-min whitespace-nowrap py-2 px-4">Pending Bookings: <span class="text-green-500">{{count($bookings)}}</span></div>
     </div>
-    <div class="h-3/5 w-full px-6 pb-6">
+    <div class="grow w-full px-6 pb-6">
         <div class="rounded-3xl px-6 py-2 font-medium text-black/60 text-lg border border-black/60 h-full">
-            <div class="border-b border-black/60 py-4">Bookings</div>
-            <div class="py-2 overflow-y-auto h-[38vh]">
-                <table class="w-full overflow-y-hidden rounded-t-lg">
-                    <thead class="bg-black/10">
+            <div class="border-b border-black/60 py-4 flex justify-between items-center">
+                <div class="text-xl">Bookings</div>
+                <div class="relative">
+                    <input class="border border-black/30 rounded-full outline-none py-2 pl-10 pr-4">
+                    <div class="absolute inset-y-0 flex items-center pl-2">
+                        <svg class="w-6 h-6 text-black/30" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="overflow-y-auto h-[70vh] rounded-lg">
+                <table class="w-full overflow-y-hidden">
+                    <thead class="bg-amber-500/40">
                         <tr>
                             <th class="font-normal py-2">
                                 No
@@ -34,6 +45,9 @@ use function Livewire\Volt\{state};
                                 Last Name
                             </th>
                             <th class="font-normal py-2">
+                                Phone no
+                            </th>
+                            <th class="font-normal py-2">
                                 No of People
                             </th>
                             <th class="font-normal py-2">
@@ -42,17 +56,30 @@ use function Livewire\Volt\{state};
                             <th class="font-normal py-2">
                                 Status
                             </th>
+                            <th class="font-normal py-2">
+                                Acton
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td class="text-center font-normal">1</td>
-                            <td class="text-center font-normal">Nishant</td>
-                            <td class="text-center font-normal">Kedare</td>
-                            <td class="text-center font-normal">10</td>
-                            <td class="text-center font-normal">11 jan 2024</td>
-                            <td class="text-center font-normal">Completed</td>
+                        @foreach($bookings as $booking)
+                        <tr class="hover:bg-black/10 transition-colors duration-200">
+                            <td class="text-center font-normal py-3">{{$loop->iteration}}</td>
+                            <td class="text-center font-normal py-3">{{$booking->user->first_name}}</td>
+                            <td class="text-center font-normal py-3">{{$booking->user->last_name}}</td>
+                            <td class="text-center font-normal py-3">{{$booking->user->phoneno}}</td>
+                            <td class="text-center font-normal py-3">{{$booking->no_of_people}}</td>
+                            <td class="text-center font-normal py-3">{{Carbon::parse($booking->created_at)->format('d M Y')}}</td>
+                            <td class="text-center font-normal py-3 capitalize">{{$booking->status->name}}</td>
+                            <td class="text-center font-normal py-3 capitalize flex justify-center">
+                                <button @click="$dispatch('show-modal', { name: 'update-status', data: {{$booking->id}} })">
+                                    <svg class="w-6 h-6 text-amber-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
+                                    </svg>
+                                </button>
+                            </td>
                         </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>

@@ -20,6 +20,8 @@ mount(function () {
 ?>
 
 <div class="h-screen">
+    <livewire:toastr />
+    <livewire:modal.modal />
     @if(in_array($path , ['/' , 'sign-in', 'book-table']))
     @if($path == '/')
     <livewire:home />
@@ -31,7 +33,7 @@ mount(function () {
     @elseif(in_array($path , ['booking', 'product', 'manage-product']))
     <div class="flex justify-between h-full">
         <div class="w-1/12 h-full">
-            <livewire:side-bar />
+            <livewire:side-bar :path="$path" />
         </div>
         <div class="w-11/12 flex flex-col">
             @if($path == 'booking')

@@ -3,6 +3,11 @@ function otp() {
     timeLeft: 120, // 2 minutes countdown (in seconds)
     isActive: false, // Whether the countdown is active or not
     interval: null,
+    reset() {
+      this.timeLeft = 120; // 2 minutes countdown (in seconds)
+      this.isActive = false; // Whether the countdown is active or not
+      this.interval = null;
+    },
     verifyOtp() {
       if (this.$wire.otp.length == 6) {
         this.$wire.verifyOtp();
@@ -55,6 +60,23 @@ function imageUploader() {
       } else {
         this.preview = "";
       }
+    }
+  };
+}
+
+function toastr() {
+  return {
+    show: false,
+    type: "",
+    message: "",
+    toggle(event) {
+      this.show = true;
+      this.type = event.type;
+      this.message = event.message;
+
+      setTimeout(() => {
+        this.show = false;
+      }, 4000);
     }
   };
 }

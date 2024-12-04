@@ -33,7 +33,7 @@ $verifyOtp = function (Request $request) {
                 $this->redirectRoute('product', navigate: true);
             }
         } else {
-            $this->addError('phoneno', 'Phone no does not exist for this phone no.');
+            $this->addError('phoneno', 'Account does not exist with this phone no.');
         }
     } else {
         $this->addError('otp', 'Confirmation Code is invalid');
@@ -44,6 +44,7 @@ $submit = function () {
     $this->validate();
     $this->generatedOtp = App::call([SmsController::class, 'generateOtp']);
     App::call([SmsController::class, 'send'], ['phoneno' => env('TWILIO_PHONE_COUNTRY_CODE') . $this->phoneno, 'message' => 'Your otp is ' . $this->generatedOtp->otp . '.']);
+    $this->dispatch('show-toastr', type: 'success', message: 'A code has been sent to this number');
     $this->dispatch('start-countdown');
 };
 
@@ -78,7 +79,7 @@ $submit = function () {
                 @endif
             </div>
 
-            <button type="submit" :class="interval && 'pointer-events-none opacity-50'" class="rounded-md text-center py-2 px-4 bg-amber-500 mx-auto text-white text-xl">{{$generatedOtp ? 'Resend OTP' : 'Send OTP'}}</button>
+            <button type="submit" :class="interval && 'pointer-events-none opacity-50'" class="rounded-md text-center py-2 px-4 bg-amber-500 mx-auto text-white text-xl">{{$generatedOtp ? 'Resend' : 'Send'}}</button>
         </div>
     </form>
 </div>

@@ -2,7 +2,9 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use function Livewire\Volt\{state};
+use function Livewire\Volt\{state, mount};
+
+state(['path']);
 
 $signOut = function (Request $request) {
     Auth::logout();
@@ -11,6 +13,9 @@ $signOut = function (Request $request) {
     $this->redirectRoute('home', navigate: true);
 };
 
+mount(function ($path) {
+    $this->path = $path;
+});
 ?>
 
 <div class="h-full flex flex-col pb-8 pt-20">
@@ -27,7 +32,17 @@ $signOut = function (Request $request) {
                         </svg>
                     </a>
                 </div>
-                <div class="border-2 rounded-full w-0 h-8 border-amber-500"></div>
+                <div class="@if($path != 'product') invisible @endif border-2 rounded-full w-0 h-8 border-amber-500"></div>
+            </div>
+            <div class="flex justify-between items-center gap-4 pl-3">
+                <div class="flex justify-center items-center w-full">
+                    <a href="/booking" wire:navigate class="flex justify-center items-center gap-4 w-min p-2 rounded-md group hover:bg-amber-500 transition-colors duration-300">
+                        <svg class="w-8 h-8 text-amber-500 group-hover:text-white transition-colors duration-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                            <path fill-rule="evenodd" d="M5 5a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1h1a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1h1a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1 2 2 0 0 1 2 2v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a2 2 0 0 1 2-2ZM3 19v-7a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Zm6.01-6a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm2 0a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm6 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm-10 4a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm6 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm2 0a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z" clip-rule="evenodd" />
+                        </svg>
+                    </a>
+                </div>
+                <div class="@if($path != 'booking') invisible @endif border-2 rounded-full w-0 h-8 border-amber-500"></div>
             </div>
         </div>
         <div class="mt-auto">

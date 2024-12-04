@@ -1,14 +1,17 @@
 <?php
 
 use App\Models\Product;
+use App\Models\ProductType;
 
-use function Livewire\Volt\{state, rules, on};
+use function Livewire\Volt\{state, rules, on, with};
 
-state(['name', 'description', 'thumbnail', 'price']);
+state(['name', 'description', 'thumbnail', 'price', 'type']);
 
-rules(['name' => 'required|min:3', 'description' => 'required|min:6', 'price' => 'required', 'thumbnail' => "required|lt:100",])->messages([
+rules(['name' => 'required|min:3', 'description' => 'required|min:6', 'price' => 'required', 'thumbnail' => "required|lt:100", 'type' => "required"])->messages([
     'thumbnail.lt' => 'The :attribute must be less than 100kb.',
 ]);
+
+with(fn() => ['producttypes' => ProductType::get()]);
 
 on(['store' => function ($file) {
 
@@ -18,6 +21,7 @@ on(['store' => function ($file) {
         'price' => $this->price,
         'thumbnail' => $file['name'],
         'thumbnail_path' => $file['path'],
+        'type_id' => $this->type,
     ]);
 
     $this->reset();
@@ -125,10 +129,23 @@ $submit = function () {
                                 </div>
                             </div>
                             <div>
-                                <div class="text-lg font-semibold text-black/30">Description</div>
                                 <input wire:model="description" class="w-full border border-black/30 rounded-lg outline-none p-2 text-black/60 font-semibold" placeholder="Description">
                                 <div>
                                     @error('description')
+                                    <span wire:transition.in.duration.500ms="scale-y-100"
+                                        wire:transition.out.duration.500ms="scale-y-0" class="text-red-500">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div>
+                                <select wire:model="type" class="w-full border border-black/30 rounded-lg outline-none p-2 text-black/60 font-semibold capitalize">
+                                    <option value="">Select a Product Type</option>
+                                    @foreach($producttypes as $type)
+                                    <option value="{{$type->id}}">{{$type->name}}</option>
+                                    @endforeach
+                                </select>
+                                <div>
+                                    @error('type')
                                     <span wire:transition.in.duration.500ms="scale-y-100"
                                         wire:transition.out.duration.500ms="scale-y-0" class="text-red-500">{{ $message }}</span>
                                     @enderror
