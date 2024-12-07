@@ -11,9 +11,9 @@ state(['path']);
 mount(function () {
     $this->path = request()->path();
     $isAuth = Auth::check();
-    if ($isAuth && in_array($this->path, ['/', 'sign-in', 'book-table'])) {
+    if ($isAuth && in_array($this->path, config('constants.non-auth-paths'))) {
         $this->redirectRoute('product', navigate: true);
-    } elseif (!$isAuth && in_array($this->path, ['booking', 'product', 'manage-product'])) {
+    } elseif (!$isAuth && in_array($this->path, config('constants.auth-paths'))) {
         $this->redirectRoute('home', navigate: true);
     }
 });
@@ -22,7 +22,7 @@ mount(function () {
 <div class="h-screen">
     <livewire:toastr />
     <livewire:modal.modal />
-    @if(in_array($path , ['/' , 'sign-in', 'book-table']))
+    @if(in_array($path , config('constants.non-auth-paths')))
     @if($path == '/')
     <livewire:home />
     @elseif($path == 'sign-in')
@@ -30,7 +30,7 @@ mount(function () {
     @elseif($path == 'book-table')
     <livewire:book-table />
     @endif
-    @elseif(in_array($path , ['booking', 'product', 'manage-product']))
+    @elseif(in_array($path , config('constants.auth-paths')))
     <div class="flex justify-between h-full">
         <div class="w-1/12 h-full">
             <livewire:side-bar :path="$path" />
@@ -42,6 +42,8 @@ mount(function () {
             <livewire:product.product />
             @elseif($path == 'manage-product')
             <livewire:product.manage-product />
+            @elseif($path == 'setting')
+            <livewire:setting.setting />
             @endif
         </div>
     </div>

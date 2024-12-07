@@ -2,13 +2,17 @@
 
 use App\Models\PostalCode;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 use function Livewire\Volt\{state, with, mount, computed};
 
-state(['user', 'cart' => [], 'shippingType', 'search', 'address']);
+state(['user' => User::with(['addresses'])->find(Auth::user()->id), 'cart' => [], 'shippingType', 'search', 'address']);
 
-with(fn() => ['products' => Product::whereRaw("LOWER(REPLACE(name, ' ', '')) LIKE ?", ['%' . strtolower(str_replace(' ', '', $this->search)) . '%'])->get()]);
+with(fn() => [
+    'products' => Product::whereRaw("LOWER(REPLACE(name, ' ', '')) LIKE ?", ['%' . strtolower(str_replace(' ', '', $this->search)) . '%'])->get(),
+]);
 
 $increaseQuantity = function ($id) {
     $this->cart[$id]++;
@@ -40,10 +44,6 @@ $totals = computed(function () {
     $total = ($subTotal + $salesTax) - $discount;
 
     return ['subTotal' => $subTotal, 'discount' => $discount, 'salesTax' => $salesTax, 'total' => $total];
-});
-
-mount(function () {
-    $this->user = Auth::user();
 });
 ?>
 
@@ -140,7 +140,7 @@ mount(function () {
         </div>
         <div x-show="show == 'address'" class="mb-auto">
             <div class="flex justify-between items-center gap-4">
-                <button @click="$refs.pickupRadioButton.click()" :class="$wire.shippingType == 0 ? 'border-blue-500' : 'border-black/60'" class="w-full flex justify-start items-center gap-4 border rounded-lg py-2 px-3">
+                <button @click="$refs.pickupRadioButton.click(); $wire.address = null" :class="$wire.shippingType == 0 ? 'border-blue-500' : 'border-black/60'" class="w-full flex justify-start items-center gap-4 border rounded-lg py-2 px-3">
                     <input class="hidden" x-ref="pickupRadioButton" type="radio" value="0" wire:model="shippingType">
                     <div class="p-0.5 rounded-full border border-black/30">
                         <div :class="$wire.shippingType == 0 && 'bg-blue-500'" class="rounded-full size-3"></div>
@@ -158,23 +158,22 @@ mount(function () {
             <div class="py-6">
                 <div x-show="$wire.shippingType == 1" class="flex flex-col gap-2">
                     <div class="text-black/60 font-semibold">Select an Address</div>
-                    <!-- <div class="overflow-y-auto max-h-[50vh] flex flex-col gap-4">
-                        <button @click="$refs.kalamboli.click()" :class="$wire.address == 1 ? 'border-blue-500' : 'border-black/30'" class="border-2 flex flex-col rounded-md p-2">
-                            <div class="font-medium">Kalamboli</div>
-                            <div class="text-sm text-black/60">A-402,Vision Residency...</div>
-                            <input class="hidden" x-ref="kalamboli" type="radio" value="1" wire:model="address">
+                    <div class="overflow-y-auto max-h-[50vh] flex flex-col gap-4">
+                        @foreach($user->addresses as $address)
+                        <button @click="$refs.{{$address->name}}.click()" :class="$wire.address == {{$address->id}} ? 'border-blue-500' : 'border-black/30'" class="border-2 rounded-md flex justify-start gap-2 items-center p-2">
+                            <div class="p-0.5 rounded-full border border-black/30">
+                                <div :class="$wire.address == {{$address->id}} && 'bg-blue-500'" class="rounded-full  size-3"></div>
+                            </div>
+                            <div class="flex flex-col ">
+                                <div class="font-medium flex justify-start gap-2">
+                                    <div>{{$address->name}}</div>
+                                </div>
+                                <div class="text-sm text-black/60">{{Str::limit($address->address, 50)}}</div>
+                            </div>
+                            <input class="hidden" x-ref="{{$address->name}}" type="radio" value="{{$address->id}}" wire:model="address">
                         </button>
-                        <button @click="$refs.pune.click()" :class="$wire.address == 2 ? 'border-blue-500' : 'border-black/30'" class="border-2 border-black/30 flex flex-col rounded-md p-2">
-                            <div class="font-medium">Pune</div>
-                            <div class="text-sm text-black/60">Boat club Road...</div>
-                            <input class="hidden" x-ref="pune" type="radio" value="2" wire:model="address">
-                        </button>
-                        <button @click="$refs.pune2.click()" :class="$wire.address == 3 ? 'border-blue-500' : 'border-black/30'" class="border-2 border-black/30 flex flex-col rounded-md p-2">
-                            <div class="font-medium">Pune</div>
-                            <div class="text-sm text-black/60">Salisbury Park...</div>
-                            <input class="hidden" x-ref="pune2" type="radio" value="3" wire:model="address">
-                        </button>
-                    </div> -->
+                        @endforeach
+                    </div>
                 </div>
             </div>
         </div>
@@ -208,7 +207,7 @@ mount(function () {
             </div>
         </div>
         <div class="flex justify-between items-center gap-4">
-            <button x-cloak x-show="show == 'address'" @click="show = 'cart'" class="bg-amber-500 font-medium w-min text-center p-3 text-lg rounded-md text-white">
+            <button x-cloak x-show="show == 'address'" @click="show = 'cart'; $wire.address = null" class="bg-amber-500 font-medium w-min text-center p-3 text-lg rounded-md text-white">
                 <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12l4-4m-4 4 4 4" />
                 </svg>
