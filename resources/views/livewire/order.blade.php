@@ -70,28 +70,28 @@ with(fn() => [
                     <table class="w-full overflow-y-hidden">
                         <thead class="sticky top-0 bg-white">
                             <tr>
-                                <th class="font-medium py-3 sticky top-0 bg-amber-500/40">
+                                <th class="font-medium py-3 sticky top-0 bg-primary/40">
                                     #
                                 </th>
-                                <th class="font-medium py-3 sticky top-0 bg-amber-500/40">
+                                <th class="font-medium py-3 sticky top-0 bg-primary/40">
                                     Name
                                 </th>
-                                <th class="font-medium py-3 sticky top-0 bg-amber-500/40">
+                                <th class="font-medium py-3 sticky top-0 bg-primary/40">
                                     Price
                                 </th>
-                                <th class="font-medium py-3 sticky top-0 bg-amber-500/40">
+                                <th class="font-medium py-3 sticky top-0 bg-primary/40">
                                     Quantity
                                 </th>
-                                <th class="font-medium py-3 sticky top-0 bg-amber-500/40">
+                                <th class="font-medium py-3 sticky top-0 bg-primary/40">
                                     Total price
                                 </th>
-                                <th class="font-medium py-3 sticky top-0 bg-amber-500/40">
+                                <th class="font-medium py-3 sticky top-0 bg-primary/40">
                                     Item Id
                                 </th>
-                                <th class="font-medium py-3 sticky top-0 bg-amber-500/40">
+                                <th class="font-medium py-3 sticky top-0 bg-primary/40">
                                     Item Status
                                 </th>
-                                <th class="font-medium py-3 sticky top-0 bg-amber-500/40">
+                                <th class="font-medium py-3 sticky top-0 bg-primary/40">
                                     Status
                                 </th>
                             </tr>
@@ -114,7 +114,7 @@ with(fn() => [
                             <td class="text-center font-normal py-3 capitalize">{{$item->status ? $item->status->name : ''}}</td>
                             <td class="text-center font-normal py-3 flex justify-center items-center gap-2">
                                 <button wire:click="toggleModal({{$item->id}})">
-                                    <svg class="w-6 h-6 text-amber-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-6 h-6 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
                                         <path fill-rule="evenodd" d="M11.32 6.176H5c-1.105 0-2 .949-2 2.118v10.588C3 20.052 3.895 21 5 21h11c1.105 0 2-.948 2-2.118v-7.75l-3.914 4.144A2.46 2.46 0 0 1 12.81 16l-2.681.568c-1.75.37-3.292-1.263-2.942-3.115l.536-2.839c.097-.512.335-.983.684-1.352l2.914-3.086Z" clip-rule="evenodd" />
                                         <path fill-rule="evenodd" d="M19.846 4.318a2.148 2.148 0 0 0-.437-.692 2.014 2.014 0 0 0-.654-.463 1.92 1.92 0 0 0-1.544 0 2.014 2.014 0 0 0-.654.463l-.546.578 2.852 3.02.546-.579a2.14 2.14 0 0 0 .437-.692 2.244 2.244 0 0 0 0-1.635ZM17.45 8.721 14.597 5.7 9.82 10.76a.54.54 0 0 0-.137.27l-.536 2.84c-.07.37.239.696.588.622l2.682-.567a.492.492 0 0 0 .255-.145l4.778-5.06Z" clip-rule="evenodd" />
                                     </svg>
@@ -144,35 +144,35 @@ with(fn() => [
                 <div class="border border-black/30 rounded-lg flex items-center justify-center p-2 py-24 h-full">
                     <div class="flex justify-stretch items-center w-11/12">
                         <div class="size-8 shrink-0 flex justify-center items-center relative">
-                            <button type="button" @click="$wire.item_status = (1).toString();" :class="[1 , 2 , 3 , 4].includes(Number($wire.item_status)) ? 'bg-amber-500 text-white border-amber-500' : 'hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-colors duration-200 border-2 border-black/30'" class="rounded-full size-full flex justify-center items-center">1</button>
-                            <div :class="[1 , 2 , 3 , 4].includes(Number($wire.item_status)) ? 'text-amber-500' : 'text-black/30'" class="absolute pointer-events-none -translate-y-full pb-2 font-semibold text-center"><span class="whitespace-nowrap">Ready for</span> Firing</div>
+                            <button type="button" @click="$wire.item_status = (1).toString();" :class="[1 , 2 , 3 , 4].includes(Number($wire.item_status)) ? 'bg-primary text-white border-primary' : 'hover:bg-primary hover:text-white hover:border-primary transition-colors duration-200 border-2 border-black/30'" class="rounded-full size-full flex justify-center items-center">1</button>
+                            <div :class="[1 , 2 , 3 , 4].includes(Number($wire.item_status)) ? 'text-primary' : 'text-black/30'" class="absolute pointer-events-none -translate-y-full pb-2 font-semibold text-center"><span class="whitespace-nowrap">Ready for</span> Firing</div>
                         </div>
                         <div class="w-full border h-1.5 bg-black/30 rounded-full relative overflow-hidden">
                             <div class="absolute inset-0">
-                                <div :class="[2 , 3 , 4].includes(Number($wire.item_status))  ? 'w-full' : 'w-0'" class="h-full bg-amber-500 transition-all duration-200"></div>
+                                <div :class="[2 , 3 , 4].includes(Number($wire.item_status))  ? 'w-full' : 'w-0'" class="h-full bg-primary transition-all duration-200"></div>
                             </div>
                         </div>
                         <div class="size-8 shrink-0 flex justify-center items-center relative">
-                            <button type="button" @click="$wire.item_status = (2).toString();" :class="[2 , 3 , 4].includes(Number($wire.item_status)) ? 'bg-amber-500 text-white border-amber-500' : 'hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-colors duration-200 border-2 border-black/30'" class="rounded-full size-full flex justify-center items-center">2</button>
-                            <div :class="[2 , 3 , 4].includes(Number($wire.item_status)) ? 'text-amber-500' : 'text-black/30'" class="absolute pointer-events-none translate-y-full pt-2 font-semibold text-center"><span class="whitespace-nowrap">Firing in</span> Progress</div>
+                            <button type="button" @click="$wire.item_status = (2).toString();" :class="[2 , 3 , 4].includes(Number($wire.item_status)) ? 'bg-primary text-white border-primary' : 'hover:bg-primary hover:text-white hover:border-primary transition-colors duration-200 border-2 border-black/30'" class="rounded-full size-full flex justify-center items-center">2</button>
+                            <div :class="[2 , 3 , 4].includes(Number($wire.item_status)) ? 'text-primary' : 'text-black/30'" class="absolute pointer-events-none translate-y-full pt-2 font-semibold text-center"><span class="whitespace-nowrap">Firing in</span> Progress</div>
                         </div>
                         <div class="w-full border h-1.5 bg-black/30 rounded-full relative overflow-hidden">
                             <div class="absolute inset-0">
-                                <div :class="[3 , 4].includes(Number($wire.item_status))  ? 'w-full' : 'w-0'" class="h-full bg-amber-500 transition-all duration-200"></div>
+                                <div :class="[3 , 4].includes(Number($wire.item_status))  ? 'w-full' : 'w-0'" class="h-full bg-primary transition-all duration-200"></div>
                             </div>
                         </div>
                         <div class="size-8 shrink-0 flex justify-center items-center relative">
-                            <button type="button" @click="$wire.item_status = (3).toString()" :class="[3 , 4].includes(Number($wire.item_status)) ? 'bg-amber-500 text-white border-amber-500' : 'hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-colors duration-200 border-2 border-black/30'" class="rounded-full size-full flex justify-center items-center">3</button>
-                            <div :class="[3 , 4].includes(Number($wire.item_status)) ? 'text-amber-500' : 'text-black/30'" class="absolute pointer-events-none -translate-y-full pb-2 font-semibold text-center"><span class="whitespace-nowrap"> Firing Process</span> Finished</div>
+                            <button type="button" @click="$wire.item_status = (3).toString()" :class="[3 , 4].includes(Number($wire.item_status)) ? 'bg-primary text-white border-primary' : 'hover:bg-primary hover:text-white hover:border-primary transition-colors duration-200 border-2 border-black/30'" class="rounded-full size-full flex justify-center items-center">3</button>
+                            <div :class="[3 , 4].includes(Number($wire.item_status)) ? 'text-primary' : 'text-black/30'" class="absolute pointer-events-none -translate-y-full pb-2 font-semibold text-center"><span class="whitespace-nowrap"> Firing Process</span> Finished</div>
                         </div>
                         <div class="w-full border h-1.5 bg-black/30 rounded-full relative overflow-hidden">
                             <div class="absolute inset-0">
-                                <div :class="[4].includes(Number($wire.item_status))  ? 'w-full' : 'w-0'" class="h-full bg-amber-500 transition-all duration-200"></div>
+                                <div :class="[4].includes(Number($wire.item_status))  ? 'w-full' : 'w-0'" class="h-full bg-primary transition-all duration-200"></div>
                             </div>
                         </div>
                         <div class="size-8 shrink-0 flex justify-center items-center relative">
-                            <button type="button" @click="$wire.item_status = (4).toString()" :class="[4].includes(Number($wire.item_status)) ? 'bg-amber-500 text-white border-amber-500' : 'hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-colors duration-200 border-2 border-black/30'" class="rounded-full size-full flex justify-center items-center">4</button>
-                            <div :class="[4].includes(Number($wire.item_status)) ? 'text-amber-500' : 'text-black/30'" class="absolute pointer-events-none translate-y-full pt-2 font-semibold text-center"><span class="whitespace-nowrap">Ready for</span> Pickup</div>
+                            <button type="button" @click="$wire.item_status = (4).toString()" :class="[4].includes(Number($wire.item_status)) ? 'bg-primary text-white border-primary' : 'hover:bg-primary hover:text-white hover:border-primary transition-colors duration-200 border-2 border-black/30'" class="rounded-full size-full flex justify-center items-center">4</button>
+                            <div :class="[4].includes(Number($wire.item_status)) ? 'text-primary' : 'text-black/30'" class="absolute pointer-events-none translate-y-full pt-2 font-semibold text-center"><span class="whitespace-nowrap">Ready for</span> Pickup</div>
                         </div>
                     </div>
                 </div>
@@ -195,7 +195,7 @@ with(fn() => [
                 <div class="flex justify-center items-center capitalize">Status: {{$selected_item->status ? $selected_item->status->name : ''}}</div>
             </div>
             <div class="flex justify-center items-center">
-                <button type="submit" wire:loading.class="pointer-events-none" wire:dirty.class.remove="pointer-events-none opacity-50" class="pointer-events-none opacity-50 rounded-md text-center py-2 px-4 bg-amber-500 mx-auto text-white text-xl relative">
+                <button type="submit" wire:loading.class="pointer-events-none" wire:dirty.class.remove="pointer-events-none opacity-50" class="pointer-events-none opacity-50 rounded-md text-center py-2 px-4 bg-primary mx-auto text-white text-xl relative">
                     <div wire:loading.class="invisible" wire:target="submit">Submit</div>
                     <div wire:loading.class.remove="invisible" wire:target="submit" class="absolute inset-0 flex justify-center items-center invisible">
                         <svg aria-hidden="true" class="w-8 h-8 text-transparent animate-spin fill-white" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">

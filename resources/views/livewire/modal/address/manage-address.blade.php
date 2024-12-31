@@ -34,23 +34,23 @@ mount(function ($data) {});
     </div>
     <form wire:submit="submit" class="flex flex-col justify-around gap-5">
         <div>
-            <input wire:model="name" class="p-2 border border-amber-500 outline-none w-full rounded-md placeholder:text-amber-500/70" placeholder="Address Name">
+            <input wire:model="name" class="p-2 border border-primary outline-none w-full rounded-md placeholder:text-primary/70" placeholder="Address Name">
             @error('name')
             <div class="text-sm text-red-500">{{$message}}</div>
             @enderror
         </div>
         <div>
-            <textarea wire:model="address" class="p-2 border border-amber-500 outline-none w-full rounded-md placeholder:text-amber-500/70" placeholder="Address"></textarea>
+            <textarea wire:model="address" class="p-2 border border-primary outline-none w-full rounded-md placeholder:text-primary/70" placeholder="Address"></textarea>
             @error('address')
             <div class="text-sm text-red-500">{{$message}}</div>
             @enderror
         </div>
         <div>
-            <input wire:model="postcode" x-mask="9999" class="p-2 border border-amber-500 outline-none w-full rounded-md placeholder:text-amber-500/70" placeholder="Postcode">
+            <input wire:model="postcode" x-mask="9999" class="p-2 border border-primary outline-none w-full rounded-md placeholder:text-primary/70" placeholder="Postcode">
             @error('postcode')
             <div class="text-sm text-red-500">{{$message}}</div>
             @enderror
         </div>
-        <button type="submit" class="py-2 px-4 bg-amber-500 rounded-md text-white font-semibold w-min mx-auto">Submit</button>
+        <button type="submit" class="py-2 px-4 bg-primary rounded-md text-white font-semibold w-min mx-auto">Submit</button>
     </form>
 </div>

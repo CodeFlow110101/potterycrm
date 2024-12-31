@@ -38,24 +38,24 @@ mount(function ($data) {
     <div class="grow flex flex-col gap-6 justify-around w-11/12 mx-auto">
         <div class="flex justify-between gap-2 text-black/60">
             <div class="basis-1/3 font-medium">Name:</div>
-            <div class="basis-1/3 border border-amber-500 rounded-md p-2">{{$booking->user->first_name}}</div>
-            <div class="basis-1/3 border border-amber-500 rounded-md p-2">{{$booking->user->last_name}}</div>
+            <div class="basis-1/3 border border-primary rounded-md p-2">{{$booking->user->first_name}}</div>
+            <div class="basis-1/3 border border-primary rounded-md p-2">{{$booking->user->last_name}}</div>
         </div>
         <div class="flex justify-between gap-2 text-black/60">
             <div class="basis-1/3 font-medium">Phone:</div>
-            <div class="basis-2/3 border border-amber-500 rounded-md p-2">{{$booking->user->phoneno}}</div>
+            <div class="basis-2/3 border border-primary rounded-md p-2">{{$booking->user->phoneno}}</div>
         </div>
         <div class="flex justify-between gap-2 text-black/60">
             <div class="basis-1/3 font-medium">Email:</div>
-            <div class="basis-2/3 border border-amber-500 rounded-md p-2">{{$booking->user->email}}</div>
+            <div class="basis-2/3 border border-primary rounded-md p-2">{{$booking->user->email}}</div>
         </div>
         <div class="flex justify-between gap-2 text-black/60">
             <div class="basis-1/3 font-medium">No of People:</div>
-            <div class="basis-2/3 border border-amber-500 rounded-md p-2">{{$booking->no_of_people}}</div>
+            <div class="basis-2/3 border border-primary rounded-md p-2">{{$booking->no_of_people}}</div>
         </div>
         <div class="flex justify-around">
-            <button @click="$dispatch('hide-modal')" class="py-2 px-4 border border-amber-500 rounded-md text-amber-500 font-semibold">Cancel</button>
-            <button wire:click="submit" class="py-2 px-4 bg-amber-500 rounded-md text-white font-semibold">Confirm Booking</button>
+            <button @click="$dispatch('hide-modal')" class="py-2 px-4 border border-primary rounded-md text-primary font-semibold">Cancel</button>
+            <button wire:click="submit" class="py-2 px-4 bg-primary rounded-md text-white font-semibold">Confirm Booking</button>
         </div>
     </div>
 </div>

@@ -139,13 +139,13 @@ $proceedToPayment = function () {
                     <div x-show="show == 'cart'" class="absolute inset-0 p-2 flex justify-end">
                         @if(array_key_exists($product->id, $cart))
                         <button wire:click="removeProduct({{$product->id}})" class="size-min rounded-md bg-white p-1 opacity-60">
-                            <svg class="w-6 h-6 text-amber-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <svg class="w-6 h-6 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14" />
                             </svg>
                         </button>
                         @else
                         <button wire:click="addProduct({{$product->id}})" class="size-min rounded-md bg-white p-1 opacity-60">
-                            <svg class="w-6 h-6 text-amber-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <svg class="w-6 h-6 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5" />
                             </svg>
                         </button>
@@ -156,7 +156,7 @@ $proceedToPayment = function () {
                     <div class="text-black/80">
                         {{$product->name}}
                     </div>
-                    <div class="mt-auto text-amber-500 font-medium">${{$product->price}}</div>
+                    <div class="mt-auto text-primary font-medium">${{$product->price}}</div>
                 </div>
             </div>
             @endforeach
@@ -181,11 +181,11 @@ $proceedToPayment = function () {
                     <div class="w-3/4 h-full flex flex-col">
                         <div class="text-lg text-black/60">{{$product->name}}</div>
                         <div class="flex justify-between mt-auto">
-                            <div class="text-amber-500 text-lg font-medium">${{$product->price}}</div>
+                            <div class="text-primary text-lg font-medium">${{$product->price}}</div>
                             <div class="w-min flex justify-evenly items-center gap-3">
-                                <button wire:click="increaseQuantity({{$product->id}})" class="bg-amber-500 rounded-md aspect-square py-1 px-2 text-white text-sm">+</button>
+                                <button wire:click="increaseQuantity({{$product->id}})" class="bg-primary rounded-md aspect-square py-1 px-2 text-white text-sm">+</button>
                                 <div class="text-black/60">{{$cart[$product->id]}}</div>
-                                <button wire:click="decreaseQuantity({{$product->id}})" class="bg-amber-500 rounded-md aspect-square py-1 px-2 text-white text-sm">-</button>
+                                <button wire:click="decreaseQuantity({{$product->id}})" class="bg-primary rounded-md aspect-square py-1 px-2 text-white text-sm">-</button>
                             </div>
                         </div>
                     </div>
@@ -264,13 +264,13 @@ $proceedToPayment = function () {
             </div>
         </div>
         <div class="flex justify-between items-center gap-4">
-            <button x-cloak x-show="show == 'address'" @click="show = 'cart'; $wire.address = null" class="bg-amber-500 font-medium w-min text-center p-3 text-lg rounded-md text-white">
+            <button x-cloak x-show="show == 'address'" @click="show = 'cart'; $wire.address = null" class="bg-primary font-medium w-min text-center p-3 text-lg rounded-md text-white">
                 <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12l4-4m-4 4 4 4" />
                 </svg>
             </button>
-            <button x-show="show == 'cart'" @click="show = 'address'" :class="$wire.cart.length == 0 && 'pointer-events-none opacity-60'" class="bg-amber-500 font-medium w-full text-center p-3 text-lg rounded-md text-white">Select Delivery Preference</button>
-            <button x-show="show == 'address'" wire:click="proceedToPayment" :class="$wire.cart.length == 0 && 'pointer-events-none opacity-60'" wire:loading.class="pointer-events-none py-2.5" wire:loading.class.remove="py-3" wire:target="proceedToPayment" class="bg-amber-500 font-medium w-full text-center py-3 text-lg rounded-md text-white flex items-center justify-center">
+            <button x-show="show == 'cart'" @click="show = 'address'" :class="$wire.cart.length == 0 && 'pointer-events-none opacity-60'" class="bg-primary font-medium w-full text-center p-3 text-lg rounded-md text-white">Select Delivery Preference</button>
+            <button x-show="show == 'address'" wire:click="proceedToPayment" :class="$wire.cart.length == 0 && 'pointer-events-none opacity-60'" wire:loading.class="pointer-events-none py-2.5" wire:loading.class.remove="py-3" wire:target="proceedToPayment" class="bg-primary font-medium w-full text-center py-3 text-lg rounded-md text-white flex items-center justify-center">
                 <div wire:target="proceedToPayment" wire:loading.remove>Proceed to Payment</div>
                 <div wire:target="proceedToPayment" wire:loading class="mx-auto">
                     <svg aria-hidden="true" class="w-8 h-8 text-transparent animate-spin fill-white" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">

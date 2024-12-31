@@ -51,13 +51,13 @@ $submit = function () {
 ?>
 
 <div x-data="otp" x-on:start-countdown="startCountdown()" class="h-full flex flex-col">
-    <form wire:submit="submit" class="w-2/5 m-auto border border-amber-500 rounded-2xl h-min px-4">
+    <form wire:submit="submit" class="w-2/5 m-auto border border-primary rounded-2xl h-min px-4">
         <div class="w-11/12 mx-auto grid grid-cols-1 gap-8 py-4">
-            <div class="text-center text-amber-500 py-6 text-3xl">
+            <div class="text-center text-primary py-6 text-3xl">
                 Sign in
             </div>
             <div>
-                <input x-mask="9999999999" wire:model="phoneno" type="text" class="border w-full rounded-lg border-amber-500 outline-none p-3" placeholder="Phone No">
+                <input x-mask="9999999999" wire:model="phoneno" type="text" class="border w-full rounded-lg border-primary outline-none p-3" placeholder="Phone No">
                 @error('phoneno')
                 <div wire:transition.in.scale.origin.top.duration.1000ms class="text-red-500 text-sm">
                     <span class="error">{{ $message }}</span>
@@ -68,7 +68,7 @@ $submit = function () {
                 @endif
             </div>
             <div>
-                <input @input="verifyOtp" x-mask="999999" wire:model="otp" class="@if(!$generatedOtp) pointer-events-none opacity-50 @endif border w-full rounded-lg border-amber-500 outline-none p-3" placeholder="Confirmation Code">
+                <input @input="verifyOtp" x-mask="999999" wire:model="otp" class="@if(!$generatedOtp) pointer-events-none opacity-50 @endif border w-full rounded-lg border-primary outline-none p-3" placeholder="Confirmation Code">
                 @error('otp')
                 <div wire:transition.in.scale.origin.top.duration.1000ms class="text-red-500 text-sm">
                     <span class="error">{{ $message }}</span>
@@ -79,7 +79,7 @@ $submit = function () {
                 @endif
             </div>
 
-            <button type="submit" :class="interval && 'pointer-events-none opacity-50'" class="rounded-md text-center py-2 px-4 bg-amber-500 mx-auto text-white text-xl">{{$generatedOtp ? 'Resend' : 'Send'}}</button>
+            <button type="submit" :class="interval && 'pointer-events-none opacity-50'" class="rounded-md text-center py-2 px-4 bg-primary mx-auto text-white text-xl">{{$generatedOtp ? 'Resend' : 'Send'}}</button>
         </div>
     </form>
 </div>

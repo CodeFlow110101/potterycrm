@@ -72,12 +72,12 @@ $submit = function () {
 
 <div x-data="otp" x-on:reset="reset()" x-on:start-countdown="startCountdown()" class="h-screen flex justify-center items-center">
     <div class="bg-white w-1/2 rounded-xl">
-        <form wire:submit="submit" class="border border-amber-500 rounded-xl py-10">
+        <form wire:submit="submit" class="border border-primary rounded-xl py-10">
             <div class="h-min grid grid-cols-1 gap-5 w-4/5 mx-auto">
-                <div class="text-4xl text-amber-500 text-center">Book a Table</div>
+                <div class="text-4xl text-primary text-center">Book a Table</div>
                 <div class="flex justify-between gap-4">
                     <div class="h-min grid grid-cols-1 gap-2 w-full">
-                        <input wire:model="first_name" class="p-2 w-full rounded-md outline-none border border-amber-500" placeholder="First name">
+                        <input wire:model="first_name" class="p-2 w-full rounded-md outline-none border border-primary" placeholder="First name">
                         <div>
                             @error('first_name')
                             <span wire:transition.in.duration.500ms="scale-y-100"
@@ -86,7 +86,7 @@ $submit = function () {
                         </div>
                     </div>
                     <div class="h-min grid grid-cols-1 gap-2 w-full">
-                        <input wire:model="last_name" class="p-2 w-full rounded-md outline-none border border-amber-500" placeholder="Last name">
+                        <input wire:model="last_name" class="p-2 w-full rounded-md outline-none border border-primary" placeholder="Last name">
                         <div>
                             @error('last_name')
                             <span wire:transition.in.duration.500ms="scale-y-100"
@@ -97,7 +97,7 @@ $submit = function () {
 
                 </div>
                 <div class="h-min grid grid-cols-1 gap-2 w-full">
-                    <input wire:model="email" class="p-2 w-full rounded-md outline-none border border-amber-500" placeholder="Email">
+                    <input wire:model="email" class="p-2 w-full rounded-md outline-none border border-primary" placeholder="Email">
                     <div>
                         @error('email')
                         <span wire:transition.in.duration.500ms="scale-y-100"
@@ -108,7 +108,7 @@ $submit = function () {
                 <div class="flex justify-between gap-4">
                     <div class="w-full">
                         <div>
-                            <input wire:model="phoneno" x-mask="9999999999" class="p-2 w-full rounded-md outline-none border border-amber-500" placeholder="Phone No">
+                            <input wire:model="phoneno" x-mask="9999999999" class="p-2 w-full rounded-md outline-none border border-primary" placeholder="Phone No">
                         </div>
                         <div>
                             @error('phoneno')
@@ -119,7 +119,7 @@ $submit = function () {
                     </div>
                     <div class="w-full">
                         <div>
-                            <input wire:model="noofpeople" x-mask="99" class="p-2 w-full rounded-md outline-none border border-amber-500" placeholder="No of People">
+                            <input wire:model="noofpeople" x-mask="99" class="p-2 w-full rounded-md outline-none border border-primary" placeholder="No of People">
                         </div>
                         <div>
                             @error('noofpeople')
@@ -130,7 +130,7 @@ $submit = function () {
                     </div>
                 </div>
                 <div class="h-min grid grid-cols-1 gap-2">
-                    <input @input="verifyOtp" wire:model="otp" x-mask="999999" class="@if(!$generatedOtp) pointer-events-none opacity-50 @endif p-2 w-1/2 mx-auto rounded-md outline-none border border-amber-500" placeholder="Confirmation Code">
+                    <input @input="verifyOtp" wire:model="otp" x-mask="999999" class="@if(!$generatedOtp) pointer-events-none opacity-50 @endif p-2 w-1/2 mx-auto rounded-md outline-none border border-primary" placeholder="Confirmation Code">
                     <div class="w-1/2 mx-auto">
                         @error('otp')
                         <span wire:transition.in.duration.500ms="scale-y-100"
@@ -141,7 +141,7 @@ $submit = function () {
                     <div :class="formattedTime == '00:00' && 'text-red-500'" class="mx-auto w-1/2" x-text="formattedTime == '00:00' ? 'Otp Timed Out' : formattedTime"></div>
                     @endif
                 </div>
-                <button type="submit" :class="interval && 'pointer-events-none opacity-50'" class="rounded-md text-white text-center p-2 w-1/2 bg-amber-500 mx-auto text-xl">{{$generatedOtp ? 'Resend Code' : 'Send Code'}}</button>
+                <button type="submit" :class="interval && 'pointer-events-none opacity-50'" class="rounded-md text-white text-center p-2 w-1/2 bg-primary mx-auto text-xl">{{$generatedOtp ? 'Resend Code' : 'Send Code'}}</button>
             </div>
         </form>
     </div>

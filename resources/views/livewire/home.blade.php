@@ -9,8 +9,8 @@ use function Livewire\Volt\{state};
 <div>
     <div class="shadow-md">
         <div class="w-11/12 mx-auto flex justify-between items-center py-4">
-            <a href="/sign-in" wire:navigate class="border border-amber-500 rounded-md text-amber-500 px-4 py-2">Sign In</a>
-            <a href="/book-table" wire:navigate class="border border-amber-500 rounded-md text-amber-500 px-4 py-2">Book a Table</a>
+            <a href="/sign-in" wire:navigate class="border border-primary rounded-md text-primary px-4 py-2">Sign In</a>
+            <a href="/book-table" wire:navigate class="border border-primary rounded-md text-primary px-4 py-2">Book a Table</a>
         </div>
     </div>
 </div>
