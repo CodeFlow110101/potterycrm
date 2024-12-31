@@ -20,7 +20,7 @@ mount(function ($path) {
 
 <div class="h-full flex flex-col gap-6 pb-8 pt-8 px-2">
     <div class="w-full">
-        <img class="w-full h-12" src="{{ secure_asset('images/logo_no_name.jpeg') }}">
+        <img class="w-full h-12" src="{{ asset('images/logo_no_name.jpeg') }}">
     </div>
     <div>
         <div class="border h-0 w-full"></div>
