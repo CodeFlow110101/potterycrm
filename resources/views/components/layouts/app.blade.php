@@ -9,7 +9,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{asset('js/alpine.js')}}"></script>
     <script src="{{asset('js/events.js')}}"></script>
-    @vite(['resources/css/app.css' , 'resources/js/bootstrap.js'])
+    @vite(['resources/css/app.css' , 'resources/js/app.js'])
 
     <!-- Trix Editor -->
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.8/dist/trix.css">
