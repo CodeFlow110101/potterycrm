@@ -19,7 +19,7 @@ mount(function () {
 });
 ?>
 
-<div class="h-screen">
+<div class="h-dvh">
     <livewire:toastr />
     <livewire:modal.modal />
     @if(in_array($path , config('constants.non-auth-paths')))
@@ -44,6 +44,10 @@ mount(function () {
             <livewire:product.manage-product />
             @elseif($path == 'setting')
             <livewire:setting.setting />
+            @elseif($path == 'purchase')
+            <livewire:purchase />
+            @elseif($path == 'order')
+            <livewire:order />
             @endif
         </div>
     </div>

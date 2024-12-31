@@ -7,14 +7,14 @@
     <title>{{ $title ?? 'Page Title' }}</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="{{asset('js/alpine.js')}}"></script>
-    <script src="{{asset('js/events.js')}}"></script>
-    @vite('resources/css/app.css')
+    <script src="{{secure_asset('js/alpine.js')}}"></script>
+    <script src="{{secure_asset('js/events.js')}}"></script>
+    @vite(['resources/css/app.css' , 'resources/js/bootstrap.js'])
 
     <!-- Trix Editor -->
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.8/dist/trix.css">
     <script type="text/javascript" src="https://unpkg.com/trix@2.0.8/dist/trix.umd.min.js"></script>
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ secure_asset('css/style.css') }}">
 </head>
 
 <body>

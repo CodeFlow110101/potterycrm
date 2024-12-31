@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Square\Models\Order;
 
 class Product extends Model
 {
@@ -14,5 +16,10 @@ class Product extends Model
     public function type(): BelongsTo
     {
         return $this->belongsTo(ProductType::class, 'type_id', 'id');
+    }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class, 'product_id', 'id');
     }
 }

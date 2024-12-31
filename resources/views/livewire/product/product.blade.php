@@ -10,8 +10,9 @@ use Square\Models\Money;
 use Square\Models\QuickPay;
 use Square\Models\CheckoutOptions;
 use Square\Models\CreatePaymentLinkRequest;
+use Square\Models\Order;
 
-use function Livewire\Volt\{state, with, mount, computed};
+use function Livewire\Volt\{state, with, mount, computed, on};
 
 state(['user' => User::with(['addresses'])->find(Auth::user()->id), 'cart' => [], 'shippingType', 'search', 'address']);
 
@@ -53,31 +54,44 @@ $totals = computed(function () {
 
 $proceedToPayment = function () {
 
+    $products = Product::whereIn('id', array_keys($this->cart))->get();
+
     $client = new SquareClient([
         'accessToken' => env('SQUARE_POS_ACCESS_TOKEN'),
-        'environment' => 'sandbox', // or 'production' based on your environment
+        'environment' => env('SQUARE_POS_ENVIRONMENT'),
     ]);
 
-    $price_money = new \Square\Models\Money();
-    $price_money->setAmount($this->totals['total'] * 100);
-    $price_money->setCurrency('USD');
+    $all_order_line_item = [];
 
-    $quick_pay = new \Square\Models\QuickPay(
-        'Products',
-        $price_money,
-        env('SQUARE_POS_LOCATION_ID'),
-    );
+    foreach ($this->cart as $id => $quantitiy) {
+        $metadata = ['id' => (string)$id];
+        $base_price_money = new \Square\Models\Money();
+        $base_price_money->setAmount($products->where('id', $id)->first()->price * 100);
+        $base_price_money->setCurrency(env('SQUARE_POS_CURRENCY'));
 
-    $checkout_options = new \Square\Models\CheckoutOptions();
-    $checkout_options->setRedirectUrl(url('/'));
+        $order_line_item = new \Square\Models\OrderLineItem($quantitiy);
+        $order_line_item->setName($products->where('id', $id)->first()->name);
+        $order_line_item->setMetadata($metadata);
+        $order_line_item->setBasePriceMoney($base_price_money);
+        $all_order_line_item[] = $order_line_item;
+    }
+
+    $line_items = $all_order_line_item;
+    $metadata = ['user_id' => (string)$this->user->id];
+    $order = new \Square\Models\Order(env('SQUARE_POS_LOCATION_ID'));
+    $order->setLineItems($line_items);
+    $order->setMetadata($metadata);
+
+    $checkout_options = new CheckoutOptions();
+    $checkout_options->setRedirectUrl(url('purchase'));
     $checkout_options->setEnableCoupon(false);
     $checkout_options->setEnableLoyalty(false);
 
-    $body = new \Square\Models\CreatePaymentLinkRequest();
+    $body = new CreatePaymentLinkRequest();
     $body->setIdempotencyKey('');
-    $body->setQuickPay($quick_pay);
-    $body->setCheckoutOptions($checkout_options);
+    $body->setOrder($order);
 
+    $body->setCheckoutOptions($checkout_options);
     $api_response = $client->getCheckoutApi()->createPaymentLink($body);
 
     if ($api_response->isSuccess()) {
@@ -85,12 +99,13 @@ $proceedToPayment = function () {
         return redirect()->away($result->getPaymentLink()->getlongUrl());
     } else {
         $errors = $api_response->getErrors();
+        dd($errors);
     }
 }
 ?>
 
 <div x-data="{ show : 'cart' }" class="grow flex justify-between bg-black/5">
-    <div class="h-full w-4/6 flex flex-col p-4">
+    <div x-data="testWS" class="h-full w-4/6 flex flex-col p-4">
         <div class="py-12 flex justify-between items-center">
             <div class="w-full flex flex-col gap-2">
                 <div class="text-2xl font-medium text-black/80">
