@@ -6,14 +6,15 @@ use App\Models\User;
 use Illuminate\Support\Facades\App;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 
 use function Livewire\Volt\{state, rules, with};
 
-state(['first_name', 'last_name', 'email', 'phoneno', 'otp', 'generatedOtp', 'noofpeople']);
+state(['first_name', 'last_name', 'email', 'phoneno', 'otp', 'generatedOtp', 'noofpeople', 'booking_date_time']);
 
-rules(['first_name' => 'required', 'last_name' => 'required', 'email' => 'required|email', 'phoneno' => 'required']);
+rules(['first_name' => 'required', 'last_name' => 'required', 'email' => 'required|email', 'phoneno' => 'required', 'booking_date_time' => "required"]);
 
-$verifyOtp = function (Request $request) {
+$verifyOtp = function () {
 
     $this->validate();
     $this->resetValidation();
@@ -24,6 +25,7 @@ $verifyOtp = function (Request $request) {
             User::where('phoneno', $this->phoneno)->first()->bookings()->create([
                 'status_id' => 1,
                 'no_of_people' => $this->noofpeople,
+                'booking_datetime' => Carbon::createFromFormat('h:i A | d-m-Y', $this->booking_date_time)->format('Y-m-d H:i:s'),
             ]);
         } else {
             $user = User::Create(
@@ -40,6 +42,7 @@ $verifyOtp = function (Request $request) {
             $user->bookings()->create([
                 'status_id' => 1,
                 'no_of_people' => $this->noofpeople,
+                'booking_datetime' => Carbon::createFromFormat('h:i A | d-m-Y', $this->booking_date_time)->format('Y-m-d H:i:s'),
             ]);
         }
         $this->dispatch('show-toastr', type: 'success', message: 'Your booking has been successfully registered');
@@ -63,7 +66,7 @@ $submit = function () {
     }
 
     $this->generatedOtp = App::call([SmsController::class, 'generateOtp']);
-    // App::call([SmsController::class, 'send'], ['phoneno' => env('TWILIO_PHONE_COUNTRY_CODE') . $this->phoneno, 'message' => 'Your otp is ' . $this->generatedOtp->otp . '.']);
+    App::call([SmsController::class, 'send'], ['phoneno' => env('TWILIO_PHONE_COUNTRY_CODE') . $this->phoneno, 'message' => 'Your otp is ' . $this->generatedOtp->otp . '.']);
     $this->dispatch('show-toastr', type: 'success', message: 'A code has been sent to this number');
     $this->dispatch('start-countdown');
 };
@@ -94,12 +97,20 @@ $submit = function () {
                             @enderror
                         </div>
                     </div>
-
                 </div>
-                <div class="h-min grid grid-cols-1 gap-2 w-full">
-                    <input wire:model="email" class="p-2 w-full rounded-md outline-none border border-primary" placeholder="Email">
-                    <div>
-                        @error('email')
+                <div class="h-min flex justify-between gap-4 w-full">
+                    <div class="w-full">
+                        <input wire:model="email" class="p-2 w-full rounded-md outline-none border border-primary" placeholder="Email">
+                        <div>
+                            @error('email')
+                            <span wire:transition.in.duration.500ms="scale-y-100"
+                                wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                    <div x-data x-init="flatpickr($refs.input, { dateFormat: 'H:i K d-m-Y', enableTime: true , time_24hr: false, })" class="w-full">
+                        <input wire:model="booking_date_time" x-ref="input" type="text" class="p-2 w-full rounded-md outline-none border border-primary" placeholder="Booking Date & Time" />
+                        @error('booking_date_time')
                         <span wire:transition.in.duration.500ms="scale-y-100"
                             wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
                         @enderror

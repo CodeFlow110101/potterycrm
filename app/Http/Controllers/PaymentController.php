@@ -2,16 +2,150 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\TerminalPaymentEvent;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
 use Square\SquareClient;
+use App\Models\Product;
+use App\Models\Purchase;
+use Illuminate\Support\Facades\Log;
+use Square\Models\CheckoutOptions;
+use Square\Models\CreatePaymentLinkRequest;
+use Illuminate\Support\Str;
 
 class PaymentController extends Controller
 {
+
+    function webhook(Request $request)
+    {
+        if ($request->type == "payment.updated") {
+            $this->store($request);
+        } elseif ($request->type == "terminal.checkout.updated") {
+            $this->terminalUpdated($request);
+        }
+    }
+
+    static function onlinePayment($cart, $user)
+    {
+        $products = Product::whereIn('id', array_keys($cart))->get();
+
+        $client = new SquareClient([
+            'accessToken' => env('SQUARE_POS_ACCESS_TOKEN'),
+            'environment' => env('SQUARE_POS_ENVIRONMENT'),
+        ]);
+
+        $all_order_line_item = [];
+
+        foreach ($cart as $id => $quantitiy) {
+            $metadata = ['id' => (string)$id];
+            $base_price_money = new \Square\Models\Money();
+            $base_price_money->setAmount($products->where('id', $id)->first()->price * 100);
+            $base_price_money->setCurrency(env('SQUARE_POS_CURRENCY'));
+
+            $order_line_item = new \Square\Models\OrderLineItem($quantitiy);
+            $order_line_item->setName($products->where('id', $id)->first()->name);
+            $order_line_item->setMetadata($metadata);
+            $order_line_item->setBasePriceMoney($base_price_money);
+            $all_order_line_item[] = $order_line_item;
+        }
+
+        $line_items = $all_order_line_item;
+        $metadata = ['user_id' => (string)$user->id];
+        $order = new \Square\Models\Order(env('SQUARE_POS_LOCATION_ID'));
+        $order->setLineItems($line_items);
+        $order->setMetadata($metadata);
+
+        $accepted_payment_methods = new \Square\Models\AcceptedPaymentMethods();
+        $accepted_payment_methods->setApplePay(true);
+        $checkout_options = new CheckoutOptions();
+        $checkout_options->setRedirectUrl(url('purchase'));
+        $checkout_options->setEnableCoupon(false);
+        $checkout_options->setEnableLoyalty(false);
+        $checkout_options->setAcceptedPaymentMethods($accepted_payment_methods);
+
+
+        $body = new CreatePaymentLinkRequest();
+        $body->setIdempotencyKey('');
+        $body->setOrder($order);
+
+        $body->setCheckoutOptions($checkout_options);
+        $api_response = $client->getCheckoutApi()->createPaymentLink($body);
+
+        if ($api_response->isSuccess()) {
+            $result = $api_response->getResult();
+            return redirect()->away($result->getPaymentLink()->getlongUrl());
+        }
+    }
+
+    static function terminalPayment($cart, $user)
+    {
+        $products = Product::whereIn('id', array_keys($cart))->get();
+
+        $client = new SquareClient([
+            'accessToken' => env('SQUARE_POS_ACCESS_TOKEN'),
+            'environment' => env('SQUARE_POS_ENVIRONMENT'),
+        ]);
+
+        $all_order_line_item = [];
+
+        foreach ($cart as $id => $quantitiy) {
+            $metadata = ['id' => (string)$id];
+            $base_price_money = new \Square\Models\Money();
+            $base_price_money->setAmount($products->where('id', $id)->first()->price * 100);
+            $base_price_money->setCurrency(env('SQUARE_POS_CURRENCY'));
+
+            $order_line_item = new \Square\Models\OrderLineItem($quantitiy);
+            $order_line_item->setName($products->where('id', $id)->first()->name);
+            $order_line_item->setMetadata($metadata);
+            $order_line_item->setBasePriceMoney($base_price_money);
+            $all_order_line_item[] = $order_line_item;
+        }
+
+        $line_items = $all_order_line_item;
+        $metadata = ['user_id' => (string)$user->id];
+        $order = new \Square\Models\Order(env('SQUARE_POS_LOCATION_ID'));
+        $order->setLineItems($line_items);
+        $order->setMetadata($metadata);
+
+        $body = new \Square\Models\CreateOrderRequest();
+        $body->setOrder($order);
+
+        $api_response = $client->getOrdersApi()->createOrder($body);
+
+        if ($api_response->isSuccess()) {
+            $order_id = $api_response->getResult()->getOrder();
+        }
+
+        $amount_money = new \Square\Models\Money();
+        $amount_money->setAmount($order_id->getTotalMoney()->getAmount());
+        $amount_money->setCurrency(env('SQUARE_POS_CURRENCY'));
+
+        $device_options = new \Square\Models\DeviceCheckoutOptions(env('SQUARE_POS_DEVICE_ID'));
+        $device_options->setSkipReceiptScreen(false);
+        $device_options->setShowItemizedCart(true);
+
+        $checkout = new \Square\Models\TerminalCheckout($amount_money, $device_options);
+        $checkout->setOrderId($order_id->getId());
+
+        $body = new \Square\Models\CreateTerminalCheckoutRequest(Str::uuid(), $checkout);
+
+        $api_response = $client->getTerminalApi()->createTerminalCheckout($body);
+
+        if ($api_response->isSuccess()) {
+            $result = $api_response->getResult();
+        } else {
+            $errors = $api_response->getErrors();
+        }
+    }
+
     function store(Request $request)
     {
         $payment = $request['data']['object']['payment'];
+
+        if (Purchase::where('order_id', $payment['order_id'])->exists()) {
+            return;
+        }
 
         $client = new SquareClient([
             'accessToken' => env('SQUARE_POS_ACCESS_TOKEN'),
@@ -28,7 +162,9 @@ class PaymentController extends Controller
         $purchasedItems = [];
 
         foreach ($orders->getorder()->getlineItems() as $order) {
-            $purchasedItems[] = ['product_id' => $order->getmetadata()['id'], 'quantity' => $order->getquantity()];
+            for ($i = 1; $i <= $order->getquantity(); $i++) {
+                $purchasedItems[] = ['product_id' => $order->getmetadata()['id']];
+            }
         }
 
         $user = User::find($orders->getorder()->getmetadata()['user_id']);
@@ -40,8 +176,8 @@ class PaymentController extends Controller
         $purchase->payment()->create([
             'payment_id' => $payment['id'],
             'amount' => $payment['amount_money']['amount'],
-            'source' => $payment['external_details']['source'],
-            'type' => $payment['external_details']['type'],
+            'source' => array_key_exists('external_details', $payment) ? $payment['external_details']['source'] : "Terminal Device",
+            'type' => array_key_exists('external_details', $payment) ? $payment['external_details']['type'] : "Terminal Device",
             'receipt_url' => $payment['receipt_url'],
             'status' => $payment['status'],
             'transaction_id' => $orders->getorder()->gettenders()[0]->gettransactionId(),
@@ -51,5 +187,19 @@ class PaymentController extends Controller
 
         Broadcast::on('purchase')->as('admin')->with($request)->sendNow();
         Broadcast::on('order')->as('admin')->with($request)->sendNow();
+    }
+
+    function terminalUpdated(Request $request)
+    {
+
+        $client = new SquareClient([
+            'accessToken' => env('SQUARE_POS_ACCESS_TOKEN'),
+            'environment' => env('SQUARE_POS_ENVIRONMENT'),
+        ]);
+
+        $api_response = $client->getOrdersApi()->retrieveOrder($request['data']['object']['checkout']['order_id']);
+        $user_id = $api_response->getResult()->getorder()->getmetadata()['user_id'];
+
+        TerminalPaymentEvent::dispatch($user_id, $request);
     }
 }

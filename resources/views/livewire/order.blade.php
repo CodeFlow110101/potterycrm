@@ -70,28 +70,22 @@ with(fn() => [
                     <table class="w-full overflow-y-hidden">
                         <thead class="sticky top-0 bg-white">
                             <tr>
-                                <th class="font-medium py-3 sticky top-0 bg-primary/40">
+                                <th class="font-medium py-2 sticky top-0 bg-primary/40">
                                     #
                                 </th>
-                                <th class="font-medium py-3 sticky top-0 bg-primary/40">
+                                <th class="font-medium py-2 sticky top-0 bg-primary/40">
                                     Name
                                 </th>
-                                <th class="font-medium py-3 sticky top-0 bg-primary/40">
+                                <th class="font-medium py-2 sticky top-0 bg-primary/40">
                                     Price
                                 </th>
-                                <th class="font-medium py-3 sticky top-0 bg-primary/40">
-                                    Quantity
-                                </th>
-                                <th class="font-medium py-3 sticky top-0 bg-primary/40">
-                                    Total price
-                                </th>
-                                <th class="font-medium py-3 sticky top-0 bg-primary/40">
+                                <th class="font-medium py-2 sticky top-0 bg-primary/40">
                                     Item Id
                                 </th>
-                                <th class="font-medium py-3 sticky top-0 bg-primary/40">
+                                <th class="font-medium py-2 sticky top-0 bg-primary/40">
                                     Item Status
                                 </th>
-                                <th class="font-medium py-3 sticky top-0 bg-primary/40">
+                                <th class="font-medium py-2 sticky top-0 bg-primary/40">
                                     Status
                                 </th>
                             </tr>
@@ -108,8 +102,6 @@ with(fn() => [
                             <td class="text-center font-normal py-3">{{$iteration}}</td>
                             <td class="text-center font-normal py-3">{{$item->product->name}}</td>
                             <td class="text-center font-normal py-3">$ {{number_format($item->product->price, 2, '.', '')}}</td>
-                            <td class="text-center font-normal py-3">{{$item->quantity}}</td>
-                            <td class="text-center font-normal py-3">$ {{(number_format($item->product->price, 2, '.', '')) * $item->quantity}}</td>
                             <td class="text-center font-normal py-3">{{$item->item_id}}</td>
                             <td class="text-center font-normal py-3 capitalize">{{$item->status ? $item->status->name : ''}}</td>
                             <td class="text-center font-normal py-3 flex justify-center items-center gap-2">

@@ -13,10 +13,6 @@ on(['echo:purchase,.admin' => function ($request) {
 }]);
 
 with(fn() => ['user' => User::with(['purchases.payment'])->find(Auth::user()->id)]);
-
-mount(function(){
-    User::with(['purchases.payment'])->find(Auth::user()->id);
-});
 ?>
 
 <div class="grow flex flex-col p-4">

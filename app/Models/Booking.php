@@ -9,7 +9,7 @@ class Booking extends Model
 {
     protected $table = 'bookings';
 
-    protected $fillable = ['user_id', 'status_id', 'no_of_people'];
+    protected $fillable = ['user_id', 'status_id', 'no_of_people', 'booking_datetime'];
 
     public function user(): BelongsTo
     {

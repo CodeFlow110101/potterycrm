@@ -14,7 +14,6 @@ rules(['phoneno' => 'required'])->messages([
     'phoneno.required' => 'The phone no is required.',
 ]);
 
-
 $verifyOtp = function (Request $request) {
     $this->validate();
     $this->resetValidation();

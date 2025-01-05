@@ -80,15 +80,3 @@ function toastr() {
     }
   };
 }
-
-function testWS() {
-  return {
-    init() {
-      console.log("hi");
-
-      // Echo.channel("group").listen(".chat", e => {
-      //   console.log("hello");
-      // });
-    }
-  };
-}

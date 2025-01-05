@@ -1,5 +1,7 @@
 <?php
 
+use App\Events\PaymentSuccessEvent;
+use App\Http\Controllers\PaymentController;
 use App\Models\PostalCode;
 use App\Models\Product;
 use App\Models\User;
@@ -7,18 +9,30 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Square\SquareClient;
 use Square\Models\Money;
+use Illuminate\Support\Facades\App;
 use Square\Models\QuickPay;
-use Square\Models\CheckoutOptions;
-use Square\Models\CreatePaymentLinkRequest;
+
 use Square\Models\Order;
 
 use function Livewire\Volt\{state, with, mount, computed, on};
 
-state(['user' => User::with(['addresses'])->find(Auth::user()->id), 'cart' => [], 'shippingType', 'search', 'address']);
+state(['user' => User::with(['addresses'])->find(Auth::user()->id), 'cart' => [], 'shippingType', 'search', 'address', 'booking_id', 'modal' => false, 'terminal_status' => "Please complete the payment through the device."]);
 
 with(fn() => [
-    'products' => Product::whereRaw("LOWER(REPLACE(name, ' ', '')) LIKE ?", ['%' . strtolower(str_replace(' ', '', $this->search)) . '%'])->get(),
+    'products' => Product::whereRaw("LOWER(REPLACE(name, ' ', '')) LIKE ?", ['%' . strtolower(str_replace(' ', '', $this->search)) . '%'])->when($this->booking_id, function ($query) {
+        $query->whereHas('type', function ($typeQuery) {
+            $typeQuery->where('name', 'in store');
+        });
+    }, function ($query) {
+        $query->whereHas('type', function ($typeQuery) {
+            $typeQuery->where('name', 'online');
+        });
+    })->get(),
 ]);
+
+on(['echo-private:payment-user-{user.id},TerminalPaymentEvent' => function ($request) {
+    $this->terminal_status = $request['request']['data']['object']['checkout']['status'];
+}]);
 
 $increaseQuantity = function ($id) {
     $this->cart[$id]++;
@@ -53,59 +67,21 @@ $totals = computed(function () {
 });
 
 $proceedToPayment = function () {
-
-    $products = Product::whereIn('id', array_keys($this->cart))->get();
-
-    $client = new SquareClient([
-        'accessToken' => env('SQUARE_POS_ACCESS_TOKEN'),
-        'environment' => env('SQUARE_POS_ENVIRONMENT'),
-    ]);
-
-    $all_order_line_item = [];
-
-    foreach ($this->cart as $id => $quantitiy) {
-        $metadata = ['id' => (string)$id];
-        $base_price_money = new \Square\Models\Money();
-        $base_price_money->setAmount($products->where('id', $id)->first()->price * 100);
-        $base_price_money->setCurrency(env('SQUARE_POS_CURRENCY'));
-
-        $order_line_item = new \Square\Models\OrderLineItem($quantitiy);
-        $order_line_item->setName($products->where('id', $id)->first()->name);
-        $order_line_item->setMetadata($metadata);
-        $order_line_item->setBasePriceMoney($base_price_money);
-        $all_order_line_item[] = $order_line_item;
-    }
-
-    $line_items = $all_order_line_item;
-    $metadata = ['user_id' => (string)$this->user->id];
-    $order = new \Square\Models\Order(env('SQUARE_POS_LOCATION_ID'));
-    $order->setLineItems($line_items);
-    $order->setMetadata($metadata);
-
-    $checkout_options = new CheckoutOptions();
-    $checkout_options->setRedirectUrl(url('purchase'));
-    $checkout_options->setEnableCoupon(false);
-    $checkout_options->setEnableLoyalty(false);
-
-    $body = new CreatePaymentLinkRequest();
-    $body->setIdempotencyKey('');
-    $body->setOrder($order);
-
-    $body->setCheckoutOptions($checkout_options);
-    $api_response = $client->getCheckoutApi()->createPaymentLink($body);
-
-    if ($api_response->isSuccess()) {
-        $result = $api_response->getResult();
-        return redirect()->away($result->getPaymentLink()->getlongUrl());
+    if ($this->booking_id) {
+        App::call([PaymentController::class, 'terminalPayment'], ['cart' => $this->cart, 'user' => $this->user]);
+        $this->modal = true;
     } else {
-        $errors = $api_response->getErrors();
-        dd($errors);
+        App::call([PaymentController::class, 'onlinePayment'], ['cart' => $this->cart, 'user' => $this->user]);
     }
-}
+};
+
+mount(function ($id) {
+    $this->booking_id = $id;
+});
 ?>
 
 <div x-data="{ show : 'cart' }" class="grow flex justify-between bg-black/5">
-    <div x-data="testWS" class="h-full w-4/6 flex flex-col p-4">
+    <div class="h-full w-4/6 flex flex-col p-4">
         <div class="py-12 flex justify-between items-center">
             <div class="w-full flex flex-col gap-2">
                 <div class="text-2xl font-medium text-black/80">
@@ -281,4 +257,21 @@ $proceedToPayment = function () {
             </button>
         </div>
     </div>
+
+    @if($this->modal)
+    <div class="fixed inset-0 flex flex-col">
+        <div class="bg-white m-auto p-10 rounded-lg relative shadow-lg">
+            <div class="text-black/50 text-lg capitalize">{{ str_replace('_' , ' ' , $terminal_status) }}</div>
+            <div class="absolute top-0 inset-0 flex justify-center">
+                <div class="flex justify-center bg-white rounded-full size-14 p-1 -translate-y-1/2 shadow-lg">
+                    <svg class="size-full text-black/50" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                        <path fill-rule="evenodd" d="M7 6a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-2v-4a3 3 0 0 0-3-3H7V6Z" clip-rule="evenodd" />
+                        <path fill-rule="evenodd" d="M2 11a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-7Zm7.5 1a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Z" clip-rule="evenodd" />
+                        <path d="M10.5 14.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 </div>

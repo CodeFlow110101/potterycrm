@@ -9,7 +9,7 @@ class PurchaseItem extends Model
 {
     protected $table = "purchase_items";
 
-    protected $fillable = ['purchase_id', 'product_id', 'quantity', 'item_id', 'status_id'];
+    protected $fillable = ['purchase_id', 'product_id', 'item_id', 'status_id'];
 
     public function purchase(): BelongsTo
     {
