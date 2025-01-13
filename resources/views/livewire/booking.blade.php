@@ -35,6 +35,7 @@ $submit = function () {
         App::call([SmsController::class, 'send'], ['phoneno' => env('TWILIO_PHONE_COUNTRY_CODE') . $this->booking->user->phoneno, 'message' => 'Your booking has been successfully confirmed!']);
     } else if ($this->status == 3) {
         App::call([SmsController::class, 'send'], ['phoneno' => env('TWILIO_PHONE_COUNTRY_CODE') . $this->booking->user->phoneno, 'message' => 'Your booking is now active!' . 'You can start selecting items through this link:- ' . str_replace("booking", "product", $this->url) . '/' . $this->booking->id]);
+    } else if ($this->status == 4) {
     }
 };
 
@@ -134,26 +135,35 @@ mount(function ($url) {
                 <div class="border border-black/30 rounded-lg flex items-center justify-center p-2 py-24 h-full">
                     <div class="flex justify-stretch items-center w-11/12">
                         <div class="size-8 shrink-0 flex justify-center items-center relative">
-                            <button type="button" @click="$wire.status = 1;" :class="[1 , 2 , 3].includes(Number($wire.status)) ? 'bg-primary text-white border-primary' : 'hover:bg-primary hover:text-white hover:border-primary transition-colors duration-200 border-2 border-black/30'" class="rounded-full size-full flex justify-center items-center">1</button>
-                            <div :class="[1 , 2 , 3].includes(Number($wire.status)) ? 'text-primary' : 'text-black/30'" class="absolute pointer-events-none -translate-y-full pb-2 font-semibold text-center"><span class="whitespace-nowrap">Open</div>
+                            <button type="button" @click="$wire.status = 1;" :class="[1 , 2 , 3 , 4].includes(Number($wire.status)) ? 'bg-primary text-white border-primary' : 'hover:bg-primary hover:text-white hover:border-primary transition-colors duration-200 border-2 border-black/30'" class="rounded-full size-full flex justify-center items-center">1</button>
+                            <div :class="[1 , 2 , 3 , 4].includes(Number($wire.status)) ? 'text-primary' : 'text-black/30'" class="absolute pointer-events-none -translate-y-full pb-2 font-semibold text-center"><span class="whitespace-nowrap">Open</div>
                         </div>
                         <div class="w-full border h-1.5 bg-black/30 rounded-full relative overflow-hidden">
                             <div class="absolute inset-0">
-                                <div :class="[2 , 3].includes(Number($wire.status))  ? 'w-full' : 'w-0'" class="h-full bg-primary transition-all duration-200"></div>
+                                <div :class="[2 , 3 , 4].includes(Number($wire.status))  ? 'w-full' : 'w-0'" class="h-full bg-primary transition-all duration-200"></div>
                             </div>
                         </div>
                         <div class="size-8 shrink-0 flex justify-center items-center relative">
-                            <button type="button" @click="$wire.status = 2;" :class="[2 , 3].includes(Number($wire.status)) ? 'bg-primary text-white border-primary' : 'hover:bg-primary hover:text-white hover:border-primary transition-colors duration-200 border-2 border-black/30'" class="rounded-full size-full flex justify-center items-center">2</button>
-                            <div :class="[2 , 3].includes(Number($wire.status)) ? 'text-primary' : 'text-black/30'" class="absolute pointer-events-none translate-y-full pt-2 font-semibold text-center"><span class="whitespace-nowrap">Confirm</div>
+                            <button type="button" @click="$wire.status = 2;" :class="[2 , 3 , 4].includes(Number($wire.status)) ? 'bg-primary text-white border-primary' : 'hover:bg-primary hover:text-white hover:border-primary transition-colors duration-200 border-2 border-black/30'" class="rounded-full size-full flex justify-center items-center">2</button>
+                            <div :class="[2 , 3 , 4].includes(Number($wire.status)) ? 'text-primary' : 'text-black/30'" class="absolute pointer-events-none translate-y-full pt-2 font-semibold text-center"><span class="whitespace-nowrap">Confirm</div>
                         </div>
                         <div class="w-full border h-1.5 bg-black/30 rounded-full relative overflow-hidden">
                             <div class="absolute inset-0">
-                                <div :class="[3].includes(Number($wire.status))  ? 'w-full' : 'w-0'" class="h-full bg-primary transition-all duration-200"></div>
+                                <div :class="[3 , 4].includes(Number($wire.status))  ? 'w-full' : 'w-0'" class="h-full bg-primary transition-all duration-200"></div>
                             </div>
                         </div>
                         <div class="size-8 shrink-0 flex justify-center items-center relative">
-                            <button type="button" @click="$wire.status = 3;" :class="[3].includes(Number($wire.status)) ? 'bg-primary text-white border-primary' : 'hover:bg-primary hover:text-white hover:border-primary transition-colors duration-200 border-2 border-black/30'" class="rounded-full size-full flex justify-center items-center">3</button>
-                            <div :class="[3].includes(Number($wire.status)) ? 'text-primary' : 'text-black/30'" class="absolute pointer-events-none -translate-y-full pb-2 font-semibold text-center"><span class="whitespace-nowrap">Active</div>
+                            <button type="button" @click="$wire.status = 3;" :class="[3 , 4].includes(Number($wire.status)) ? 'bg-primary text-white border-primary' : 'hover:bg-primary hover:text-white hover:border-primary transition-colors duration-200 border-2 border-black/30'" class="rounded-full size-full flex justify-center items-center">3</button>
+                            <div :class="[3 , 4].includes(Number($wire.status)) ? 'text-primary' : 'text-black/30'" class="absolute pointer-events-none -translate-y-full pb-2 font-semibold text-center"><span class="whitespace-nowrap">Active</div>
+                        </div>
+                        <div class="w-full border h-1.5 bg-black/30 rounded-full relative overflow-hidden">
+                            <div class="absolute inset-0">
+                                <div :class="[4].includes(Number($wire.status))  ? 'w-full' : 'w-0'" class="h-full bg-primary transition-all duration-200"></div>
+                            </div>
+                        </div>
+                        <div class="size-8 shrink-0 flex justify-center items-center relative">
+                            <button type="button" @click="$wire.status = 4;" :class="[4].includes(Number($wire.status)) ? 'bg-primary text-white border-primary' : 'hover:bg-primary hover:text-white hover:border-primary transition-colors duration-200 border-2 border-black/30'" class="rounded-full size-full flex justify-center items-center">4</button>
+                            <div :class="[4].includes(Number($wire.status)) ? 'text-primary' : 'text-black/30'" class="absolute pointer-events-none translate-y-full pt-2 font-semibold text-center"><span class="whitespace-nowrap">Complete</div>
                         </div>
                     </div>
                 </div>

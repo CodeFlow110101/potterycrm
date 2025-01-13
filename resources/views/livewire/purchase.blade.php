@@ -19,7 +19,7 @@ with(fn() => ['user' => User::with(['purchases.payment'])->find(Auth::user()->id
     <div class="grow flex flex-col w-full">
         <div class="rounded-3xl px-6 py-2 font-medium text-black/60 border border-black/60 grow flex flex-col">
             <div class="border-b border-black/60 py-2 flex justify-between items-center">
-                <div class="text-xl">Orders</div>
+                <div class="text-xl">Purchases</div>
                 <div class="relative">
                     <input class="border border-black/30 rounded-full outline-none py-2 pl-10 pr-4">
                     <div class="absolute inset-y-0 flex items-center pl-2">

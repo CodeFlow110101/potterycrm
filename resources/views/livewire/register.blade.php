@@ -78,7 +78,7 @@ $submit = function () {
     <div class="mt-12 mb-44">
         <div class="">
             <div class="uppercase font-avenir-next-rounded-light text-center my-16 text-primary text-3xl">
-                Book a Table
+                Register
             </div>
         </div>
         <form x-data="otp" x-on:reset="reset()" x-on:start-countdown="startCountdown()" wire:submit="submit" class="w-3/5 mx-auto border py-12">

@@ -1,4 +1,196 @@
-trix-toolbar .trix-button--icon-link,
-trix-toolbar .trix-button--icon-attach {
-    display: none;
+
+/* Avenir Next */
+
+.font-avenir-next-bold {
+    font-family: 'font-avenir-next-bold', sans-serif;
+}
+
+.font-avenir-next-lt {
+    font-family: 'font-avenir-next-lt', sans-serif;
+}
+
+.font-avenir-next-regular {
+    font-family: 'font-avenir-next-regular', sans-serif;
+}
+
+/* Avenir Next Rounded */
+
+.font-avenir-next-rounded-black {
+    font-family: 'font-avenir-next-rounded-black', sans-serif;
+}
+
+.font-avenir-next-rounded-black-italic {
+    font-family: 'font-avenir-next-rounded-black-italic', sans-serif;
+}
+
+.font-avenir-next-rounded-bold {
+    font-family: 'font-avenir-next-rounded-bold', sans-serif;
+}
+
+.font-avenir-next-rounded-bold-italic {
+    font-family: 'font-avenir-next-rounded-bold-italic', sans-serif;
+}
+
+.font-avenir-next-rounded-extra-bold {
+    font-family: 'font-avenir-next-rounded-extra-bold', sans-serif;
+}
+
+.font-avenir-next-rounded-extra-bold-italic {
+    font-family: 'font-avenir-next-rounded-extra-bold-italic', sans-serif;
+}
+
+.font-avenir-next-rounded-extra-light {
+    font-family: 'font-avenir-next-rounded-extra-light', sans-serif;
+}
+
+.font-avenir-next-extra-light-italic {
+    font-family: 'font-avenir-next-extra-light-italic', sans-serif;
+}
+
+.font-avenir-next-rounded-italic {
+    font-family: 'font-avenir-next-rounded-italic', sans-serif;
+}
+
+.font-avenir-next-rounded-light {
+    font-family: 'font-avenir-next-rounded-light', sans-serif;
+}
+
+.font-avenir-next-rounded-light-italic {
+    font-family: 'font-avenir-next-rounded-light-italic', sans-serif;
+}
+
+.font-avenir-next-rounded-regular {
+    font-family: 'font-avenir-next-rounded-regular', sans-serif;
+}
+
+.font-avenir-next-rounded-semibold {
+    font-family: 'font-avenir-next-rounded-semibold', sans-serif;
+}
+
+.font-avenir-next-rounded-semibold-italic {
+    font-family: 'font-avenir-next-rounded-semibold-italic', sans-serif;
+}
+
+/* Avenir Next */
+
+@font-face {
+    font-family: 'font-avenir-next-bold';
+    src: url('/fonts/avenir_next/AvenirNextLTPro-Bold.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'font-avenir-next-lt';
+    src: url('/fonts/avenir_next/AvenirNextLTPro-It.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'font-avenir-next-regular';
+    src: url('/fonts/avenir_next/AvenirNextLTPro-Regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+/* Avenir Next Rounded */
+
+@font-face {
+    font-family: 'font-avenir-next-rounded-black';
+    src: url('/fonts/avenir_next_rounded/Nunito-Black.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'font-avenir-next-rounded-black-italic';
+    src: url('/fonts/avenir_next_rounded/Nunito-BlackItalic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'font-avenir-next-rounded-bold';
+    src: url('/fonts/avenir_next_rounded/Nunito-Bold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'font-avenir-next-rounded-bold-italic';
+    src: url('/fonts/avenir_next_rounded/Nunito-BoldItalic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'font-avenir-next-rounded-extra-bold';
+    src: url('/fonts/avenir_next_rounded/Nunito-ExtraBold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'font-avenir-next-rounded-extra-bold-italic';
+    src: url('/fonts/avenir_next_rounded/Nunito-ExtraBoldItalic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'font-avenir-next-rounded-extra-light';
+    src: url('/fonts/avenir_next_rounded/Nunito-ExtraLight.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'font-avenir-next-extra-light-italic';
+    src: url('/fonts/avenir_next_rounded/Nunito-ExtraLightItalic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'font-avenir-next-rounded-italic';
+    src: url('/fonts/avenir_next_rounded/Nunito-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'font-avenir-next-rounded-light';
+    src: url('/fonts/avenir_next_rounded/Nunito-Light.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'font-avenir-next-rounded-light-italic';
+    src: url('/fonts/avenir_next_rounded/Nunito-LightItalic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'font-avenir-next-rounded-regular';
+    src: url('/fonts/avenir_next_rounded/Nunito-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'font-avenir-next-rounded-semibold';
+    src: url('/fonts/avenir_next_rounded/Nunito-SemiBold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'font-avenir-next-rounded-semibold-italic';
+    src: url('/fonts/avenir_next_rounded/Nunito-SemiBoldItalic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
 }

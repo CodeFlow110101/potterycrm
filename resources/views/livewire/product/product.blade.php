@@ -75,8 +75,8 @@ $proceedToPayment = function () {
     }
 };
 
-mount(function ($id) {
-    $this->booking_id = $id;
+mount(function () {
+    $this->booking_id = request()->route('booking_id');
 });
 ?>
 

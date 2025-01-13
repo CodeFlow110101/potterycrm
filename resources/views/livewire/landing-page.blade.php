@@ -4,42 +4,34 @@ use App\Models\Booking;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-use function Livewire\Volt\{state, layout, mount};
+use function Livewire\Volt\{state, layout, mount, title};
 
 layout('components.layouts.app');
 
-state(['path', 'url', 'id']);
+state(['path', 'url', 'auth']);
+
+title('Icona');
 
 mount(function () {
     $this->path = request()->path();
     $this->url = request()->url();
-    $isAuth = Auth::check();
-    if ($isAuth && in_array($this->path, config('constants.non-auth-paths'))) {
-        $this->redirectRoute('product', navigate: true);
-    } elseif (!$isAuth && in_array($this->path, config('constants.auth-paths'))) {
-        $this->redirectRoute('home', navigate: true);
-    }
-
-    if (in_array(Route::currentRouteName(), config('constants.auth-paths-dynamic')) && is_numeric(str_replace('product/', '', $this->path)) && Booking::where('id', str_replace('product/', '', $this->path))->exists()) {
-        $this->id = str_replace('product/', '', $this->path);
-    } elseif (in_array(Route::currentRouteName(), config('constants.auth-paths-dynamic')) && is_numeric(str_replace('product/', '', $this->path)) && Booking::where('id', str_replace('product/', '', $this->path))->doesntExist()) {
-        $this->redirectRoute('product', navigate: true);
-    }
+    $this->auth = Auth::check();
 });
 ?>
 
 <div class="h-dvh">
     <livewire:toastr />
     <livewire:modal.modal />
-    @if(in_array($path , config('constants.non-auth-paths')))
     @if($path == '/')
-    <livewire:home />
+    <livewire:home.home />
     @elseif($path == 'sign-in')
     <livewire:sign-in />
     @elseif($path == 'book-table')
     <livewire:book-table />
+    @elseif($path == 'register')
+    <livewire:register />
     @endif
-    @elseif(in_array($path , config('constants.auth-paths')) || in_array(Route::currentRouteName() , config('constants.auth-paths-dynamic')))
+    @if($this->auth)
     <div class="flex justify-between h-full">
         <div class="w-min h-full">
             <livewire:side-bar :path="$path" />
@@ -48,7 +40,7 @@ mount(function () {
             @if($path == 'booking')
             <livewire:booking :url="$url" />
             @elseif($path == 'product' || Route::currentRouteName() == 'product-booking-id')
-            <livewire:product.product :id="$id" />
+            <livewire:product.product />
             @elseif($path == 'manage-product')
             <livewire:product.manage-product />
             @elseif($path == 'setting')
@@ -57,6 +49,8 @@ mount(function () {
             <livewire:purchase />
             @elseif($path == 'order')
             <livewire:order />
+            @elseif($path == 'coupon')
+            <livewire:coupon />
             @endif
         </div>
     </div>

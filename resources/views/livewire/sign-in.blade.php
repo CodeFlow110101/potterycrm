@@ -49,36 +49,44 @@ $submit = function () {
 
 ?>
 
-<div x-data="otp" x-on:start-countdown="startCountdown()" class="h-full flex flex-col">
-    <form wire:submit="submit" class="w-2/5 m-auto border border-primary rounded-2xl h-min px-4">
-        <div class="w-11/12 mx-auto grid grid-cols-1 gap-8 py-4">
-            <div class="text-center text-primary py-6 text-3xl">
-                Sign in
+<div>
+    <livewire:home.header />
+    <div x-data="otp" x-on:start-countdown="startCountdown()" class="mt-12 mb-44">
+        <div class="">
+            <div class="uppercase font-avenir-next-rounded-light text-center my-16 text-primary text-3xl">
+                Sign In
             </div>
-            <div>
-                <input x-mask="9999999999" wire:model="phoneno" type="text" class="border w-full rounded-lg border-primary outline-none p-3" placeholder="Phone No">
-                @error('phoneno')
-                <div wire:transition.in.scale.origin.top.duration.1000ms class="text-red-500 text-sm">
-                    <span class="error">{{ $message }}</span>
-                </div>
-                @enderror
-                @if($generatedOtp)
-                A Confirmation Code has been sent to this phone no.
-                @endif
-            </div>
-            <div>
-                <input @input="verifyOtp" x-mask="999999" wire:model="otp" class="@if(!$generatedOtp) pointer-events-none opacity-50 @endif border w-full rounded-lg border-primary outline-none p-3" placeholder="Confirmation Code">
-                @error('otp')
-                <div wire:transition.in.scale.origin.top.duration.1000ms class="text-red-500 text-sm">
-                    <span class="error">{{ $message }}</span>
-                </div>
-                @enderror
-                @if($generatedOtp)
-                <div :class="formattedTime == '00:00' && 'text-red-500'" class="" x-text="formattedTime == '00:00' ? 'Otp Timed Out' : formattedTime"></div>
-                @endif
-            </div>
-
-            <button type="submit" :class="interval && 'pointer-events-none opacity-50'" class="rounded-md text-center py-2 px-4 bg-primary mx-auto text-white text-xl">{{$generatedOtp ? 'Resend' : 'Send'}}</button>
         </div>
-    </form>
+        <form wire:submit="submit" class="w-3/5 mx-auto border py-12">
+            <div class="w-4/5 mx-auto grid grid-cols-1 gap-8 font-avenir-next-rounded-light text-primary">
+                <div>
+                    <label>Phone No</label>
+                    <input x-mask="9999999999" wire:model="phoneno" type="text" class="w-full bg-black/5 outline-none p-3" placeholder="Phone No">
+                    @error('phoneno')
+                    <div wire:transition.in.scale.origin.top.duration.1000ms class="text-red-500 text-sm">
+                        <span class="error">{{ $message }}</span>
+                    </div>
+                    @enderror
+                    @if($generatedOtp)
+                    A Confirmation Code has been sent to this phone no.
+                    @endif
+                </div>
+                <div>
+                    <label>Confirmation Code</label>
+                    <input @input="verifyOtp" x-mask="999999" wire:model="otp" class="@if(!$generatedOtp) pointer-events-none opacity-50 @endif w-full bg-black/5 outline-none p-3" placeholder="Confirmation Code">
+                    @error('otp')
+                    <div wire:transition.in.scale.origin.top.duration.1000ms class="text-red-500 text-sm">
+                        <span class="error">{{ $message }}</span>
+                    </div>
+                    @enderror
+                    @if($generatedOtp)
+                    <div :class="formattedTime == '00:00' && 'text-red-500'" class="" x-text="formattedTime == '00:00' ? 'Otp Timed Out' : formattedTime"></div>
+                    @endif
+                </div>
+
+                <button type="submit" :class="interval && 'pointer-events-none opacity-50'" class="font-avenir-next-rounded-extra-light uppercase text-center py-2 px-4 bg-primary mx-auto text-white text-xl">{{$generatedOtp ? 'Resend' : 'Send'}}</button>
+            </div>
+        </form>
+    </div>
+    <livewire:home.footer />
 </div>
