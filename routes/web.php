@@ -11,6 +11,7 @@ Volt::route('/sign-in', 'landing-page')->name('sign-in')->middleware('not-auth')
 Volt::route('/booking', 'landing-page')->name('booking');
 Volt::route('/book-table', 'landing-page')->name('book-table');
 Volt::route('/register', 'landing-page')->name('register');
+Volt::route('/about-us', 'landing-page')->name('about-us');
 
 Route::middleware(['auth'])->group(function () {
     Volt::route('/product', 'landing-page')->name('product');

@@ -29,6 +29,7 @@ use function Livewire\Volt\{state};
         <a href="/sign-in" wire:navigate class="text-primary @if(request()->path() == 'sign-in') underline @else hover:underline @endif underline-offset-4">Sign In</a>
         <a href="/register" wire:navigate class="text-primary @if(request()->path() == 'register') underline @else hover:underline @endif underline-offset-4">Register</a>
         <a href="/book-table" wire:navigate class="text-primary @if(request()->path() == 'book-table') underline @else hover:underline @endif underline-offset-4">Book a Table</a>
+        <a href="/about-us" wire:navigate class="text-primary @if(request()->path() == 'about-us') underline @else hover:underline @endif underline-offset-4">About Us</a>
     </nav>
     <div class="border"></div>
 </div>

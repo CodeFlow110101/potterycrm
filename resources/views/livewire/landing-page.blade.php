@@ -30,6 +30,8 @@ mount(function () {
     <livewire:book-table />
     @elseif($path == 'register')
     <livewire:register />
+    @elseif($path == 'about-us')
+    <livewire:home.about-us />
     @endif
     @if($this->auth)
     <div class="flex justify-between h-full">
