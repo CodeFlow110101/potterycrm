@@ -35,6 +35,7 @@ $verifyOtp = function () {
                     'first_name' => $this->first_name,
                     'last_name' => $this->last_name,
                     'email' => $this->email,
+                    'role_id' => 2,
                     'password' => Hash::make('12345678'),
                 ]
             );
@@ -74,7 +75,6 @@ $submit = function () {
 ?>
 
 <div>
-    <livewire:home.header />
     <div class="mt-12 mb-44">
         <div class="">
             <div class="uppercase font-avenir-next-rounded-light text-center my-16 text-primary text-3xl">
@@ -158,5 +158,4 @@ $submit = function () {
             </div>
         </form>
     </div>
-    <livewire:home.footer />
 </div>

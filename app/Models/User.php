@@ -73,6 +73,6 @@ class User extends Authenticatable
 
     public function issuedcoupons(): HasMany
     {
-        return $this->hasMany(IssuedCoupons::class, 'user_id', 'id');
+        return $this->hasMany(IssuedCoupon::class, 'user_id', 'id');
     }
 }

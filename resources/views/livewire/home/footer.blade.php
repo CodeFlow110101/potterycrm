@@ -1,12 +1,17 @@
 <?php
 
-use function Livewire\Volt\{state};
+use function Livewire\Volt\{state, mount};
 
-//
+state(['routeName', 'auth']);
+
+mount(function ($routeName, $auth) {
+    $this->routeName = $routeName;
+});
 
 ?>
 
-<div class="pb-6 text-primary">
+<div class="pb-6 text-primary mt-auto">
+    @if(!($auth && in_array($routeName , ['booking','purchase','order','coupon','shop','product','cart','manage-coupon'])))
     <div class="my-20 flex justify-evenly gap-10 w-3/4 mx-auto">
         <div class="flex flex-col gap-8">
             <div class="font-avenir-next-rounded-light">Useful Links</div>
@@ -37,7 +42,8 @@ use function Livewire\Volt\{state};
             </div>
         </div>
     </div>
-    <div class="border"></div>
+    @endif
+    <div class="border mt-auto"></div>
     <div class="flex flex-col gap-4 mx-auto w-3/4 py-4">
         <div>
             <svg class="size-8 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">

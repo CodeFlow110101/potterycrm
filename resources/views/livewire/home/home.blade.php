@@ -7,7 +7,6 @@ use function Livewire\Volt\{state};
 ?>
 
 <div>
-    <livewire:home.header />
     <div class="px-6 my-32 flex justify-evenly items-center gap-6 *:h-[90vh] *:w-full *:bg-cover *:bg-center *:bg-no-repeat">
         <div style="background-image: url('{{ asset('images/home_1.webp') }}');"></div>
         <div style="background-image: url('{{ asset('images/home_2.webp') }}');"></div>
@@ -143,5 +142,4 @@ use function Livewire\Volt\{state};
             contact us in writing and we will work with you to make the information available. Visit our contact page.
         </div>
     </div>
-    <livewire:home.footer />
 </div>

@@ -2,12 +2,12 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Booking;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class ValidateBooking
+class AuthenticateAdmin
 {
     /**
      * Handle an incoming request.
@@ -16,10 +16,9 @@ class ValidateBooking
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if(is_numeric($request->route('booking_id')) && Booking::where('id', $request->route('booking_id'))->exists()){
+        if(Auth::user()->role->name == 'administrator'){
             return $next($request);
         }
-
-        return redirect('/shop');
+        return redirect('/coupon');
     }
 }

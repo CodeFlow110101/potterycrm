@@ -2,12 +2,12 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Booking;
+use App\Models\Product;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class ValidateBooking
+class CheckProductAvailability
 {
     /**
      * Handle an incoming request.
@@ -16,7 +16,7 @@ class ValidateBooking
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if(is_numeric($request->route('booking_id')) && Booking::where('id', $request->route('booking_id'))->exists()){
+        if(is_numeric($request->route('id')) && Product::where('id',$request->route('id'))->exists()){
             return $next($request);
         }
 

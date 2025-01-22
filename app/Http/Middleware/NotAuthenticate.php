@@ -17,7 +17,7 @@ class NotAuthenticate
     public function handle(Request $request, Closure $next): Response
     {
         if (Auth::check()) {
-            return redirect('/product');
+            return redirect('/shop');
         }
         
         return $next($request);

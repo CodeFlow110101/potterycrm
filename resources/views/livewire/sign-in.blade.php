@@ -29,7 +29,7 @@ $verifyOtp = function (Request $request) {
                 ])
             ) {
                 $request->session()->regenerate();
-                $this->redirectRoute('product', navigate: true);
+                $this->redirectRoute('shop', navigate: true);
             }
         } else {
             $this->addError('phoneno', 'Account does not exist with this phone no.');
@@ -50,12 +50,9 @@ $submit = function () {
 ?>
 
 <div>
-    <livewire:home.header />
-    <div x-data="otp" x-on:start-countdown="startCountdown()" class="mt-12 mb-44">
-        <div class="">
-            <div class="uppercase font-avenir-next-rounded-light text-center my-16 text-primary text-3xl">
-                Sign In
-            </div>
+    <div x-data="otp" x-on:start-countdown.window="startCountdown()" class="mt-12 mb-44">
+        <div class="uppercase font-avenir-next-rounded-light text-center my-16 text-primary text-3xl">
+            Sign In
         </div>
         <form wire:submit="submit" class="w-3/5 mx-auto border py-12">
             <div class="w-4/5 mx-auto grid grid-cols-1 gap-8 font-avenir-next-rounded-light text-primary">
@@ -88,5 +85,4 @@ $submit = function () {
             </div>
         </form>
     </div>
-    <livewire:home.footer />
 </div>

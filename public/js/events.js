@@ -24,4 +24,8 @@ document.addEventListener("livewire:init", () => {
       }
     });
   });
+
+  Livewire.on("reload", () => {
+    Livewire.navigate(window.location.href);
+  });
 });

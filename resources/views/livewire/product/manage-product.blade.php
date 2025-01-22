@@ -27,7 +27,7 @@ on(['store' => function ($file) {
     $this->reset();
     $this->dispatch('reset-file-input');
     $this->dispatch('loader', show: false);
-    $this->redirectRoute('product', navigate: true);
+    $this->redirectRoute('shop', navigate: true);
 }]);
 
 $submit = function () {

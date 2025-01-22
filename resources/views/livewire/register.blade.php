@@ -10,9 +10,9 @@ use Carbon\Carbon;
 
 use function Livewire\Volt\{state, rules, with};
 
-state(['first_name', 'last_name', 'email', 'phoneno', 'otp', 'generatedOtp', 'noofpeople', 'booking_date_time']);
+state(['first_name', 'last_name', 'email', 'phoneno', 'otp', 'generatedOtp']);
 
-rules(['first_name' => 'required', 'last_name' => 'required', 'email' => 'required|email', 'phoneno' => 'required', 'booking_date_time' => "required"]);
+rules(['first_name' => 'required', 'last_name' => 'required', 'email' => 'required|email', 'phoneno' => 'required']);
 
 $verifyOtp = function () {
 
@@ -23,9 +23,9 @@ $verifyOtp = function () {
 
         if (User::where('phoneno', $this->phoneno)->exists()) {
             User::where('phoneno', $this->phoneno)->first()->bookings()->create([
-                'status_id' => 1,
-                'no_of_people' => $this->noofpeople,
-                'booking_datetime' => Carbon::createFromFormat('h:i A | d-m-Y', $this->booking_date_time)->format('Y-m-d H:i:s'),
+                'status_id' => 2,
+                'no_of_people' => 1,
+                'booking_datetime' => Carbon::now(),
             ]);
         } else {
             $user = User::Create(
@@ -40,9 +40,9 @@ $verifyOtp = function () {
             );
 
             $user->bookings()->create([
-                'status_id' => 1,
-                'no_of_people' => $this->noofpeople,
-                'booking_datetime' => Carbon::createFromFormat('h:i A | d-m-Y', $this->booking_date_time)->format('Y-m-d H:i:s'),
+                'status_id' => 2,
+                'no_of_people' => 1,
+                'booking_datetime' => Carbon::now(),
             ]);
         }
         $this->dispatch('show-toastr', type: 'success', message: 'Your booking has been successfully registered');
@@ -74,14 +74,13 @@ $submit = function () {
 ?>
 
 <div>
-    <livewire:home.header />
     <div class="mt-12 mb-44">
         <div class="">
             <div class="uppercase font-avenir-next-rounded-light text-center my-16 text-primary text-3xl">
                 Register
             </div>
         </div>
-        <form x-data="otp" x-on:reset="reset()" x-on:start-countdown="startCountdown()" wire:submit="submit" class="w-3/5 mx-auto border py-12">
+        <form x-data="otp" x-on:reset="reset()" x-on:start-countdown.window="startCountdown()" wire:submit="submit" class="w-3/5 mx-auto border py-12">
             <div class="h-min grid grid-cols-1 gap-8 w-4/5 mx-auto font-avenir-next-rounded-light text-primary">
                 <div>
                     <label>First Name</label>
@@ -113,29 +112,11 @@ $submit = function () {
                         @enderror
                     </div>
                 </div>
-                <div x-data x-init="flatpickr($refs.input, { dateFormat: 'H:i K d-m-Y', enableTime: true , time_24hr: false, })" class="w-full">
-                    <label>Booking Date & Time</label>
-                    <input wire:model="booking_date_time" x-ref="input" type="text" class="w-full bg-black/5 outline-none p-3" placeholder="Booking Date & Time" />
-                    @error('booking_date_time')
-                    <span wire:transition.in.duration.500ms="scale-y-100"
-                        wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
-                    @enderror
-                </div>
                 <div>
                     <label>Phone No</label>
                     <input wire:model="phoneno" x-mask="9999999999" class="w-full bg-black/5 outline-none p-3" placeholder="Phone No">
                     <div>
                         @error('phoneno')
-                        <span wire:transition.in.duration.500ms="scale-y-100"
-                            wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-                <div>
-                    <label>No of People</label>
-                    <input wire:model="noofpeople" x-mask="99" class="w-full bg-black/5 outline-none p-3" placeholder="No of People">
-                    <div>
-                        @error('noofpeople')
                         <span wire:transition.in.duration.500ms="scale-y-100"
                             wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
                         @enderror
@@ -158,5 +139,4 @@ $submit = function () {
             </div>
         </form>
     </div>
-    <livewire:home.footer />
 </div>

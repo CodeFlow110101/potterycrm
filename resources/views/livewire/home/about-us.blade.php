@@ -7,7 +7,6 @@ use function Livewire\Volt\{state};
 ?>
 
 <div>
-    <livewire:home.header />
     <div class="mt-12 mb-44">
         <div class="uppercase font-avenir-next-rounded-light text-center my-16 text-primary text-3xl">
             About Us
@@ -84,5 +83,4 @@ use function Livewire\Volt\{state};
             </div>
         </div>
     </div>
-    <livewire:home.footer />
 </div>
