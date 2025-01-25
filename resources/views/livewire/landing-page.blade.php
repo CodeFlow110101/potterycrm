@@ -73,7 +73,7 @@ mount(function () {
     <livewire:cart :cart="$cart" />
     @endif
     @if($auth)
-    <div class="w-3/4 mx-auto">
+    <div class="w-3/4 mx-auto grow flex flex-col">
         @if($path == 'booking')
         <livewire:booking :url="$url" :auth="$auth"/>
         @elseif($path == 'product' || Route::currentRouteName() == 'product-booking-id')

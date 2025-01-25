@@ -72,8 +72,8 @@ mount(function ($url, $auth) {
 ?>
 
 <div class="grow flex flex-col text-primary font-avenir-next-rounded-light">
-    <div class="grow w-full">
-        <div class="font-medium text-black/60 h-full">
+    <div class="grow w-full flex flex-col">
+        <div class="flex flex-col grow font-medium text-black/60 h-full">
             <div class="py-4 flex justify-end items-center">
                 <div class="relative">
                     <input class="border outline-none py-2 pl-10 pr-4">
@@ -84,69 +84,71 @@ mount(function ($url, $auth) {
                     </div>
                 </div>
             </div>
-            <div class="h-[70vh]">
-                <table class="w-full overflow-y-hidden">
-                    <thead class="bg-primary/40">
-                        <tr>
-                            <th class="font-normal py-2">
-                                No
-                            </th>
-                            @if($this->auth->role->name == 'administrator')
-                            <th class="font-normal py-2">
-                                First Name
-                            </th>
-                            <th class="font-normal py-2">
-                                Last Name
-                            </th>
-                            <th class="font-normal py-2">
-                                Phone no
-                            </th>
-                            @endif
-                            <th class="font-normal py-2">
-                                No of People
-                            </th>
-                            <th class="font-normal py-2">
-                                Booked on
-                            </th>
-                            <th class="font-normal py-2">
-                                Booking Date
-                            </th>
-                            <th class="font-normal py-2">
-                                Status
-                            </th>
-                            @if($this->auth->role->name == 'administrator')
-                            <th class="font-normal py-2">
-                                Acton
-                            </th>
-                            @endif
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($bookings as $booking)
-                        <tr class="hover:bg-black/10 transition-colors duration-200 text-primary">
-                            <td class="text-center font-normal py-3">{{$loop->iteration}}</td>
-                            @if($this->auth->role->name == 'administrator')
-                            <td class="text-center font-normal py-3">{{$booking->user->first_name}}</td>
-                            <td class="text-center font-normal py-3">{{$booking->user->last_name}}</td>
-                            @endif
-                            <td class="text-center font-normal py-3">{{$booking->user->phoneno}}</td>
-                            <td class="text-center font-normal py-3">{{$booking->no_of_people}}</td>
-                            <td class="text-center font-normal py-3">{{Carbon::parse($booking->created_at)->format('d M Y')}}</td>
-                            <td class="text-center font-normal py-3">{{Carbon::parse($booking->booking_datetime)->format('d M Y')}}</td>
-                            <td class="text-center font-normal py-3 capitalize">{{$booking->status->name}}</td>
-                            @if($this->auth->role->name == 'administrator')
-                            <td class="text-center font-normal py-3 capitalize flex justify-center">
-                                <button wire:click="toggleModal({{ $booking->id }})">
-                                    <svg class="w-6 h-6 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
-                                    </svg>
-                                </button>
-                            </td>
-                            @endif
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+            <div class="grow relative" x-data="{ height: 0 }" x-resize="height = $height">
+                <div class="overflow-y-auto absolute inset-x-0" :style="'height: ' + height + 'px;'">
+                    <table class="w-full">
+                        <thead class="bg-white sticky top-0">
+                            <tr class="bg-primary/40">
+                                <th class="font-normal py-2">
+                                    No
+                                </th>
+                                @if($this->auth->role->name == 'administrator')
+                                <th class="font-normal py-2">
+                                    First Name
+                                </th>
+                                <th class="font-normal py-2">
+                                    Last Name
+                                </th>
+                                <th class="font-normal py-2">
+                                    Phone no
+                                </th>
+                                @endif
+                                <th class="font-normal py-2">
+                                    No of People
+                                </th>
+                                <th class="font-normal py-2">
+                                    Booked on
+                                </th>
+                                <th class="font-normal py-2">
+                                    Booking Date
+                                </th>
+                                <th class="font-normal py-2">
+                                    Status
+                                </th>
+                                @if($this->auth->role->name == 'administrator')
+                                <th class="font-normal py-2">
+                                    Acton
+                                </th>
+                                @endif
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($bookings as $booking)
+                                <tr class="hover:bg-black/10 transition-colors duration-200 text-primary">
+                                    <td class="text-center font-normal py-3">{{$loop->iteration}}</td>
+                                    @if($this->auth->role->name == 'administrator')
+                                    <td class="text-center font-normal py-3">{{$booking->user->first_name}}</td>
+                                    <td class="text-center font-normal py-3">{{$booking->user->last_name}}</td>
+                                    @endif
+                                    <td class="text-center font-normal py-3">{{$booking->user->phoneno}}</td>
+                                    <td class="text-center font-normal py-3">{{$booking->no_of_people}}</td>
+                                    <td class="text-center font-normal py-3">{{Carbon::parse($booking->created_at)->format('d M Y')}}</td>
+                                    <td class="text-center font-normal py-3">{{Carbon::parse($booking->booking_datetime)->format('d M Y')}}</td>
+                                    <td class="text-center font-normal py-3 capitalize">{{$booking->status->name}}</td>
+                                    @if($this->auth->role->name == 'administrator')
+                                    <td class="text-center font-normal py-3 capitalize flex justify-center">
+                                        <button wire:click="toggleModal({{ $booking->id }})">
+                                            <svg class="w-6 h-6 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
+                                            </svg>
+                                        </button>
+                                    </td>
+                                    @endif
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
