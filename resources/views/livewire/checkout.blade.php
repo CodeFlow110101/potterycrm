@@ -102,7 +102,7 @@ $submit = function () {
 
 $submitAndPay = function () {
     $this->validate();
-    App::call([PaymentController::class, 'terminalPayment'], ['cart' => $this->cart, 'user' => $this->user, 'coupon' => $this->coupon]);
+    App::call([PaymentController::class, 'terminalPayment'], ['cart' => $this->cart, 'user' => $this->auth, 'coupon' => $this->coupon]);
     return;
     if ($this->booking_id) {
         $this->modal = true;
