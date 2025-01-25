@@ -30,7 +30,6 @@ with(fn() => ['products' => Product::whereIn('id', $this->cart ? array_keys($thi
 
 on([
     (Auth::user() ? 'echo-private:payment-user-' . Auth::user()->id . ',TerminalPaymentEvent' : '') => function ($request) {
-        dd('hi');
         $this->terminal_status = $request['request']['data']['object']['checkout']['status'];
     },
 ]);
@@ -103,6 +102,7 @@ $submit = function () {
 
 $submitAndPay = function () {
     $this->validate();
+    $this->terminal_status = 'processing';
     App::call([PaymentController::class, 'terminalPayment'], ['cart' => $this->cart, 'user' => $this->auth, 'coupon' => $this->coupon]);
     return;
     if ($this->booking_id) {
@@ -270,7 +270,7 @@ mount(function () {
                         @enderror
                     </div>
                 </div>
-                <button type="submit" class="font-avenir-next-rounded-extra-light relative uppercase text-center py-2 px-4 bg-primary mx-auto text-white text-xl">
+                <button type="submit" :class="$wire.terminal_status == 'processing' && 'pointer-events-none'" class="font-avenir-next-rounded-extra-light relative uppercase text-center py-2 px-4 bg-primary mx-auto text-white text-xl">
                     <div wire:loading.class="invisible" wire:target="submitAddress">{{ $terminal_status }}</div>
                     <div wire:loading wire:target="submitAddress" class="absolute inset-0 p-2">
                         <svg aria-hidden="true" class="size-full text-transparent animate-spin fill-white" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
