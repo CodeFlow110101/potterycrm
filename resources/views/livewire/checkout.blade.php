@@ -29,7 +29,7 @@ with(fn() => ['products' => Product::whereIn('id', $this->cart ? array_keys($thi
 })->get()]);
 
 on([
-    (Auth::user() ? 'echo-private:payment-user-{user.id},TerminalPaymentEvent' : '') => function ($request) {
+    (Auth::user() ? 'echo-private:payment-user-' . Auth::user()->id . ',TerminalPaymentEvent' : '') => function ($request) {
         $this->terminal_status = $request['request']['data']['object']['checkout']['status'];
     },
 ]);
@@ -102,9 +102,9 @@ $submit = function () {
 
 $submitAndPay = function () {
     $this->validate();
-
+    App::call([PaymentController::class, 'terminalPayment'], ['cart' => $this->cart, 'user' => $this->user, 'coupon' => $this->coupon]);
+    return;
     if ($this->booking_id) {
-        App::call([PaymentController::class, 'terminalPayment'], ['cart' => $this->cart, 'user' => $this->user, 'coupon' => $this->coupon]);
         $this->modal = true;
     } else {
         App::call([PaymentController::class, 'onlinePayment'], ['cart' => $this->cart, 'user' => $this->auth, 'coupon' => $this->coupon]);
