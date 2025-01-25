@@ -30,6 +30,7 @@ with(fn() => ['products' => Product::whereIn('id', $this->cart ? array_keys($thi
 
 on([
     (Auth::user() ? 'echo-private:payment-user-' . Auth::user()->id . ',TerminalPaymentEvent' : '') => function ($request) {
+        dd('hi');
         $this->terminal_status = $request['request']['data']['object']['checkout']['status'];
     },
 ]);
