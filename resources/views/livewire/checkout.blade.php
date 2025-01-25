@@ -36,7 +36,7 @@ rules(fn() => [
     'shipping_preference' => $this->auth ? ['required'] : ['exclude'],
     'address_name' => $this->auth ? ['required_if:shipping_preference,2'] : ['exclude'],
     'address' => $this->auth ? ['required_if:shipping_preference,2'] : ['exclude'],
-    'postal_code' => $this->auth ? ['required_if:shipping_preference,2', 'exists:postal_codes,postcode'] : ['exclude'],
+    // 'postal_code' => $this->auth ? ['required_if:shipping_preference,2', 'exists:postal_codes,postcode'] : ['exclude'],
 ])->messages([
     'address_name.required_if' => 'The :attribute is required.',
     'address.required_if' => 'The :attribute is required.',
