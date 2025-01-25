@@ -149,6 +149,7 @@ mount(function () {
 <div class="w-3/4 mx-auto text-primary">
     <div class="flex justify-between">
         <div class="w-full py-12">
+            <div x-text="$wire.shipping_preference"></div>
             @if(!$auth)
             <form x-data="otp" x-on:reset="reset()" x-on:start-countdown.window="startCountdown()" wire:submit="submit" class="h-min grid grid-cols-1 gap-8 w-4/5 mx-auto font-avenir-next-rounded-light text-primary">
                 <div>
