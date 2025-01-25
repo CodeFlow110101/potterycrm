@@ -12,11 +12,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
 
-use function Livewire\Volt\{state, with, computed, rules, mount};
+use function Livewire\Volt\{state, with, computed, rules, mount, on};
 
 state(['cart'])->reactive();
 
-state(['first_name', 'last_name', 'email', 'phoneno', 'otp', 'generatedOtp', 'auth', 'address_name', 'shipping_preference', 'address_name', 'address', 'postal_code', 'coupon_code', 'booking_id', 'coupon']);
+state(['first_name', 'last_name', 'email', 'phoneno', 'otp', 'generatedOtp', 'auth', 'address_name', 'shipping_preference', 'address_name', 'address', 'postal_code', 'coupon_code', 'booking_id', 'coupon', 'terminal_status' => 'Submit & Pay']);
 
 with(fn() => ['products' => Product::whereIn('id', $this->cart ? array_keys($this->cart) : [])->when($this->booking_id, function ($query) {
     $query->whereHas('type', function ($typeQuery) {
@@ -27,6 +27,12 @@ with(fn() => ['products' => Product::whereIn('id', $this->cart ? array_keys($thi
         $typeQuery->where('name', 'online');
     });
 })->get()]);
+
+on([
+    (Auth::user() ? 'echo-private:payment-user-{user.id},TerminalPaymentEvent' : '') => function ($request) {
+        $this->terminal_status = $request['request']['data']['object']['checkout']['status'];
+    },
+]);
 
 rules(fn() => [
     'first_name' => $this->auth ? ['exclude'] : ['required'],
@@ -94,9 +100,15 @@ $submit = function () {
     $this->dispatch('start-countdown');
 };
 
-$submitAddress = function () {
+$submitAndPay = function () {
     $this->validate();
-    App::call([PaymentController::class, 'onlinePayment'], ['cart' => $this->cart, 'user' => $this->auth, 'coupon' => $this->coupon]);
+
+    if ($this->booking_id) {
+        App::call([PaymentController::class, 'terminalPayment'], ['cart' => $this->cart, 'user' => $this->user, 'coupon' => $this->coupon]);
+        $this->modal = true;
+    } else {
+        App::call([PaymentController::class, 'onlinePayment'], ['cart' => $this->cart, 'user' => $this->auth, 'coupon' => $this->coupon]);
+    }
 };
 
 $total = computed(function () {
@@ -207,7 +219,7 @@ mount(function () {
                 <button type="submit" :class="interval && 'pointer-events-none opacity-50'" class="font-avenir-next-rounded-extra-light uppercase text-center py-2 px-4 bg-primary mx-auto text-white text-xl">{{$generatedOtp ? 'Resend Code' : 'Send Code'}}</button>
             </form>
             @else
-            <form wire:submit="submitAddress" class="h-min grid grid-cols-1 gap-8 w-4/5 mx-auto py-12 font-avenir-next-rounded-light text-primary">
+            <form wire:submit="submitAndPay" class="h-min grid grid-cols-1 gap-8 w-4/5 mx-auto py-12 font-avenir-next-rounded-light text-primary">
                 <div class="font-avenir-next-rounded-regular text-lg">Shipping Preference</div>
                 <div class="flex justify-evenly">
                     <div :class="$wire.shipping_preference == 1 && 'border-blue-500'" @click="$wire.shipping_preference = 1;" class="cursor-pointer flex items-center gap-4 border rounded-md py-2 px-4">
@@ -258,7 +270,7 @@ mount(function () {
                     </div>
                 </div>
                 <button type="submit" class="font-avenir-next-rounded-extra-light relative uppercase text-center py-2 px-4 bg-primary mx-auto text-white text-xl">
-                    <div wire:loading.class="invisible" wire:target="submitAddress">Submit & Pay</div>
+                    <div wire:loading.class="invisible" wire:target="submitAddress">{{ $terminal_status }}</div>
                     <div wire:loading wire:target="submitAddress" class="absolute inset-0 p-2">
                         <svg aria-hidden="true" class="size-full text-transparent animate-spin fill-white" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />

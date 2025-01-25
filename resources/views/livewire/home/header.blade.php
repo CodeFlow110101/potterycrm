@@ -28,7 +28,7 @@ mount(function ($cart, $path, $auth, $routeName) {
 ?>
 
 <div>
-    @if($path == 'checkout')
+    @if($routeName == 'checkout')
     <div class="w-3/4 py-4 mx-auto flex justify-between items-center">
         <a href="/" wire:navigate class="uppercase tracking-wider text-lg text-center text-primary font-avenir-next-rounded-semibold">
             Pottery Painting & Coffee
@@ -74,7 +74,7 @@ mount(function ($cart, $path, $auth, $routeName) {
             </div>
         </div>
         <nav class="flex justify-start gap-12 uppercase font-avenir-next-regular">
-            <a href="/shop" wire:navigate class="text-primary @if(request()->path() == 'shop') underline @else hover:underline @endif underline-offset-4">Shop</a>
+            <a href="/shop{{ $booking_id ? '/' . $booking_id : ''}}" wire:navigate class="text-primary @if(request()->path() == 'shop') underline @else hover:underline @endif underline-offset-4">Shop</a>
             <a href="/booking" wire:navigate class="text-primary @if(request()->path() == 'booking') underline @else hover:underline @endif underline-offset-4">Booking</a>
             <a href="/purchase" wire:navigate class="text-primary @if(request()->path() == 'purchase') underline @else hover:underline @endif underline-offset-4">Purchase</a>
             <a href="/order" wire:navigate class="text-primary @if(request()->path() == 'order') underline @else hover:underline @endif underline-offset-4">Order</a>

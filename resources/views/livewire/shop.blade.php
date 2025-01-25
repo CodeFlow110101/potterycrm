@@ -12,7 +12,7 @@ use Square\Models\Order;
 
 use function Livewire\Volt\{state, with, mount, computed, on};
 
-state(['role', 'search', 'booking_id', 'terminal_status' => "Please complete the payment through the device."]);
+state(['role', 'search', 'booking_id']);
 
 with(fn() => [
     'products' => Product::whereRaw("LOWER(REPLACE(name, ' ', '')) LIKE ?", ['%' . strtolower(str_replace(' ', '', $this->search)) . '%'])->when($this->booking_id, function ($query) {
@@ -25,10 +25,6 @@ with(fn() => [
         });
     })->get(),
 ]);
-
-on(['echo-private:payment-user-{user.id},TerminalPaymentEvent' => function ($request) {
-    $this->terminal_status = $request['request']['data']['object']['checkout']['status'];
-}]);
 
 $proceedToPayment = function () {
     if ($this->booking_id) {
