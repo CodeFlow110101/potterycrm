@@ -80,8 +80,6 @@ mount(function () {
         <livewire:product.shop />
         @elseif($path == 'manage-product')
         <livewire:product.manage-product />
-        @elseif($path == 'setting')
-        <livewire:setting.setting />
         @elseif($path == 'purchase')
         <livewire:purchase :auth="$auth" />
         @elseif($path == 'order')

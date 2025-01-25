@@ -27,7 +27,6 @@ Route::middleware(['auth'])->group(function () {
         Volt::route('/checkout/{booking_id}', 'landing-page')->name('checkout');
     });
     Volt::route('/manage-product', 'landing-page')->name('manage-product');
-    Volt::route('/setting', 'landing-page')->name('setting');
     Volt::route('/purchase', 'landing-page')->name('purchase');
     Volt::route('/order', 'landing-page')->name('order');
     Volt::route('/coupon', 'landing-page')->name('coupon');
