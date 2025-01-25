@@ -16,7 +16,7 @@ use function Livewire\Volt\{state, with, computed, rules, mount};
 
 state(['cart'])->reactive();
 
-state(['first_name', 'last_name', 'email', 'phoneno', 'otp', 'generatedOtp', 'auth', 'address_name', 'shipping_preference', 'address_name', 'address', 'postal_code', 'coupon_code', 'booking_id']);
+state(['first_name', 'last_name', 'email', 'phoneno', 'otp', 'generatedOtp', 'auth', 'address_name', 'shipping_preference', 'address_name', 'address', 'postal_code', 'coupon_code', 'booking_id', 'coupon']);
 
 with(fn() => ['products' => Product::whereIn('id', $this->cart ? array_keys($this->cart) : [])->when($this->booking_id, function ($query) {
     $query->whereHas('type', function ($typeQuery) {
@@ -96,7 +96,7 @@ $submit = function () {
 
 $submitAddress = function () {
     $this->validate();
-    App::call([PaymentController::class, 'onlinePayment'], ['cart' => $this->cart, 'user' => $this->auth]);
+    App::call([PaymentController::class, 'onlinePayment'], ['cart' => $this->cart, 'user' => $this->auth, 'coupon' => $this->coupon]);
 };
 
 $total = computed(function () {
@@ -111,6 +111,10 @@ $total = computed(function () {
     })->get()->map(function ($item) {
         return $item->price * $this->cart[$item->id];
     })->sum();
+});
+
+$discount = computed(function () {
+    return $this->coupon ? ((100 - $this->coupon->discount_value) * 0.01) : null;
 });
 
 $validateCouponCode = function () {
@@ -132,7 +136,8 @@ $submitCoupon = function () {
             $fail("The :attribute is invalid.");
         }
     },]]);
-    dd('hello');
+
+    $this->coupon = Coupon::where('name', $this->coupon_code)->first();
 };
 
 mount(function () {
@@ -297,7 +302,7 @@ mount(function () {
                 @endif
                 <div class="flex justify-between text-xl">
                     <div>Total</div>
-                    <div class="flex justify-end">$ {{ $this->total }}</div>
+                    <div class="flex justify-end"> {{ $this->discount ? ('$ ' . $this->total . ' * ' . $this->coupon->discount_value . '%  =  $ ' . $this->total * $this->discount ) : '$ ' . $this->total}}</div>
                 </div>
             </div>
         </div>

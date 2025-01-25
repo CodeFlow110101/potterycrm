@@ -29,7 +29,7 @@ $verifyOtp = function (Request $request) {
                 ])
             ) {
                 $request->session()->regenerate();
-                $this->redirectRoute('shop', navigate: true);
+                $this->redirect('/shop', navigate: true);
             }
         } else {
             $this->addError('phoneno', 'Account does not exist with this phone no.');

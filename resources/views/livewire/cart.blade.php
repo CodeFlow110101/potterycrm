@@ -5,6 +5,7 @@ use App\Models\Product;
 use function Livewire\Volt\{state, with, mount};
 
 state(['cart'])->reactive();
+state(['booking_id']);
 
 with(fn() => ['products' => Product::whereIn('id', array_keys($this->cart))->when($this->booking_id, function ($query) {
     $query->whereHas('type', function ($typeQuery) {

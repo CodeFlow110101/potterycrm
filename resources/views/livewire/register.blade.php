@@ -35,6 +35,7 @@ $verifyOtp = function () {
                     'first_name' => $this->first_name,
                     'last_name' => $this->last_name,
                     'email' => $this->email,
+                    'role_id' => 2,
                     'password' => Hash::make('12345678'),
                 ]
             );

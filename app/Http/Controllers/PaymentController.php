@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use Square\Models\CheckoutOptions;
 use Square\Models\CreatePaymentLinkRequest;
 use Illuminate\Support\Str;
+use Square\Models\OrderLineItemDiscount;
 
 class PaymentController extends Controller
 {
@@ -26,7 +27,7 @@ class PaymentController extends Controller
         }
     }
 
-    static function onlinePayment($cart, $user)
+    static function onlinePayment($cart, $user, $coupon)
     {
         $products = Product::whereIn('id', array_keys($cart))->get();
 
@@ -50,16 +51,27 @@ class PaymentController extends Controller
             $all_order_line_item[] = $order_line_item;
         }
 
+        $discounts  = null;
+        if ($coupon) {
+            $order_line_item_discount = new OrderLineItemDiscount();
+            $order_line_item_discount->setPercentage((string)$coupon->discount_value);
+            $order_line_item_discount->setName($coupon->discount_value . '% Discount'); // Required field
+            $discounts = [$order_line_item_discount];
+        }
+
         $line_items = $all_order_line_item;
         $metadata = ['user_id' => (string)$user->id];
         $order = new \Square\Models\Order(env('SQUARE_POS_LOCATION_ID'));
         $order->setLineItems($line_items);
         $order->setMetadata($metadata);
+        if ($coupon) {
+            $order->setDiscounts($discounts);
+        }
 
         $accepted_payment_methods = new \Square\Models\AcceptedPaymentMethods();
         $accepted_payment_methods->setApplePay(true);
         $checkout_options = new CheckoutOptions();
-        $checkout_options->setRedirectUrl(url('purchase'));
+        $checkout_options->setRedirectUrl(url('cart'));
         $checkout_options->setEnableCoupon(false);
         $checkout_options->setEnableLoyalty(false);
         $checkout_options->setAcceptedPaymentMethods($accepted_payment_methods);
@@ -75,6 +87,9 @@ class PaymentController extends Controller
         if ($api_response->isSuccess()) {
             $result = $api_response->getResult();
             return redirect()->away($result->getPaymentLink()->getlongUrl());
+        } else {
+            $errors = $api_response->getErrors();
+            dd(response()->json(['error' => $errors]));
         }
     }
 
