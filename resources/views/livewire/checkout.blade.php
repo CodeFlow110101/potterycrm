@@ -102,11 +102,10 @@ $submit = function () {
 
 $submitAndPay = function () {
     $this->validate();
-    $this->terminal_status = 'processing';
-    App::call([PaymentController::class, 'terminalPayment'], ['cart' => $this->cart, 'user' => $this->auth, 'coupon' => $this->coupon]);
-    return;
+
     if ($this->booking_id) {
-        $this->modal = true;
+        $this->terminal_status = 'processing';
+        App::call([PaymentController::class, 'terminalPayment'], ['cart' => $this->cart, 'user' => $this->auth, 'coupon' => $this->coupon]);
     } else {
         App::call([PaymentController::class, 'onlinePayment'], ['cart' => $this->cart, 'user' => $this->auth, 'coupon' => $this->coupon]);
     }
