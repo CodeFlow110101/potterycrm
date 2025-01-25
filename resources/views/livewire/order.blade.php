@@ -62,7 +62,7 @@ mount(function ($auth) {
 
 <div class="grow flex flex-col text-primary font-avenir-next-rounded-light">
     <div class="grow flex flex-col w-full">
-        <div class="font-medium text-black/60 h-full">
+        <div class="font-medium text-black/60 h-full flex flex-col grow">
             <div class="py-4 flex justify-end items-center">
                 <div class="relative">
                     <input class="border outline-none py-2 pl-10 pr-4">
@@ -73,60 +73,62 @@ mount(function ($auth) {
                     </div>
                 </div>
             </div>
-            <div class="h-[70vh]">
-                <table class="w-full overflow-y-hidden">
-                    <thead class="bg-primary/40">
-                        <tr>
-                            <th class="font-normal py-2">
-                                #
-                            </th>
-                            <th class="font-normal py-2">
-                                Name
-                            </th>
-                            <th class="font-normal py-2">
-                                Price
-                            </th>
-                            <th class="font-normal py-2">
-                                Item Id
-                            </th>
-                            <th class="font-normal py-2">
-                                Item Status
-                            </th>
+            <div class="grow relative" x-data="{ height: 0 }" x-resize="height = $height">
+                <div class="overflow-y-auto absolute inset-x-0" :style="'height: ' + height + 'px;'">
+                    <table class="w-full overflow-y-hidden">
+                        <thead class="bg-white sticky top-0">
+                            <tr class="bg-primary/40">
+                                <th class="font-normal py-2">
+                                    #
+                                </th>
+                                <th class="font-normal py-2">
+                                    Name
+                                </th>
+                                <th class="font-normal py-2">
+                                    Price
+                                </th>
+                                <th class="font-normal py-2">
+                                    Item Id
+                                </th>
+                                <th class="font-normal py-2">
+                                    Item Status
+                                </th>
+                                @if($this->auth->role->name == 'administrator')
+                                <th class="font-normal py-2">
+                                    Status
+                                </th>
+                                @endif
+                            </tr>
+                        </thead>
+                        @php
+                        $iteration = 0;
+                        @endphp
+                        @foreach($purchases as $purchase)
+                        @foreach($purchase->items as $item)
+                        @php
+                        $iteration++;
+                        @endphp
+                        <tr class="hover:bg-black/10 transition-colors duration-200 text-primary">
+                            <td class="text-center font-normal py-3">{{$iteration}}</td>
+                            <td class="text-center font-normal py-3">{{$item->product->name}}</td>
+                            <td class="text-center font-normal py-3">$ {{number_format($item->product->price, 2, '.', '')}}</td>
+                            <td class="text-center font-normal py-3">{{$item->item_id}}</td>
+                            <td class="text-center font-normal py-3 capitalize">{{$item->status ? $item->status->name : ''}}</td>
                             @if($this->auth->role->name == 'administrator')
-                            <th class="font-normal py-2">
-                                Status
-                            </th>
+                            <td class="text-center font-normal py-3 flex justify-center items-center gap-2">
+                                <button wire:click="toggleModal({{$item->id}})">
+                                    <svg class="w-6 h-6 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                        <path fill-rule="evenodd" d="M11.32 6.176H5c-1.105 0-2 .949-2 2.118v10.588C3 20.052 3.895 21 5 21h11c1.105 0 2-.948 2-2.118v-7.75l-3.914 4.144A2.46 2.46 0 0 1 12.81 16l-2.681.568c-1.75.37-3.292-1.263-2.942-3.115l.536-2.839c.097-.512.335-.983.684-1.352l2.914-3.086Z" clip-rule="evenodd" />
+                                        <path fill-rule="evenodd" d="M19.846 4.318a2.148 2.148 0 0 0-.437-.692 2.014 2.014 0 0 0-.654-.463 1.92 1.92 0 0 0-1.544 0 2.014 2.014 0 0 0-.654.463l-.546.578 2.852 3.02.546-.579a2.14 2.14 0 0 0 .437-.692 2.244 2.244 0 0 0 0-1.635ZM17.45 8.721 14.597 5.7 9.82 10.76a.54.54 0 0 0-.137.27l-.536 2.84c-.07.37.239.696.588.622l2.682-.567a.492.492 0 0 0 .255-.145l4.778-5.06Z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </td>
                             @endif
                         </tr>
-                    </thead>
-                    @php
-                    $iteration = 0;
-                    @endphp
-                    @foreach($purchases as $purchase)
-                    @foreach($purchase->items as $item)
-                    @php
-                    $iteration++;
-                    @endphp
-                    <tr class="hover:bg-black/10 transition-colors duration-200 text-primary">
-                        <td class="text-center font-normal py-3">{{$iteration}}</td>
-                        <td class="text-center font-normal py-3">{{$item->product->name}}</td>
-                        <td class="text-center font-normal py-3">$ {{number_format($item->product->price, 2, '.', '')}}</td>
-                        <td class="text-center font-normal py-3">{{$item->item_id}}</td>
-                        <td class="text-center font-normal py-3 capitalize">{{$item->status ? $item->status->name : ''}}</td>
-                        @if($this->auth->role->name == 'administrator')
-                        <td class="text-center font-normal py-3 flex justify-center items-center gap-2">
-                            <button wire:click="toggleModal({{$item->id}})">
-                                <svg class="w-6 h-6 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                                    <path fill-rule="evenodd" d="M11.32 6.176H5c-1.105 0-2 .949-2 2.118v10.588C3 20.052 3.895 21 5 21h11c1.105 0 2-.948 2-2.118v-7.75l-3.914 4.144A2.46 2.46 0 0 1 12.81 16l-2.681.568c-1.75.37-3.292-1.263-2.942-3.115l.536-2.839c.097-.512.335-.983.684-1.352l2.914-3.086Z" clip-rule="evenodd" />
-                                    <path fill-rule="evenodd" d="M19.846 4.318a2.148 2.148 0 0 0-.437-.692 2.014 2.014 0 0 0-.654-.463 1.92 1.92 0 0 0-1.544 0 2.014 2.014 0 0 0-.654.463l-.546.578 2.852 3.02.546-.579a2.14 2.14 0 0 0 .437-.692 2.244 2.244 0 0 0 0-1.635ZM17.45 8.721 14.597 5.7 9.82 10.76a.54.54 0 0 0-.137.27l-.536 2.84c-.07.37.239.696.588.622l2.682-.567a.492.492 0 0 0 .255-.145l4.778-5.06Z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                        </td>
-                        @endif
-                    </tr>
-                    @endforeach
-                    @endforeach
-                </table>
+                        @endforeach
+                        @endforeach
+                    </table>
+                </div>
             </div>
         </div>
     </div>
