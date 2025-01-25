@@ -36,7 +36,7 @@ rules(fn() => [
     'shipping_preference' => $this->auth ? ['required'] : ['exclude'],
     'address_name' => $this->auth ? ['required_if:shipping_preference,2'] : ['exclude'],
     'address' => $this->auth ? ['required_if:shipping_preference,2'] : ['exclude'],
-    // 'postal_code' => $this->auth ? ['required_if:shipping_preference,2', 'exists:postal_codes,postcode'] : ['exclude'],
+    'postal_code' => $this->auth ? ['required_if:shipping_preference,2', 'exists:postal_codes,postcode'] : ['exclude'],
 ])->messages([
     'address_name.required_if' => 'The :attribute is required.',
     'address.required_if' => 'The :attribute is required.',
@@ -149,7 +149,6 @@ mount(function () {
 <div class="w-3/4 mx-auto text-primary">
     <div class="flex justify-between">
         <div class="w-full py-12">
-            <div x-text="$wire.shipping_preference"></div>
             @if(!$auth)
             <form x-data="otp" x-on:reset="reset()" x-on:start-countdown.window="startCountdown()" wire:submit="submit" class="h-min grid grid-cols-1 gap-8 w-4/5 mx-auto font-avenir-next-rounded-light text-primary">
                 <div>
