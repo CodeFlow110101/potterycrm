@@ -6,140 +6,72 @@ use function Livewire\Volt\{state};
 
 ?>
 
-<div>
-    <div class="px-6 my-32 flex justify-evenly items-center gap-6 *:h-[90vh] *:w-full *:bg-cover *:bg-center *:bg-no-repeat">
-        <div style="background-image: url('{{ asset('images/home_1.webp') }}');"></div>
-        <div style="background-image: url('{{ asset('images/home_2.webp') }}');"></div>
-        <div style="background-image: url('{{ asset('images/home_3.webp') }}');"></div>
-        <div style="background-image: url('{{ asset('images/home_4.webp') }}');"></div>
-    </div>
-    <div class="my-10 flex flex-col gap-4 text-center text-primary">
-        <div class="font-avenir-next-rounded-light text-3xl tracking-wider">We are a Pottery Studio offering Memberships and Classes</div>
-        <div class="font-avenir-next-regular text-opacity-80 text-lg">
-            We offer memberships at all our locations, and classes begin monthly. Our studios are open spaces in with plenty of room to create <br>
-            on the wheel or handbuild. We fire to Cone 10 and offer members 24/7 access. You can visit our studios for a tour, just send us a <br>
-            note to let us know you are coming to say hello and we'll show you around.
-        </div>
-    </div>
-    <div class="my-32 flex flex-col gap-12 text-center text-primary">
-        <div class="flex flex-col gap-2">
-            <div class="font-avenir-next-rounded-light text-xl tracking-wider uppercase">HELLO SAN FRANCISCO</div>
-            <div class="font-avenir-next-regular text-opacity-80 tracking-wide">
-                Please get in touch to come see our San Francisco studio at 2394 Folsom Street 94110
+<div class="grow flex flex-col overflow-y-auto hidden-scrollbar text-white">
+    <div class="grow flex relative">
+        <div class="absolute inset-0 pointer-events-none flex flex-col">
+            <div class="overflow-hidden size-full">
+                <img class="translate-y-2/4 size-full" src="{{ asset('images/home_hand.png') }}">
             </div>
         </div>
-        <div class="flex justify-center">
-            <img class="w-3/4" src="{{ asset('images/home_5.webp') }}">
-        </div>
-    </div>
-    <div class="flex flex-col gap-4 text-primary my-12">
-        <div class="font-avenir-next-rounded-light text-center text-lg tracking-wider">BOOK CLASSES AT OUR SF STUDIO</div>
-        <div class="w-3/4 flex mx-auto gap-8">
-            <template x-for="i in 5">
-                <div class="flex flex-col gap-4 group">
-                    <img class="w-full aspect-square group-hover:opacity-85" src="{{ asset('images/home_6.webp') }}">
-                    <div class="font-avenir-next-rounded-light tracking-wide leading-loose">
-                        <div class="text-sm group-hover:underline underline-offset-4">
-                            San Francisco February <br> Sundays 11am-1pm: <br> Handbuilding Exploration
-                        </div>
-                        <div>$225</div>
-                    </div>
+        <div class="grow flex flex-col py-16">
+            <div class="flex justify-center grow">
+                <div class="flex flex-col text-9xl w-3/4 mx-auto uppercase font-avenir-next-regular tracking-tighter">
+                    Pottery<br><span class="font-avenir-next-bold">Painting</span>& Coffee
                 </div>
-            </template>
-        </div>
-    </div>
-    <div class="my-32 flex justify-center">
-        <button class="bg-primary bg-opacity-90 hover:bg-opacity-100 text-white py-3 px-4 uppercase font-avenir-next-rounded-extra-light tracking-wider">See More</button>
-    </div>
-    <div class="my-32 flex flex-col gap-12 text-center text-primary">
-        <div class="flex flex-col gap-2">
-            <div class="font-avenir-next-rounded-light text-2xl tracking-wider">BUCKTOWN, CHICAGO</div>
-            <div class="font-avenir-next-regular text-opacity-80 tracking-wide leading-relaxed">
-                Our location at 2525 N. Elston Ave Chicago IL 60647 fires cone 10 gas reduction, and offers memberships and classes in a beautiful historic building <br>
-                with views of the river. If you are interested in working with us, teaching, or getting more information please email <br>
-                clayandsupply@thepotterystudio.com.
             </div>
+            <div class="mt-auto w-11/12 mx-auto text-2xl font-avenir-next-rounded-light tracking-wider uppercase">Welcome to<br>our website</div>
         </div>
-        <div class="flex justify-center">
-            <img class="w-3/4" src="{{ asset('images/home_7.webp') }}">
-        </div>
-    </div>
-    <div class="flex flex-col gap-4 text-primary my-12">
-        <div class="font-avenir-next-rounded-light text-center text-lg tracking-wider uppercase">Book Chicago Classes</div>
-        <div class="w-3/4 flex mx-auto gap-8">
-            <template x-for="i in 5">
-                <div class="flex flex-col gap-4 group">
-                    <img class="w-full aspect-square group-hover:opacity-85" src="{{ asset('images/home_6.webp') }}">
-                    <div class="font-avenir-next-rounded-light tracking-wide leading-loose">
-                        <div class="text-sm group-hover:underline underline-offset-4">
-                            San Francisco February <br> Sundays 11am-1pm: <br> Handbuilding Exploration
+        <div class="flex flex-col gap-4">
+            <div class="overflow-x-hidden">
+                <div class="aspect-square rounded-full mt-10 translate-x-16 pl-8 pr-20 flex justify-center items-center bg-indigo-800/90 text-right leading-tight">
+                    <div class="flex flex-col gap-4">
+                        <div>
+                            Welcome to the perfect place for creativity and fun!
                         </div>
-                        <div>$225</div>
-                    </div>
-                </div>
-            </template>
-        </div>
-    </div>
-    <div class="my-32 flex justify-center">
-        <button class="bg-primary bg-opacity-90 hover:bg-opacity-100 text-white py-3 px-4 uppercase font-avenir-next-rounded-extra-light tracking-wider">See More</button>
-    </div>
-    <div class="my-32 flex flex-col gap-12 text-center text-primary">
-        <div class="flex flex-col gap-2">
-            <div class="font-avenir-next-rounded-light text-2xl tracking-wider">VISIT OUR COSTA MESA STUDIO</div>
-        </div>
-        <div class="flex justify-center">
-            <img class="w-3/4" src="{{ asset('images/home_8.webp') }}">
-        </div>
-    </div>
-    <div class="flex flex-col gap-4 text-primary my-12">
-        <div class="font-avenir-next-rounded-light text-center text-lg tracking-wider uppercase">BOOK COSTA MESA CLASSES</div>
-        <div class="w-3/4 flex mx-auto gap-8">
-            <template x-for="i in 5">
-                <div class="flex flex-col gap-4 group">
-                    <img class="w-full aspect-square group-hover:opacity-85" src="{{ asset('images/home_6.webp') }}">
-                    <div class="font-avenir-next-rounded-light tracking-wide leading-loose">
-                        <div class="text-sm group-hover:underline underline-offset-4">
-                            San Francisco February <br> Sundays 11am-1pm: <br> Handbuilding Exploration
+                        <div>
+                            our pottery painting cafe is a place where everyone
+                            <br>
+                            can relax, unwind, and get artistic. Choose from a wide
+                            <br>
+                            selection of pottery pieces, grab your favorite
+                            <br>
+                            colours, and let your imagination run wild.
                         </div>
-                        <div>$225</div>
-                    </div>
-                </div>
-            </template>
-        </div>
-    </div>
-    <div class="my-32 flex justify-center">
-        <button class="bg-primary bg-opacity-90 hover:bg-opacity-100 text-white py-3 px-4 uppercase font-avenir-next-rounded-extra-light tracking-wider">See More</button>
-    </div>
-    <div class="my-32 px-6 text-primary">
-        <div class="py-12 bg-cover bg-center bg-no-repeat" style="background-image: url('{{ asset('images/home_9.jpg') }}');">
-            <div class="w-4/5 mx-auto flex">
-                <div class="bg-white flex flex-col gap-4 py-8 px-10 text-center">
-                    <div class="font-avenir-next-rounded-light">TOUR HOURS</div>
-                    <template x-for="i in 6">
-                        <div class="font-avenir-next-rounded-light">Cypress Park: Tues, Thurs, Sat 10-2</div>
-                    </template>
-                    <div class="pt-4">
-                        <button class="flex justify-evenly items-center gap-2 py-1 px-4 border border-primary w-min whitespace-nowrap mx-auto text-sm">
-                            <div>
-                                <svg class="size-4 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                                    <path fill-rule="evenodd" d="M11.906 1.994a8.002 8.002 0 0 1 8.09 8.421 7.996 7.996 0 0 1-1.297 3.957.996.996 0 0 1-.133.204l-.108.129c-.178.243-.37.477-.573.699l-5.112 6.224a1 1 0 0 1-1.545 0L5.982 15.26l-.002-.002a18.146 18.146 0 0 1-.309-.38l-.133-.163a.999.999 0 0 1-.13-.202 7.995 7.995 0 0 1 6.498-12.518ZM15 9.997a3 3 0 1 1-5.999 0 3 3 0 0 1 5.999 0Z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                            <div class="text-primary text-sm uppercase font-avenir-next-rounded-light">
-                                Get Direction
-                            </div>
-                        </button>
+                        <div>
+                            No experience necessary – we provide all the supplies
+                            <br>
+                            and guidance you need to create a masterpiece. Great
+                            <br>
+                            for families, friends, parties, Date Nights or just a solo
+                            <br>
+                            art therapy session.
+                        </div>
+                        <div>
+                            Come in, paint, and make memories that last!
+                        </div>
+                        <div>
+                            P.S we make great coffee too
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="my-32 w-3/4 mx-auto flex flex-col gap-4 text-primary">
-        <div class="text-2xl font-avenir-next-rounded-extra-light">Accessibility Statement</div>
-        <div class="font-avenir-next-rounded-semibold">
-            The Pottery Studio is committed to ensuring digital accessibility for people with disabilities. We are continually improving the user <br>
-            experience for everyone, and applying the relevant accessibility standards. If you have difficulty accessing any material on this site, please <br>
-            contact us in writing and we will work with you to make the information available. Visit our contact page.
+            <div class="flex justify-end">
+                <div class="border-t pt-4 pr-4">
+                    <button class="text-black py-3 uppercase px-20 bg-white rounded-lg tracking-tight">Subscribe</button>
+                </div>
+            </div>
+            <div class="mt-auto flex justify-end gap-2 pr-4">
+                <div class="bg-white rounded-full p-1">
+                    <svg class="size-10 text-black" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path fill="currentColor" fill-rule="evenodd" d="M3 8a5 5 0 0 1 5-5h8a5 5 0 0 1 5 5v8a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5V8Zm5-3a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3V8a3 3 0 0 0-3-3H8Zm7.597 2.214a1 1 0 0 1 1-1h.01a1 1 0 1 1 0 2h-.01a1 1 0 0 1-1-1ZM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm-5 3a5 5 0 1 1 10 0 5 5 0 0 1-10 0Z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="bg-white rounded-full p-1">
+                    <svg class="size-10 text-black" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                        <path fill-rule="evenodd" d="M13.135 6H15V3h-1.865a4.147 4.147 0 0 0-4.142 4.142V9H7v3h2v9.938h3V12h2.021l.592-3H12V6.591A.6.6 0 0 1 12.592 6h.543Z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -194,3 +194,14 @@
     font-weight: normal;
     font-style: normal;
 }
+
+.hidden-scrollbar {
+    overflow: auto; /* Enables scrolling */
+    scrollbar-width: none; /* For Firefox */
+    -ms-overflow-style: none; /* For Internet Explorer and Edge */
+}
+
+/* For Webkit browsers like Chrome and Safari */
+.hidden-scrollbar::-webkit-scrollbar {
+    display: none;
+}

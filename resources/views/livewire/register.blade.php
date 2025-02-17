@@ -74,70 +74,68 @@ $submit = function () {
 
 ?>
 
-<div>
-    <div class="mt-12 mb-44">
-        <div class="">
-            <div class="uppercase font-avenir-next-rounded-light text-center my-16 text-primary text-3xl">
-                Register
-            </div>
+<div class="grow flex flex-col gap-8 py-8 text-white w-11/12 mx-auto">
+    <div class="text-7xl font-avenir-next-bold">Register</div>
+    <div class="grow relative" x-data="{ height: 0 }" x-resize="height = $height">
+        <div class="overflow-y-auto hidden-scrollbar absolute inset-x-0" :style="'height: ' + height + 'px;'">
+            <form x-data="otp" x-on:reset="reset()" x-on:start-countdown.window="startCountdown()" wire:submit="submit" class="w-3/5 mx-auto py-12 backdrop-blur-xl border border-white rounded-lg">
+                <div class="h-min grid grid-cols-1 gap-8 w-4/5 mx-auto font-avenir-next-rounded-light">
+                    <div>
+                        <label class="font-avenir-next-rounded-semibold text-xl">First Name</label>
+                        <input wire:model="first_name" class="w-full bg-black/5 outline-none p-3" placeholder="First Name">
+                        <div>
+                            @error('first_name')
+                            <span wire:transition.in.duration.500ms="scale-y-100"
+                                wire:transition.out.duration.500ms="scale-y-0">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                    <div>
+                        <label class="font-avenir-next-rounded-semibold text-xl">Last Name</label>
+                        <input wire:model="last_name" class="w-full bg-black/5 outline-none p-3" placeholder="Last Name">
+                        <div>
+                            @error('last_name')
+                            <span wire:transition.in.duration.500ms="scale-y-100"
+                                wire:transition.out.duration.500ms="scale-y-0">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                    <div>
+                        <label class="font-avenir-next-rounded-semibold text-xl">Email</label>
+                        <input wire:model="email" class="w-full bg-black/5 outline-none p-3" placeholder="Email">
+                        <div>
+                            @error('email')
+                            <span wire:transition.in.duration.500ms="scale-y-100"
+                                wire:transition.out.duration.500ms="scale-y-0">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                    <div>
+                        <label class="font-avenir-next-rounded-semibold text-xl">Phone No</label>
+                        <input wire:model="phoneno" x-mask="9999999999" class="w-full bg-black/5 outline-none p-3" placeholder="Phone No">
+                        <div>
+                            @error('phoneno')
+                            <span wire:transition.in.duration.500ms="scale-y-100"
+                                wire:transition.out.duration.500ms="scale-y-0">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                    <div>
+                        <label class="font-avenir-next-rounded-semibold text-xl">Confirmation Code</label>
+                        <input @input="verifyOtp" wire:model="otp" x-mask="999999" class="@if(!$generatedOtp) pointer-events-none opacity-50 @endif w-full bg-black/5 outline-none p-3" placeholder="Confirmation Code">
+                        <div class="w-1/2 mx-auto">
+                            @error('otp')
+                            <span wire:transition.in.duration.500ms="scale-y-100"
+                                wire:transition.out.duration.500ms="scale-y-0">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        @if($generatedOtp)
+                        <div :class="formattedTime == '00:00' && 'text-red-500'" class="mx-auto w-1/2" x-text="formattedTime == '00:00' ? 'Otp Timed Out' : formattedTime"></div>
+                        @endif
+                    </div>
+                    <button type="submit" :class="interval && 'pointer-events-none opacity-50'" class="text-black py-3 uppercase px-6 mx-auto bg-white rounded-lg tracking-tight">{{$generatedOtp ? 'Resend Code' : 'Send Code'}}</button>
+                </div>
+            </form>
         </div>
-        <form x-data="otp" x-on:reset="reset()" x-on:start-countdown.window="startCountdown()" wire:submit="submit" class="w-3/5 mx-auto border py-12">
-            <div class="h-min grid grid-cols-1 gap-8 w-4/5 mx-auto font-avenir-next-rounded-light text-primary">
-                <div>
-                    <label>First Name</label>
-                    <input wire:model="first_name" class="w-full bg-black/5 outline-none p-3" placeholder="First Name">
-                    <div>
-                        @error('first_name')
-                        <span wire:transition.in.duration.500ms="scale-y-100"
-                            wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-                <div>
-                    <label>Last Name</label>
-                    <input wire:model="last_name" class="w-full bg-black/5 outline-none p-3" placeholder="Last Name">
-                    <div>
-                        @error('last_name')
-                        <span wire:transition.in.duration.500ms="scale-y-100"
-                            wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-                <div>
-                    <label>Email</label>
-                    <input wire:model="email" class="w-full bg-black/5 outline-none p-3" placeholder="Email">
-                    <div>
-                        @error('email')
-                        <span wire:transition.in.duration.500ms="scale-y-100"
-                            wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-                <div>
-                    <label>Phone No</label>
-                    <input wire:model="phoneno" x-mask="9999999999" class="w-full bg-black/5 outline-none p-3" placeholder="Phone No">
-                    <div>
-                        @error('phoneno')
-                        <span wire:transition.in.duration.500ms="scale-y-100"
-                            wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-                <div>
-                    <label>Confirmation Code</label>
-                    <input @input="verifyOtp" wire:model="otp" x-mask="999999" class="@if(!$generatedOtp) pointer-events-none opacity-50 @endif w-full bg-black/5 outline-none p-3" placeholder="Confirmation Code">
-                    <div class="w-1/2 mx-auto">
-                        @error('otp')
-                        <span wire:transition.in.duration.500ms="scale-y-100"
-                            wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
-                        @enderror
-                    </div>
-                    @if($generatedOtp)
-                    <div :class="formattedTime == '00:00' && 'text-red-500'" class="mx-auto w-1/2" x-text="formattedTime == '00:00' ? 'Otp Timed Out' : formattedTime"></div>
-                    @endif
-                </div>
-                <button type="submit" :class="interval && 'pointer-events-none opacity-50'" class="font-avenir-next-rounded-extra-light uppercase text-center py-2 px-4 bg-primary mx-auto text-white text-xl">{{$generatedOtp ? 'Resend Code' : 'Send Code'}}</button>
-            </div>
-        </form>
     </div>
 </div>

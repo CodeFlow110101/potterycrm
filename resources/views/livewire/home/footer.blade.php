@@ -10,7 +10,7 @@ mount(function ($routeName, $auth) {
 
 ?>
 
-<div class="pb-6 text-primary mt-auto">
+<div class="pb-6 text-primary mt-auto hidden">
     @if(!($auth && in_array($routeName , ['booking','purchase','order','coupon','shop','product','cart','manage-coupon'])))
     <div class="my-20 flex justify-evenly gap-10 w-3/4 mx-auto">
         <div class="flex flex-col gap-8">

@@ -44,7 +44,7 @@ $submit = function () {
                 add a new product
             </div>
             <div x-data="{loader : false}" x-on:loader.window="loader = $event.detail.show;" class="w-min flex justify-between gap-4">
-                <a href="/product" wire:navigate class="rounded-full border border-black/30 px-4 py-2">Cancel</a>
+                <a href="shop" wire:navigate class="rounded-full border border-black/30 px-4 py-2">Cancel</a>
                 <button :class="loader && 'pointer-events-none'" wire:loading.class="pointer-events-none" wire:target="submit" type="submit" class="rounded-full bg-blue-500 text-white px-4 py-2">
                     <div :class="loader && 'hidden'" wire:loading.class="hidden pointer-events-none" wire:target="submit">Save</div>
                     <div wire:loading.class.remove="hidden" wire:target="submit" class="mx-4 hidden">

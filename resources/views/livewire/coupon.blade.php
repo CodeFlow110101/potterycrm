@@ -13,17 +13,18 @@ mount(function ($auth) {
 });
 ?>
 
-<div class="font-avenir-next-rounded-light grow flex flex-col">
-    @if($role == 'administrator')
-    <div class="flex justify-end py-4">
-        <a href="/manage-coupon" wire:navigate class="bg-primary bg-opacity-90 hover:bg-opacity-100 text-white py-3 px-6 uppercase font-avenir-next-rounded-extra-light tracking-wider">Manage Coupon</a>
+<div class="grow flex flex-col gap-8 py-8 text-white w-11/12 mx-auto">
+    <div class="flex justify-between items-center">
+        <div class="text-7xl font-avenir-next-bold text-white">Orders</div>
+        @if($role == 'administrator')
+        <a href="/manage-coupon" wire:navigate class="text-black py-3 uppercase px-6 font-normal bg-white rounded-lg tracking-tight w-min whitespace-nowrap">Manage Coupon</a>
+        @endif
     </div>
-    @endif
     <div class="grow relative" x-data="{ height: 0 }" x-resize="height = $height">
-        <div class="overflow-y-auto absolute inset-x-0" :style="'height: ' + height + 'px;'">
-            <table class="w-full overflow-y-hidden">
-                <thead class="bg-white sticky top-0">
-                    <tr class="bg-primary/40">
+        <div class="overflow-y-auto absolute inset-x-0 border border-white rounded-lg" :style="'height: ' + height + 'px;'">
+            <table class="w-full overflow-y-hidden backdrop-blur-xl">
+                <thead class="sticky top-0 text-black rounded-t-lg">
+                    <tr class="bg-white">
                         <th class="font-normal py-2">
                             No
                         </th>
@@ -51,7 +52,7 @@ mount(function ($auth) {
                 </thead>
                 <tbody>
                     @foreach($issuedcoupons as $issuedcoupon)
-                    <tr class="hover:bg-black/10 transition-colors duration-200 text-primary">
+                    <tr class="hover:bg-black/10 transition-colors duration-200 text-white">
                         <td class="text-center font-normal py-3">{{$loop->iteration}}</td>
                         @if($role == 'administrator')
                         <td class="text-center font-normal py-3">{{$issuedcoupon->user->first_name}}</td>
@@ -67,3 +68,4 @@ mount(function ($auth) {
             </table>
         </div>
     </div>
+</div>

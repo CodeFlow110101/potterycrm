@@ -158,147 +158,156 @@ mount(function () {
 });
 ?>
 
-<div class="w-3/4 mx-auto text-primary">
-    <div class="flex justify-between">
-        <div class="w-full py-12">
-            @if(!$auth)
-            <form x-data="otp" x-on:reset="reset()" x-on:start-countdown.window="startCountdown()" wire:submit="submit" class="h-min grid grid-cols-1 gap-8 w-4/5 mx-auto font-avenir-next-rounded-light text-primary">
-                <div>
-                    <label>First Name</label>
-                    <input wire:model="first_name" class="w-full bg-black/5 outline-none p-3" placeholder="First Name">
-                    <div>
-                        @error('first_name')
+<div class="grow flex flex-col gap-8 py-8 text-white w-11/12 mx-auto">
+    <div class="text-7xl font-avenir-next-bold text-white">Cart</div>
+    <div class="flex justify-between gap-12 grow">
+        <div class="w-full py-12 flex flex-col backdrop-blur-xl border border-white rounded-lg">
+            <div class="w-4/5 mx-auto relative grow" x-data="{ height: 0 }" x-resize="height = $height">
+                <div class="overflow-y-auto absolute inset-x-0" :style="'height: ' + height + 'px;'">
+                    @if(!$auth)
+                    <form x-data="otp" x-on:reset="reset()" x-on:start-countdown.window="startCountdown()" wire:submit="submit" class="h-min grid grid-cols-1 gap-8 mx-auto font-avenir-next-rounded-light">
+                        <div>
+                            <label class="font-avenir-next-rounded-semibold text-xl">First Name</label>
+                            <input wire:model="first_name" class="w-full bg-black/5 outline-none p-3" placeholder="First Name">
+                            <div>
+                                @error('first_name')
+                                <span wire:transition.in.duration.500ms="scale-y-100"
+                                    wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div>
+                            <label class="font-avenir-next-rounded-semibold text-xl">Last Name</label>
+                            <input wire:model="last_name" class="w-full bg-black/5 outline-none p-3" placeholder="Last Name">
+                            <div>
+                                @error('last_name')
+                                <span wire:transition.in.duration.500ms="scale-y-100"
+                                    wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div>
+                            <label class="font-avenir-next-rounded-semibold text-xl">Email</label>
+                            <input wire:model="email" class="w-full bg-black/5 outline-none p-3" placeholder="Email">
+                            <div>
+                                @error('email')
+                                <span wire:transition.in.duration.500ms="scale-y-100"
+                                    wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div>
+                            <label class="font-avenir-next-rounded-semibold text-xl">Phone No</label>
+                            <input wire:model="phoneno" x-mask="9999999999" class="w-full bg-black/5 outline-none p-3" placeholder="Phone No">
+                            <div>
+                                @error('phoneno')
+                                <span wire:transition.in.duration.500ms="scale-y-100"
+                                    wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div>
+                            <label class="font-avenir-next-rounded-semibold text-xl">Confirmation Code</label>
+                            <input @input="verifyOtp" wire:model="otp" x-mask="999999" class="@if(!$generatedOtp) pointer-events-none opacity-50 @endif w-full bg-black/5 outline-none p-3" placeholder="Confirmation Code">
+                            <div class="w-1/2 mx-auto">
+                                @error('otp')
+                                <span wire:transition.in.duration.500ms="scale-y-100"
+                                    wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            @if($generatedOtp)
+                            <div :class="formattedTime == '00:00' && 'text-red-500'" class="w-1/2" x-text="formattedTime == '00:00' ? 'Otp Timed Out' : formattedTime"></div>
+                            @endif
+                        </div>
+                        <button type="submit" :class="interval && 'pointer-events-none opacity-50'" class="text-black py-3 uppercase px-20 bg-white rounded-lg tracking-tight w-min mx-auto whitespace-nowrap">{{$generatedOtp ? 'Resend Code' : 'Send Code'}}</button>
+                    </form>
+                    @else
+                    <form wire:submit="submitAndPay" class="h-min grid grid-cols-1 gap-8 w-4/5 mx-auto py-12 font-avenir-next-rounded-light">
+                        <div class="font-avenir-next-rounded-regular text-lg">Shipping Preference</div>
+                        <div class="flex justify-evenly">
+                            <div :class="$wire.shipping_preference == 1 && 'border-blue-500'" @click="$wire.shipping_preference = 1;" class="cursor-pointer flex items-center gap-4 border rounded-md py-2 px-4">
+                                <div>
+                                    <input type="radio" value="1" wire:model="shipping_preference">
+                                </div>
+                                <div>Pickup</div>
+                            </div>
+                            <div :class="$wire.shipping_preference == 2 && 'border-blue-500'" @click="$wire.shipping_preference = 2;" class="cursor-pointer flex items-center gap-4 border rounded-md py-2 px-4">
+                                <div>
+                                    <input x-ref="shipping_preference-deliver" type="radio" value="2" wire:model="shipping_preference">
+                                </div>
+                                <div>Deliver</div>
+                            </div>
+                        </div>
+                        @error('shipping_preference')
                         <span wire:transition.in.duration.500ms="scale-y-100"
-                            wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
+                            wire:transition.out.duration.500ms="scale-y-0">{{ $message }}</span>
                         @enderror
-                    </div>
-                </div>
-                <div>
-                    <label>Last Name</label>
-                    <input wire:model="last_name" class="w-full bg-black/5 outline-none p-3" placeholder="Last Name">
-                    <div>
-                        @error('last_name')
-                        <span wire:transition.in.duration.500ms="scale-y-100"
-                            wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-                <div>
-                    <label>Email</label>
-                    <input wire:model="email" class="w-full bg-black/5 outline-none p-3" placeholder="Email">
-                    <div>
-                        @error('email')
-                        <span wire:transition.in.duration.500ms="scale-y-100"
-                            wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-                <div>
-                    <label>Phone No</label>
-                    <input wire:model="phoneno" x-mask="9999999999" class="w-full bg-black/5 outline-none p-3" placeholder="Phone No">
-                    <div>
-                        @error('phoneno')
-                        <span wire:transition.in.duration.500ms="scale-y-100"
-                            wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-                <div>
-                    <label>Confirmation Code</label>
-                    <input @input="verifyOtp" wire:model="otp" x-mask="999999" class="@if(!$generatedOtp) pointer-events-none opacity-50 @endif w-full bg-black/5 outline-none p-3" placeholder="Confirmation Code">
-                    <div class="w-1/2 mx-auto">
-                        @error('otp')
-                        <span wire:transition.in.duration.500ms="scale-y-100"
-                            wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
-                        @enderror
-                    </div>
-                    @if($generatedOtp)
-                    <div :class="formattedTime == '00:00' && 'text-red-500'" class="w-1/2" x-text="formattedTime == '00:00' ? 'Otp Timed Out' : formattedTime"></div>
+                        <div x-show="$wire.shipping_preference == 2">
+                            <label class="font-avenir-next-rounded-semibold text-xl">Address Name</label>
+                            <input wire:model="address_name" class="w-full bg-black/5 outline-none p-3" placeholder="Address Name">
+                            <div>
+                                @error('address_name')
+                                <span wire:transition.in.duration.500ms="scale-y-100"
+                                    wire:transition.out.duration.500ms="scale-y-0">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div x-show="$wire.shipping_preference == 2">
+                            <label class="font-avenir-next-rounded-semibold text-xl">Address</label>
+                            <textarea wire:model="address" class="w-full bg-black/5 outline-none p-3" placeholder="Address"></textarea>
+                            <div>
+                                @error('address')
+                                <span wire:transition.in.duration.500ms="scale-y-100"
+                                    wire:transition.out.duration.500ms="scale-y-0">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div x-show="$wire.shipping_preference == 2">
+                            <label class="font-avenir-next-rounded-semibold text-xl">Postal Code</label>
+                            <input wire:model="postal_code" x-mask="999999" class="w-full bg-black/5 outline-none p-3" placeholder="Postal Code">
+                            <div>
+                                @error('postal_code')
+                                <span wire:transition.in.duration.500ms="scale-y-100"
+                                    wire:transition.out.duration.500ms="scale-y-0">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <button type="submit" :class="$wire.terminal_status == 'processing' && 'pointer-events-none'" class="relative uppercase text-center py-2 px-4 bg-white mx-auto text-black rounded-lg">
+                            <div wire:loading.class="invisible" wire:target="submitAndPay">{{ str_replace("_", " ", $terminal_status) }}</div>
+                            <div wire:loading.class.remove="invisible" wire:target="submitAndPay" class="invisible absolute inset-0 p-2">
+                                <svg aria-hidden="true" class="size-full text-transparent animate-spin fill-black" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
+                                    <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
+                                </svg>
+                            </div>
+                        </button>
+                    </form>
                     @endif
                 </div>
-                <button type="submit" :class="interval && 'pointer-events-none opacity-50'" class="font-avenir-next-rounded-extra-light uppercase text-center py-2 px-4 bg-primary mx-auto text-white text-xl">{{$generatedOtp ? 'Resend Code' : 'Send Code'}}</button>
-            </form>
-            @else
-            <form wire:submit="submitAndPay" class="h-min grid grid-cols-1 gap-8 w-4/5 mx-auto py-12 font-avenir-next-rounded-light text-primary">
-                <div class="font-avenir-next-rounded-regular text-lg">Shipping Preference</div>
-                <div class="flex justify-evenly">
-                    <div :class="$wire.shipping_preference == 1 && 'border-blue-500'" @click="$wire.shipping_preference = 1;" class="cursor-pointer flex items-center gap-4 border rounded-md py-2 px-4">
-                        <div>
-                            <input type="radio" value="1" wire:model="shipping_preference">
-                        </div>
-                        <div>Pickup</div>
-                    </div>
-                    <div :class="$wire.shipping_preference == 2 && 'border-blue-500'" @click="$wire.shipping_preference = 2;" class="cursor-pointer flex items-center gap-4 border rounded-md py-2 px-4">
-                        <div>
-                            <input x-ref="shipping_preference-deliver" type="radio" value="2" wire:model="shipping_preference">
-                        </div>
-                        <div>Deliver</div>
-                    </div>
-                </div>
-                @error('shipping_preference')
-                <span wire:transition.in.duration.500ms="scale-y-100"
-                    wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
-                @enderror
-                <div x-show="$wire.shipping_preference == 2">
-                    <label>Address Name</label>
-                    <input wire:model="address_name" class="w-full bg-black/5 outline-none p-3" placeholder="Address Name">
-                    <div>
-                        @error('address_name')
-                        <span wire:transition.in.duration.500ms="scale-y-100"
-                            wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-                <div x-show="$wire.shipping_preference == 2">
-                    <label>Address</label>
-                    <textarea wire:model="address" class="w-full bg-black/5 outline-none p-3" placeholder="Address"></textarea>
-                    <div>
-                        @error('address')
-                        <span wire:transition.in.duration.500ms="scale-y-100"
-                            wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-                <div x-show="$wire.shipping_preference == 2">
-                    <label>Postal Code</label>
-                    <input wire:model="postal_code" x-mask="999999" class="w-full bg-black/5 outline-none p-3" placeholder="Postal Code">
-                    <div>
-                        @error('postal_code')
-                        <span wire:transition.in.duration.500ms="scale-y-100"
-                            wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-                <button type="submit" :class="$wire.terminal_status == 'processing' && 'pointer-events-none'" class="font-avenir-next-rounded-extra-light relative uppercase text-center py-2 px-4 bg-primary mx-auto text-white text-xl">
-                    <div wire:loading.class="invisible" wire:target="submitAndPay">{{ str_replace("_", " ", $terminal_status) }}</div>
-                    <div wire:loading wire:target="submitAndPay" class="absolute inset-0 p-2">
-                        <svg aria-hidden="true" class="size-full text-transparent animate-spin fill-white" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
-                            <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
-                        </svg>
-                    </div>
-                </button>
-            </form>
-            @endif
+            </div>
         </div>
-        <div class="w-full flex flex-col gap-12 p-12 bg-black/5 font-avenir-next-rounded-semibold">
-            @foreach($products as $product)
-            <div class="flex">
-                <div class="flex flex-1 gap-4">
-                    <div class="w-16 aspect-square relative">
-                        <img class="size-full" src="{{asset('storage/'.$product->thumbnail_path)}}">
-                        <div class="absolute -top-4 -right-4 text-white bg-primary rounded-full text-xs size-6 aspect-square flex justify-center items-center">{{ $cart[$product->id] }}</div>
+        <div class="flex flex-col gap-2 p-12 font-avenir-next-rounded-semibold w-full backdrop-blur-xl border border-white rounded-lg">
+            <div class="grow relative" x-data="{ height: 0 }" x-resize="height = $height">
+                <div class="overflow-y-auto absolute inset-x-0 py-8 flex flex-col gap-12" :style="'height: ' + height + 'px;'">
+                    @foreach($products as $product)
+                    <div class="flex">
+                        <div class="flex flex-1 gap-4">
+                            <div class="w-16 aspect-square relative">
+                                <img class="size-full rounded-lg" src="{{asset('storage/'.$product->thumbnail_path)}}">
+                                <div class="absolute -top-4 -right-4 text-black bg-white rounded-full text-xs size-6 aspect-square flex justify-center items-center">{{ $cart[$product->id] }}</div>
+                            </div>
+                            <div class="flex flex-col">
+                                <div>{{ $product->name }}</div>
+                                <div>{{ $product->description }}</div>
+                            </div>
+                        </div>
+                        <div>
+                            $ {{ $product->price * $cart[$product->id]}}
+                        </div>
                     </div>
-                    <div class="flex flex-col">
-                        <div>{{ $product->name }}</div>
-                        <div>{{ $product->description }}</div>
-                    </div>
-                </div>
-                <div>
-                    $ {{ $product->price * $cart[$product->id]}}
+                    @endforeach
                 </div>
             </div>
-            @endforeach
             <div class="flex flex-col gap-2">
                 @if($auth)
                 <form wire:submit="submitCoupon" class="flex gap-4">

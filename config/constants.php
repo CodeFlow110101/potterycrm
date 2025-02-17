@@ -17,5 +17,10 @@ return [
         "Can I cancel or modify my order?" => "Orders can be modified or canceled within 24 hours of placement. Please contact us immediately to make changes.",
         "Do you offer corporate or large event packages?" => "Yes, we can create customized packages for corporate events, school activities, and other large gatherings. Contact us to discuss your needs.",
         "Who can I contact for additional questions or support?" => "You can reach our customer service team via email or phone. We’re happy to assist with any concerns or special requests."
-    ]
+    ],
+    'booking-2-message' => "Your booking has been successfully confirmed!",
+    'booking-3-message' => "Your booking is now active! You can start selecting items through this link:- {url}",
+    'booking-4-message' => "Thank you for shopping with us!",
+    'coupon-issued-message' => "Here is a discount coupon for the appreciation {coupon code}.",
+    'confirmation-code-message' => 'Your confirmation code is {confirmation code}.'
 ];

@@ -45,37 +45,39 @@ mount(function () {
 });
 ?>
 
-<div class="h-dvh flex flex-col">
+<div class="h-dvh @if($this->routeName == 'home') @endif flex flex-col bg-no-repeat bg-cover bg-black" style="background-image: url('{{ asset('/images/home.jpeg')}}');">
     <livewire:toastr />
     <livewire:modal.modal />
     <livewire:home.header :routeName="$routeName" :cart="$cart" :path="$path" :auth="$auth" />
-    @if($path == '/')
-    <livewire:home.home />
-    @elseif($path == 'sign-in')
-    <livewire:sign-in />
-    @elseif($path == 'book-table')
-    <livewire:book-table />
-    @elseif($path == 'register')
-    <livewire:register />
-    @elseif($path == 'about-us')
-    <livewire:home.about-us />
-    @elseif($path == 'contact-us')
-    <livewire:contact-us />
-    @elseif($routeName == 'shop')
-    <livewire:shop :auth="$auth"/>
-    @elseif($path == 'faq')
-    <livewire:faq />
-    @elseif($this->routeName == 'product')
-    <livewire:product />
-    @elseif($routeName == 'checkout')
-    <livewire:checkout :cart="$cart" />
-    @elseif($routeName == 'cart')
-    <livewire:cart :cart="$cart" />
-    @endif
-    @if($auth)
-    <div class="w-3/4 mx-auto grow flex flex-col">
-        @if($path == 'booking')
-        <livewire:booking :url="$url" :auth="$auth"/>
+    <div class="grow flex flex-col">
+        @if($path == '/')
+        <livewire:home.home />
+        @elseif($path == 'log-in')
+        <livewire:log-in />
+        @elseif($path == 'book-table')
+        <livewire:booking.book-table />
+        @elseif($path == 'register')
+        <livewire:register />
+        @elseif($path == 'about-us')
+        <livewire:home.about-us />
+        @elseif($path == 'contact-us')
+        <livewire:contact-us />
+        @elseif($routeName == 'shop')
+        <livewire:shop :auth="$auth" />
+        @elseif($path == 'faq')
+        <livewire:faq />
+        @elseif($this->routeName == 'product')
+        <livewire:product />
+        @elseif($routeName == 'checkout')
+        <livewire:checkout :cart="$cart" />
+        @elseif($routeName == 'cart')
+        <livewire:cart :cart="$cart" />
+        @elseif($routeName == 'how-it-works')
+        <livewire:how-it-works />
+
+        
+        @elseif($path == 'booking')
+        <livewire:booking.booking :url="$url" :auth="$auth" />
         @elseif($path == 'product' || Route::currentRouteName() == 'product-booking-id')
         <livewire:product.shop />
         @elseif($path == 'manage-product')
@@ -87,9 +89,9 @@ mount(function () {
         @elseif($path == 'manage-coupon')
         <livewire:manage-coupon :auth="$auth" />
         @elseif($path == 'coupon')
-        <livewire:coupon :auth="$auth"/>
+        <livewire:coupon :auth="$auth" />
+        @elseif($path == 'manage-booking')
+        <livewire:manage-booking :auth="$auth" />
         @endif
     </div>
-    @endif
-    <livewire:home.footer :routeName="$routeName" :auth="$auth" />
 </div>

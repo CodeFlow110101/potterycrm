@@ -21,9 +21,12 @@ class SmsController extends Controller
         return $message;
     }
 
-    public static function generateOtp()
+    public static function generateOtp($phoneno)
     {
-        $otp = Otp::create(['otp' => rand(100000, 999999)]);
+        $otp = Otp::create([
+            'otp' => rand(100000, 999999),
+            'phoneno' => $phoneno,
+        ]);
         return $otp;
     }
 

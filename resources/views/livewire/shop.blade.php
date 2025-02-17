@@ -43,27 +43,28 @@ mount(function ($auth) {
 });
 ?>
 
-<div class="w-3/4 mx-auto">
-    @if($role == 'administrator')
-    <div class="flex justify-end py-4">
-        <a href="/manage-product" wire:navigate class="bg-primary bg-opacity-90 hover:bg-opacity-100 text-white py-3 px-6 uppercase font-avenir-next-rounded-extra-light tracking-wider">Manage Product</a>
+<div class="w-11/12 mx-auto grow py-4 flex flex-col">
+    <div class="flex justify-between items-center py-4">
+        <div class="text-7xl font-avenir-next-bold text-white">Shop</div>
+        @if($role == 'administrator')
+        <a href="/manage-product" wire:navigate class="text-black py-3 uppercase px-6 bg-white rounded-lg tracking-tight">Manage Product</a>
+        @endif
     </div>
-    @endif
-    <div class="my-12">
-        <div class="grid grid-cols-5 gap-6">
+    <div class="grow relative" x-data="{ height: 0 }" x-resize="height = $height">
+        <div class="grid grid-cols-5 gap-6 text-white overflow-y-auto hidden-scrollbar absolute inset-x-0" :style="'height: ' + height + 'px;'">
             @foreach($products as $product)
-            <a href="/product/{{ $product->id . ($booking_id ? '/' . $booking_id : '')}}" wire:navigate class="flex flex-col gap-2 group">
+            <a href=" /product/{{ $product->id . ($booking_id ? '/' . $booking_id : '')}}" wire:navigate class="flex flex-col h-min backdrop-blur-xl border border-white p-4 rounded-lg gap-2">
+                <div class="font-avenir-next-rounded-bold text-center">
+                    {{$product->name}}
+                </div>
                 <div class="w-full aspect-square">
-                    <img class="size-full group-hover:opacity-85" src="{{asset('storage/'.$product->thumbnail_path)}}">
+                    <img class="size-full rounded-lg" src="{{asset('storage/'.$product->thumbnail_path)}}">
                 </div>
                 <div class="flex flex-col">
-                    <div class="font-avenir-next-rounded-light text-primary group-hover:underline underline-offset-4">
-                        {{$product->name}}
-                    </div>
-                    <div class="font-avenir-next-rounded-light text-primary group-hover:underline underline-offset-4">
+                    <div class="font-avenir-next-rounded-regular">
                         {{$product->description}}
                     </div>
-                    <div class="mt-auto text-primary font-extralight">${{$product->price}}</div>
+                    <div class="mt-auto">${{$product->price}}</div>
                 </div>
             </a>
             @endforeach

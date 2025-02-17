@@ -80,3 +80,59 @@ function toastr() {
     }
   };
 }
+
+function flatpickrDate(tomorrow) {
+  return {
+    tomorrow: tomorrow,
+    init() {
+      
+      const options = {
+        dateFormat: "Y-m-d",
+        inline: true,
+        appendTo: this.$refs.calendarContainer
+      };
+      
+      if(this.tomorrow){
+        const date = new Date(this.tomorrow);
+        date.setDate(date.getDate());
+        const formattedDate = date.toISOString().split("T")[0];
+        options.minDate = this.tomorrow;
+        options.defaultDate = formattedDate;
+      }
+      console.log(this.$refs.dateInput);
+
+      flatpickr(this.$refs.dateInput, options);
+    },
+    timeSlot(timeslot) {
+      const [start, end] = timeslot.split(" - ");
+      const formatTime = time => {
+        const [hours, minutes, seconds] = time.split(":");
+        return new Date(
+          0,
+          0,
+          0,
+          hours,
+          minutes,
+          seconds
+        ).toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true
+        });
+      };
+
+      return formatTime(start) + " - " + formatTime(end);
+    },
+    year(year) {
+      return year.split("-")[0];
+    },
+    date(value) {
+      const date = new Date(value);
+      return date.toLocaleDateString("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "2-digit"
+      });
+    }
+  };
+}

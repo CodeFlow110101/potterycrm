@@ -60,24 +60,15 @@ mount(function ($auth) {
 });
 ?>
 
-<div class="grow flex flex-col text-primary font-avenir-next-rounded-light">
+<div class="grow flex flex-col gap-8 py-8 text-white w-11/12 mx-auto">
+    <div class="text-7xl font-avenir-next-bold text-white">Coupons</div>
     <div class="grow flex flex-col w-full">
         <div class="font-medium text-black/60 h-full flex flex-col grow">
-            <div class="py-4 flex justify-end items-center">
-                <div class="relative">
-                    <input class="border outline-none py-2 pl-10 pr-4">
-                    <div class="absolute inset-y-0 flex items-center pl-2">
-                        <svg class="w-6 h-6 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
-                        </svg>
-                    </div>
-                </div>
-            </div>
             <div class="grow relative" x-data="{ height: 0 }" x-resize="height = $height">
-                <div class="overflow-y-auto absolute inset-x-0" :style="'height: ' + height + 'px;'">
-                    <table class="w-full overflow-y-hidden">
-                        <thead class="bg-white sticky top-0">
-                            <tr class="bg-primary/40">
+                <div class="overflow-y-auto absolute inset-x-0 border border-white rounded-lg" :style="'height: ' + height + 'px;'">
+                    <table class="w-full overflow-y-hidden backdrop-blur-xl">
+                        <thead class="bg-white text-black sticky top-0">
+                            <tr class="bg-white">
                                 <th class="font-normal py-2">
                                     #
                                 </th>
@@ -108,7 +99,7 @@ mount(function ($auth) {
                         @php
                         $iteration++;
                         @endphp
-                        <tr class="hover:bg-black/10 transition-colors duration-200 text-primary">
+                        <tr class="hover:bg-black/10 transition-colors duration-200 text-white">
                             <td class="text-center font-normal py-3">{{$iteration}}</td>
                             <td class="text-center font-normal py-3">{{$item->product->name}}</td>
                             <td class="text-center font-normal py-3">$ {{number_format($item->product->price, 2, '.', '')}}</td>

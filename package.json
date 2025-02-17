@@ -17,6 +17,7 @@
         "vite": "^5.0"
     },
     "dependencies": {
+        "@alpinejs/collapse": "^3.14.8",
         "@alpinejs/mask": "^3.14.3",
         "@alpinejs/resize": "^3.14.7"
     }
