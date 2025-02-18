@@ -42,7 +42,7 @@ $toggleTimeSlot = function ($slot) {
 };
 
 $verifyOtp = function () {
-
+    dd('Working');
     $this->validate();
     $this->resetValidation();
 
