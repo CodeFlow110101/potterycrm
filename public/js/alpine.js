@@ -81,25 +81,28 @@ function toastr() {
   };
 }
 
-function flatpickrDate(tomorrow) {
+function flatpickrDate(tomorrow, allowedDates) {
   return {
     tomorrow: tomorrow,
+    allowedDates: allowedDates,
     init() {
-      
       const options = {
         dateFormat: "Y-m-d",
         inline: true,
         appendTo: this.$refs.calendarContainer
       };
-      
-      if(this.tomorrow){
+
+      if (this.tomorrow) {
         const date = new Date(this.tomorrow);
         date.setDate(date.getDate());
         const formattedDate = date.toISOString().split("T")[0];
         options.minDate = this.tomorrow;
         options.defaultDate = formattedDate;
       }
-      console.log(this.$refs.dateInput);
+
+      if (this.allowedDates) {
+        options.enable = JSON.parse(this.allowedDates);
+      }
 
       flatpickr(this.$refs.dateInput, options);
     },
@@ -124,15 +127,19 @@ function flatpickrDate(tomorrow) {
       return formatTime(start) + " - " + formatTime(end);
     },
     year(year) {
-      return year.split("-")[0];
+      return year ? year.split("-")[0] : 'Select a date';
     },
     date(value) {
-      const date = new Date(value);
-      return date.toLocaleDateString("en-US", {
-        weekday: "short",
-        month: "short",
-        day: "2-digit"
-      });
+      if(value){
+        const date = new Date(value);
+        return date.toLocaleDateString("en-US", {
+          weekday: "short",
+          month: "short",
+          day: "2-digit"
+        });
+      }else{
+        return '';
+      }
     }
   };
 }

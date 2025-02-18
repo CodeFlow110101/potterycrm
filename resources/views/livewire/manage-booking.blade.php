@@ -82,7 +82,7 @@ mount(function () {
     <div class="text-7xl font-avenir-next-bold">Manage Bookings</div>
     <div class="grow relative" x-data="{ height: 0 }" x-resize="height = $height">
         <div class="overflow-y-auto hidden-scrollbar absolute inset-x-0 flex flex-col grow" :style="'height: ' + height + 'px;'">
-            <form x-data="flatpickrDate('{{ $tomorrow }}')" wire:submit="submit" class="backdrop-blur-xl border border-white rounded-lg p-4 flex flex-col grow gap-4">
+            <form x-data="flatpickrDate('{{ $tomorrow }}', null)" wire:submit="submit" class="backdrop-blur-xl border border-white rounded-lg p-4 flex flex-col grow gap-4">
                 <div class="grow flex gap-12">
                     <div class="flex-1">
                         <input type="text" x-ref="dateInput" wire:model.live="date" class="hidden" placeholder="Select a date">
