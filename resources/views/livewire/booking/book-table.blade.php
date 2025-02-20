@@ -58,7 +58,7 @@ $verifyOtp = function () {
     if (User::where('phoneno', $this->phoneno)->exists()) {
         $user = User::where('phoneno', $this->phoneno)->first();
 
-        if (User::whereHas('bookings.timeSlot.date', function ($query) {
+        if (User::where('id', $user->id)->whereHas('bookings.timeSlot.date', function ($query) {
             $query->where('date', $this->date);
         })->get()->isEmpty()) {
 

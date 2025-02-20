@@ -13,6 +13,21 @@ rules(['date' => 'required', 'people' => 'integer|min:1', 'selectedTimeSlots' =>
     'selectedTimeSlots' => 'time slot',
 ]);
 
+rules(fn() => [
+    'date' => ['required', function (string $attribute, mixed $value, Closure $fail) {
+        if (Date::where('date', $value)->has('timeSlots.bookings')->get()->isNotEmpty()) {
+            $fail("Bookings are already made for this {$attribute}, So cannot update data.");
+        }
+    },],
+    'people' => ['integer', 'min:1'],
+    'selectedTimeSlots' => ['required'],
+])->messages([
+    'selectedTimeSlots.required' => 'At least one :attribute is required.',
+])->attributes([
+    'selectedTimeSlots' => 'time slot',
+]);
+
+
 with(fn() => [
     'tomorrow' => Carbon::tomorrow()->format('Y-m-d'),
     'slots' => collect()->when($this->date, function () {
@@ -96,7 +111,7 @@ mount(function () {
                             <div wire:ignore x-ref="calendarContainer" class="flex justify-center"></div>
                         </div>
                         @error('date')
-                        <div wire:transition.in.scale.origin.top.duration.1000ms class="text-red-500 text-sm">
+                        <div wire:transition.in.scale.origin.top.duration.1000ms class="text-sm">
                             <span class="error">{{ $message }}</span>
                         </div>
                         @enderror
@@ -110,7 +125,7 @@ mount(function () {
                                 </div>
                             </div>
                             @error('people')
-                            <div wire:transition.in.scale.origin.top.duration.1000ms class="text-red-500 text-sm">
+                            <div wire:transition.in.scale.origin.top.duration.1000ms class="text-sm">
                                 <span class="error">{{ $message }}</span>
                             </div>
                             @enderror
@@ -125,7 +140,7 @@ mount(function () {
                                 </div>
                             </div>
                             @error('selectedTimeSlots')
-                            <div wire:transition.in.scale.origin.top.duration.1000ms class="text-red-500 text-sm">
+                            <div wire:transition.in.scale.origin.top.duration.1000ms class="text-sm">
                                 <span class="error">{{ $message }}</span>
                             </div>
                             @enderror
