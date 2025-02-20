@@ -58,7 +58,7 @@ $submit = function () {
                 <label class="font-avenir-next-rounded-semibold text-xl">Phone Number</label>
                 <input x-mask="9999999999" wire:model="phoneno" type="text" class="w-full bg-black/20 outline-none p-3 placeholder:text-white/80" placeholder="Phone No">
                 @error('phoneno')
-                <div wire:transition.in.scale.origin.top.duration.1000ms class="text-red-500 text-sm">
+                <div wire:transition.in.scale.origin.top.duration.1000ms class="text-white text-sm">
                     <span class="error">{{ $message }}</span>
                 </div>
                 @enderror
@@ -70,7 +70,7 @@ $submit = function () {
                 <label class="font-avenir-next-rounded-semibold text-xl">Confirmation Code</label>
                 <input @input="verifyOtp" x-mask="999999" wire:model="otp" class="@if(!$generatedOtp) pointer-events-none opacity-50 @endif w-full bg-black/20 outline-none p-3 placeholder:text-white/80" placeholder="Confirmation Code">
                 @error('otp')
-                <div wire:transition.in.scale.origin.top.duration.1000ms class="text-red-500 text-sm">
+                <div wire:transition.in.scale.origin.top.duration.1000ms class="text-white text-sm">
                     <span class="error">{{ $message }}</span>
                 </div>
                 @enderror

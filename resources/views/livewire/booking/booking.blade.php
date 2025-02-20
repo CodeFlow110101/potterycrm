@@ -11,7 +11,7 @@ use function Livewire\Volt\{mount, state, with, on};
 
 state(['modal' => false, 'booking', 'status', 'url', 'auth', 'role']);
 
-with(fn() => ['bookings' => Booking::with(['user', 'status'])
+with(fn() => ['bookings' => Booking::with(['user', 'status','timeSlot.date'])
     ->when($this->auth->role->name !== 'administrator', function ($query) {
         $query->where('user_id', $this->auth->id);
     })
@@ -36,7 +36,6 @@ $toggleModal = function ($booking = null) {
 $submit = function () {
     $this->modal = !$this->modal;
     $this->booking->update(['status_id' => $this->status]);
-    // BookingStatusUpdated::dispatch($this->status, $this->booking, $this->url);
 };
 
 mount(function ($url, $auth) {
@@ -46,7 +45,7 @@ mount(function ($url, $auth) {
 });
 ?>
 
-<div class="grow flex flex-col gap-8 py-8 text-white w-11/12 mx-auto">
+<div x-data="flatpickrDate(null,null)" class="grow flex flex-col gap-8 py-8 text-white w-11/12 mx-auto">
     <div class="flex justify-between items-center">
         <div class="text-7xl font-avenir-next-bold text-white">Bookings</div>
         @if($role == 'administrator')
@@ -82,6 +81,9 @@ mount(function ($url, $auth) {
                             Booking Date
                         </th>
                         <th class="font-normal py-2">
+                            Time Slot
+                        </th>
+                        <th class="font-normal py-2">
                             Status
                         </th>
                         @if($this->auth->role->name == 'administrator')
@@ -98,11 +100,12 @@ mount(function ($url, $auth) {
                         @if($this->auth->role->name == 'administrator')
                         <td class="text-center font-normal py-3">{{$booking->user->first_name}}</td>
                         <td class="text-center font-normal py-3">{{$booking->user->last_name}}</td>
-                        @endif
                         <td class="text-center font-normal py-3">{{$booking->user->phoneno}}</td>
+                        @endif
                         <td class="text-center font-normal py-3">{{$booking->no_of_people}}</td>
                         <td class="text-center font-normal py-3">{{Carbon::parse($booking->created_at)->format('d M Y')}}</td>
-                        <td class="text-center font-normal py-3">{{Carbon::parse($booking->booking_datetime)->format('d M Y')}}</td>
+                        <td class="text-center font-normal py-3">{{Carbon::parse($booking->timeSlot->date->date)->format('d M Y')}}</td>
+                        <td class="text-center font-normal py-3" x-text="timeSlot('{{ $booking->timeSlot->start_time . ' - ' . $booking->timeSlot->end_time }}')"></td>
                         <td class="text-center font-normal py-3 capitalize">{{$booking->status->name}}</td>
                         @if($this->auth->role->name == 'administrator')
                         <td class="text-center font-normal py-3 capitalize flex justify-center">

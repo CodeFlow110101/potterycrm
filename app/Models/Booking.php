@@ -2,17 +2,15 @@
 
 namespace App\Models;
 
+use App\Events\BookingStatusUpdated;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Observers\BookingObserver;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
-#[ObservedBy([BookingObserver::class])]
 class Booking extends Model
 {
     protected $table = 'bookings';
 
-    protected $fillable = ['user_id', 'status_id', 'no_of_people', 'booking_datetime', 'time_slot_id'];
+    protected $fillable = ['user_id', 'status_id', 'no_of_people', 'time_slot_id'];
 
     public function user(): BelongsTo
     {
@@ -23,4 +21,13 @@ class Booking extends Model
     {
         return $this->belongsTo(BookingStatus::class, 'status_id', 'id');
     }
+
+    public function timeSlot(): BelongsTo
+    {
+        return $this->belongsTo(TimeSlot::class, 'time_slot_id', 'id');
+    }
+
+    protected $dispatchesEvents = [
+        'saved' => BookingStatusUpdated::class,
+    ];
 }

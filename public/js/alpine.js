@@ -103,8 +103,9 @@ function flatpickrDate(tomorrow, allowedDates) {
       if (this.allowedDates) {
         options.enable = JSON.parse(this.allowedDates);
       }
-
-      flatpickr(this.$refs.dateInput, options);
+      if (this.tomorrow || this.allowedDates) {
+        flatpickr(this.$refs.dateInput, options);
+      }
     },
     timeSlot(timeslot) {
       const [start, end] = timeslot.split(" - ");
@@ -127,18 +128,18 @@ function flatpickrDate(tomorrow, allowedDates) {
       return formatTime(start) + " - " + formatTime(end);
     },
     year(year) {
-      return year ? year.split("-")[0] : 'Select a date';
+      return year ? year.split("-")[0] : "Select a date";
     },
     date(value) {
-      if(value){
+      if (value) {
         const date = new Date(value);
         return date.toLocaleDateString("en-US", {
           weekday: "short",
           month: "short",
           day: "2-digit"
         });
-      }else{
-        return '';
+      } else {
+        return "";
       }
     }
   };

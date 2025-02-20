@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TimeSlot extends Model
@@ -14,8 +15,8 @@ class TimeSlot extends Model
         return $this->belongsTo(Date::class, 'date_id', 'id');
     }
 
-    public function timeSlot()
+    public function bookings(): HasMany
     {
-        return $this->belongsTo(TimeSlot::class);
+        return $this->hasMany(Booking::class, 'time_slot_id', 'id');
     }
 }

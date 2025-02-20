@@ -24,7 +24,6 @@ class SendBookingStatusNotification
      */
     public function handle(BookingStatusUpdated $event): void
     {
-
         $coupon = null;
         if ($event->booking->status_id == 4) {
             $bookings =  $event->booking->user->bookings()->whereHas('status', function ($query) {

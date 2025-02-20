@@ -15,7 +15,7 @@ mount(function ($auth) {
 
 <div class="grow flex flex-col gap-8 py-8 text-white w-11/12 mx-auto">
     <div class="flex justify-between items-center">
-        <div class="text-7xl font-avenir-next-bold text-white">Orders</div>
+        <div class="text-7xl font-avenir-next-bold text-white">Coupon</div>
         @if($role == 'administrator')
         <a href="/manage-coupon" wire:navigate class="text-black py-3 uppercase px-6 font-normal bg-white rounded-lg tracking-tight w-min whitespace-nowrap">Manage Coupon</a>
         @endif
