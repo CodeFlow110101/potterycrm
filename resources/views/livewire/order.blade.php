@@ -61,7 +61,7 @@ mount(function ($auth) {
 ?>
 
 <div class="grow flex flex-col gap-8 py-8 text-white w-11/12 mx-auto">
-    <div class="text-7xl font-avenir-next-bold text-white">Coupons</div>
+    <div class="text-7xl font-avenir-next-bold text-white">Orders</div>
     <div class="grow flex flex-col w-full">
         <div class="font-medium text-black/60 h-full flex flex-col grow">
             <div class="grow relative" x-data="{ height: 0 }" x-resize="height = $height">
