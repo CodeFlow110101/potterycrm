@@ -38,10 +38,6 @@ with(fn() => [
     }),
 ]);
 
-$toggleTimeSlot = function ($slot) {
-    $this->selectedTimeSlot  = $slot;
-};
-
 $verifyOtp = function () {
     $this->validate();
     $this->resetValidation();
@@ -55,42 +51,28 @@ $verifyOtp = function () {
         return;
     }
 
-    if (User::where('phoneno', $this->phoneno)->exists()) {
-        $user = User::where('phoneno', $this->phoneno)->first();
+    $user = User::firstOrCreate(
+        ['phoneno' => $this->phoneno], // Condition to check existence
+        [
+            'email' => $this->email,
+            'first_name' => $this->first_name,
+            'last_name' => $this->last_name,
+            'role_id' => 2,
+            'password' => Hash::make('12345678'),
+        ]
+    );
 
-        if (User::where('id', $user->id)->whereHas('bookings.timeSlot.date', function ($query) {
-            $query->where('date', $this->date);
-        })->get()->isEmpty()) {
+    $isBookingCreated = $user->whereHas('bookings.timeSlot.date', function ($query) {
+        $query->where('date', $this->date);
+    })->doesntExist() && $user->bookings()->create([
+        'status_id' => $status_id,
+        'no_of_people' => $this->people,
+        'time_slot_id' => $timeslot->id,
+    ]);
 
-            $user->bookings()->create([
-                'status_id' => $status_id,
-                'no_of_people' => $this->people,
-                'time_slot_id' => $timeslot->id,
-            ]);
-        } else {
-            $this->currentForm = 'summary';
-            $this->summary = 'You already have a booking for this date';
-            return;
-        }
-    } else {
-        (User::Create(
-            [
-                'email' => $this->email,
-                'phoneno' => $this->phoneno,
-                'first_name' => $this->first_name,
-                'last_name' => $this->last_name,
-                'email' => $this->email,
-                'role_id' => 2,
-                'password' => Hash::make('12345678'),
-            ]
-        ))->bookings()->create([
-            'status_id' => $status_id,
-            'no_of_people' => $this->people,
-            'time_slot_id' => $timeslot->id,
-        ]);
-    }
+    $this->summary = $isBookingCreated ? 'Your booking has been successfully registered' : 'You already have a booking for this date';
+
     $this->currentForm = 'summary';
-    $this->summary = 'Your booking has been successfully registered';
 };
 
 $submitBooking = function () {

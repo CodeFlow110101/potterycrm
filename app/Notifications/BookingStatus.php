@@ -2,7 +2,7 @@
 
 namespace App\Notifications;
 
-use App\Models\Coupon;
+use App\Mail\BookingCapacityExceededMail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -31,12 +31,18 @@ class BookingStatus extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return $this->booking->status_id == 1 ? [] : [TwilioSmsChannel::class];
+        return $this->booking->status_id == 1  && $notifiable->role_id == 1 ? ['mail'] : [TwilioSmsChannel::class];
     }
 
     public function toTwilioSms($notifiable)
     {
         return Str::of(config('constants.booking-' . $this->booking->status_id . '-message'))->replace('{url}', str_replace("booking", "product", config('app.url')) . '/' . $this->booking->id);
+    }
+
+    public function toMail($notifiable)
+    {
+        return (new BookingCapacityExceededMail($this->booking, $notifiable))->to(env('TEST_TO_MAIL'));
+        // ->to($notifiable->email);
     }
 
     /**

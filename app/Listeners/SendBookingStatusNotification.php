@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Events\BookingStatusUpdated;
 use App\Models\Coupon;
+use App\Models\User;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\BookingStatus;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -48,6 +49,12 @@ class SendBookingStatusNotification
             }
         }
 
-        Notification::send($event->booking->user, new BookingStatus($event->booking));
+        // if($event->booking->status_id == 1){
+
+        // }
+
+        $admins = User::where('role_id', 1)->get();
+        $users = $admins->push($event->booking->user)->unique('id');
+        Notification::send($users, new BookingStatus($event->booking));
     }
 }

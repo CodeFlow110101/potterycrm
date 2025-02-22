@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\PaymentController;
+use App\Mail\BookingCapacityExceededMail;
 use Livewire\Volt\Volt;
 use Illuminate\Support\Facades\Route;
 
@@ -47,3 +48,9 @@ Route::post('/square-webhook', [PaymentController::class, 'webhook']);
 // OTP Page
 Volt::route('/otp', 'otp')->name('otp');
 Volt::route('/test', 'test')->name('test');
+Route::get('/preview-email', function () {
+    $booking = ['id' => 123, 'customer_name' => 'John Doe'];
+    $timeslot = '2025-02-22 7:00 PM';
+
+    return new BookingCapacityExceededMail($booking, $timeslot);
+});
