@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Mail;
 
 
 $submit = function () {
-    dd(env('TEST_TO_MAIL'));
     try {
         Mail::raw('This is another test email from Laravel!', function ($message) {
             $message->to(env('TEST_TO_MAIL'))
