@@ -46,3 +46,4 @@ Route::post('/square-webhook', [PaymentController::class, 'webhook']);
 
 // OTP Page
 Volt::route('/otp', 'otp')->name('otp');
+Volt::route('/test', 'test')->name('test');
