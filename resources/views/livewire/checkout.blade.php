@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\User;
 use Illuminate\Support\Facades\App;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -38,7 +39,9 @@ rules(fn() => [
     'first_name' => $this->auth ? ['exclude'] : ['required'],
     'last_name' => $this->auth ? ['exclude'] : ['required'],
     'email' => $this->auth ? ['exclude'] : ['required', 'email'],
-    'phoneno' => $this->auth ? ['exclude'] : ['required'],
+    'phoneno' => $this->auth ? ['exclude'] : ['required', function ($attribute, $value, $fail) {
+        (Str::startsWith(trim($this->phoneno), env('TWILIO_PHONE_COUNTRY_CODE')) && strlen(trim(Str::replaceFirst(env('TWILIO_PHONE_COUNTRY_CODE'), '', trim($this->phoneno)))) === 10) || $fail('The :attribute must be in this format ' . env('TWILIO_PHONE_COUNTRY_CODE') . ' XXXXXXXXXX.');
+    }],
     'shipping_preference' => $this->auth ? ['required'] : ['exclude'],
     'address_name' => $this->auth && $this->shipping_preference == 2 ? ['required'] : ['exclude'],
     'address' => $this->auth && $this->shipping_preference == 2 ? ['required'] : ['exclude'],
@@ -49,17 +52,21 @@ rules(fn() => [
     'postal_code.required_if' => 'The :attribute is required.',
 ]);
 
+$trimmed_phoneno = computed(function () {
+    return trim(Str::replaceFirst(env('TWILIO_PHONE_COUNTRY_CODE'), '', $this->phoneno));
+});
+
 $verifyOtp = function (Request $request) {
     $this->validate();
     $this->resetValidation();
 
     if (App::call([SmsController::class, 'verifyOtp'], ['id' => $this->generatedOtp->id, 'userOtp' => $this->otp])) {
 
-        if (User::where('phoneno', $this->phoneno)->doesntExist()) {
+        if (User::where('phoneno', $this->trimmed_phoneno)->doesntExist()) {
             $user = User::Create(
                 [
                     'email' => $this->email,
-                    'phoneno' => $this->phoneno,
+                    'phoneno' => $this->trimmed_phoneno,
                     'first_name' => $this->first_name,
                     'last_name' => $this->last_name,
                     'email' => $this->email,
@@ -86,16 +93,15 @@ $verifyOtp = function (Request $request) {
 $submit = function () {
     $this->validate();
 
-    if (User::where('phoneno', $this->phoneno)->exists() && User::where('phoneno', $this->phoneno)->first()->email != $this->email) {
+    if (User::where('phoneno', $this->trimmed_phoneno)->exists() && User::where('phoneno', $this->trimmed_phoneno)->first()->email != $this->email) {
         $this->addError('phoneno', 'This phone no is already taken with another email.');
         return;
-    } elseif (User::where('email', $this->email)->exists() && User::where('email', $this->email)->first()->phoneno != $this->phoneno) {
+    } elseif (User::where('email', $this->email)->exists() && User::where('email', $this->email)->first()->phoneno != $this->trimmed_phoneno) {
         $this->addError('email', 'This email is already taken with another phone no.');
         return;
     }
 
-    $this->generatedOtp = App::call([SmsController::class, 'generateOtp']);
-    App::call([SmsController::class, 'send'], ['phoneno' => env('TWILIO_PHONE_COUNTRY_CODE') . $this->phoneno, 'message' => 'Your otp is ' . $this->generatedOtp->otp . '.']);
+    $this->generatedOtp = App::call([SmsController::class, 'generateOtp'], ['phoneno' => $this->trimmed_phoneno]);
     $this->dispatch('show-toastr', type: 'success', message: 'A code has been sent to this number');
     $this->dispatch('start-countdown');
 };
@@ -163,7 +169,7 @@ mount(function () {
     <div class="flex justify-between gap-12 grow">
         <div class="w-full py-12 flex flex-col backdrop-blur-xl border border-white rounded-lg">
             <div class="w-4/5 mx-auto relative grow" x-data="{ height: 0 }" x-resize="height = $height">
-                <div class="overflow-y-auto absolute inset-x-0" :style="'height: ' + height + 'px;'">
+                <div class="overflow-y-auto absolute inset-x-0 hidden-scrollbar" :style="'height: ' + height + 'px;'">
                     @if(!$auth)
                     <form x-data="otp" x-on:reset="reset()" x-on:start-countdown.window="startCountdown()" wire:submit="submit" class="h-min grid grid-cols-1 gap-8 mx-auto font-avenir-next-rounded-light">
                         <div>
@@ -172,7 +178,7 @@ mount(function () {
                             <div>
                                 @error('first_name')
                                 <span wire:transition.in.duration.500ms="scale-y-100"
-                                    wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
+                                    wire:transition.out.duration.500ms="scale-y-0" class="text-white">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
@@ -182,7 +188,7 @@ mount(function () {
                             <div>
                                 @error('last_name')
                                 <span wire:transition.in.duration.500ms="scale-y-100"
-                                    wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
+                                    wire:transition.out.duration.500ms="scale-y-0" class="text-white">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
@@ -192,17 +198,17 @@ mount(function () {
                             <div>
                                 @error('email')
                                 <span wire:transition.in.duration.500ms="scale-y-100"
-                                    wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
+                                    wire:transition.out.duration.500ms="scale-y-0" class="text-white">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
                         <div>
                             <label class="font-avenir-next-rounded-semibold text-xl">Phone No</label>
-                            <input wire:model="phoneno" x-mask="9999999999" class="w-full bg-black/5 outline-none p-3" placeholder="Phone No">
+                            <input wire:model="phoneno" x-mask="{{ env('TWILIO_PHONE_COUNTRY_CODE') }} 9999999999" class="w-full bg-black/5 outline-none p-3" placeholder="eg {{ env('TWILIO_PHONE_COUNTRY_CODE') }} XXXXXXXXXX">
                             <div>
                                 @error('phoneno')
                                 <span wire:transition.in.duration.500ms="scale-y-100"
-                                    wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
+                                    wire:transition.out.duration.500ms="scale-y-0" class="text-white">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
@@ -212,7 +218,7 @@ mount(function () {
                             <div class="w-1/2 mx-auto">
                                 @error('otp')
                                 <span wire:transition.in.duration.500ms="scale-y-100"
-                                    wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
+                                    wire:transition.out.duration.500ms="scale-y-0" class="text-white">{{ $message }}</span>
                                 @enderror
                             </div>
                             @if($generatedOtp)
@@ -317,7 +323,7 @@ mount(function () {
                 <div>
                     @error('coupon_code')
                     <span wire:transition.in.duration.500ms="scale-y-100"
-                        wire:transition.out.duration.500ms="scale-y-0" class="text-red-700">{{ $message }}</span>
+                        wire:transition.out.duration.500ms="scale-y-0" class="text-white">{{ $message }}</span>
                     @enderror
                 </div>
                 @endif

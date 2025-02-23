@@ -141,7 +141,7 @@ mount(function ($url, $auth) {
                             <button type="button" @click="$wire.status = 1;" :class="[1 , 2 , 3 , 4].includes(Number($wire.status)) ? 'bg-white text-black border-white' : 'hover:bg-white hover:text-black hover:border-white transition-colors duration-200 border-2 border-black/30'" class="rounded-full size-full flex justify-center items-center">1</button>
                             <div :class="[1 , 2 , 3 , 4].includes(Number($wire.status)) ? 'text-white' : 'text-black/30'" class="absolute pointer-events-none -translate-y-full pb-2 font-semibold text-center"><span class="whitespace-nowrap">Open</div>
                         </div>
-                        <div class="w-full border h-1.5 bg-black/30 rounded-full relative overflow-hidden">
+                        <div class="w-full h-1.5 bg-black/30 relative overflow-hidden">
                             <div class="absolute inset-0">
                                 <div :class="[2 , 3 , 4].includes(Number($wire.status))  ? 'w-full' : 'w-0'" class="h-full bg-white transition-all duration-200"></div>
                             </div>
@@ -150,7 +150,7 @@ mount(function ($url, $auth) {
                             <button type="button" @click="$wire.status = 2;" :class="[2 , 3 , 4].includes(Number($wire.status)) ? 'bg-white text-black border-white' : 'hover:bg-white hover:text-black hover:border-white transition-colors duration-200 border-2 border-black/30'" class="rounded-full size-full flex justify-center items-center">2</button>
                             <div :class="[2 , 3 , 4].includes(Number($wire.status)) ? 'text-white' : 'text-black/30'" class="absolute pointer-events-none translate-y-full pt-2 font-semibold text-center"><span class="whitespace-nowrap">Confirm</div>
                         </div>
-                        <div class="w-full border h-1.5 bg-black/30 rounded-full relative overflow-hidden">
+                        <div class="w-full h-1.5 bg-black/30 relative overflow-hidden">
                             <div class="absolute inset-0">
                                 <div :class="[3 , 4].includes(Number($wire.status))  ? 'w-full' : 'w-0'" class="h-full bg-white transition-all duration-200"></div>
                             </div>
@@ -159,7 +159,7 @@ mount(function ($url, $auth) {
                             <button type="button" @click="$wire.status = 3;" :class="[3 , 4].includes(Number($wire.status)) ? 'bg-white text-black border-white' : 'hover:bg-white hover:text-black hover:border-white transition-colors duration-200 border-2 border-black/30'" class="rounded-full size-full flex justify-center items-center">3</button>
                             <div :class="[3 , 4].includes(Number($wire.status)) ? 'text-white' : 'text-black/30'" class="absolute pointer-events-none -translate-y-full pb-2 font-semibold text-center"><span class="whitespace-nowrap">Active</div>
                         </div>
-                        <div class="w-full border h-1.5 bg-black/30 rounded-full relative overflow-hidden">
+                        <div class="w-full h-1.5 bg-black/30 relative overflow-hidden">
                             <div class="absolute inset-0">
                                 <div :class="[4].includes(Number($wire.status))  ? 'w-full' : 'w-0'" class="h-full bg-white transition-all duration-200"></div>
                             </div>
@@ -195,6 +195,7 @@ mount(function ($url, $auth) {
                     <input disabled type="text" value="{{ $booking->status->name }}" id="floating_outlined" class="capitalize block px-2.5 pb-2.5 pt-4 w-full text-sm text-white bg-transparent rounded-lg border-2 border-white appearance-none focus:outline-none focus:ring-0 focus:border-primary peer" placeholder=" " />
                     <label for="floating_outlined" class="absolute text-sm rounded-full text-black duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-primary peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">Status</label>
                 </div>
+                <button @click="$wire.status = 5;" type="button" class="text-black py-3 uppercase bg-white rounded-lg tracking-tight">Cancel Booking</button>
             </div>
             <div class="flex justify-center">
                 <button type="submit" wire:loading.class="pointer-events-none" wire:dirty.class.remove="pointer-events-none opacity-50" class="text-black py-3 uppercase px-20 bg-white rounded-lg tracking-tight relative">

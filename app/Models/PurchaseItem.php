@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\OrderStatusUpdated;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -25,4 +26,8 @@ class PurchaseItem extends Model
     {
         return $this->belongsTo(PurchaseItemStatus::class, 'status_id', 'id');
     }
+
+    protected $dispatchesEvents = [
+        'saved' => OrderStatusUpdated::class,
+    ];
 }

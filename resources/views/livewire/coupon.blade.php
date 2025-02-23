@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\IssuedCoupon;
+use App\Models\User;
 
 use function Livewire\Volt\{state, mount, with};
 

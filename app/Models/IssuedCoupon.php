@@ -2,12 +2,10 @@
 
 namespace App\Models;
 
+use App\Events\CouponIssued;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Observers\IssuedCouponObserver;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
-#[ObservedBy([IssuedCouponObserver::class])]
 class IssuedCoupon extends Model
 {
     protected $table = "issued_coupons";
@@ -23,4 +21,8 @@ class IssuedCoupon extends Model
     {
         return $this->belongsTo(Coupon::class, 'coupon_id', 'id');
     }
+
+    protected $dispatchesEvents = [
+        'created' => CouponIssued::class,
+    ];
 }

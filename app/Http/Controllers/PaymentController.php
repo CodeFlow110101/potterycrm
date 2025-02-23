@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Events\TerminalPaymentEvent;
+use App\Models\IssuedCoupon;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
 use Square\SquareClient;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use App\Models\Product;
 use App\Models\Purchase;
 use Illuminate\Support\Facades\Log;
@@ -60,7 +63,7 @@ class PaymentController extends Controller
         }
 
         $line_items = $all_order_line_item;
-        $metadata = ['user_id' => (string)$user->id];
+        $metadata = ['user_id' => (string)$user->id, 'coupon_id' => (string)($coupon ? $coupon->id : 0)];
         $order = new \Square\Models\Order(env('SQUARE_POS_LOCATION_ID'));
         $order->setLineItems($line_items);
         $order->setMetadata($metadata);
@@ -126,7 +129,7 @@ class PaymentController extends Controller
         }
 
         $line_items = $all_order_line_item;
-        $metadata = ['user_id' => (string)$user->id];
+        $metadata = ['user_id' => (string)$user->id, 'coupon_id' => ($coupon ? $coupon->id : 0)];
         $order = new \Square\Models\Order(env('SQUARE_POS_LOCATION_ID'));
         $order->setLineItems($line_items);
         $order->setMetadata($metadata);
@@ -210,6 +213,15 @@ class PaymentController extends Controller
         ]);
 
         $purchase->items()->createMany($purchasedItems);
+
+        IssuedCoupon::where('is_used', false)->whereHas('user', function (Builder $query) use ($user) {
+            $query->where('id', $user->id);
+        })->whereHas('coupon', function (Builder $query) use ($orders) {
+            $query->where('id', $orders->getorder()->getmetadata()['coupon_id']);
+        })->first()?->update([
+            'is_used' => true,
+            'used_at' => Carbon::now()->format('Y-m-d H:i:s')
+        ]);
 
         Broadcast::on('purchase')->as('admin')->with($request)->sendNow();
         Broadcast::on('order')->as('admin')->with($request)->sendNow();
