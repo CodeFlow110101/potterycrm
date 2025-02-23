@@ -47,11 +47,14 @@ mount(function () {
 
 <div class="h-dvh @if($this->routeName == 'home') @endif flex flex-col bg-no-repeat bg-cover bg-black" style="background-image: url('{{ asset('/images/home.jpeg')}}');">
     <livewire:toastr />
-    <livewire:modal.modal />
     <livewire:home.header :routeName="$routeName" :cart="$cart" :path="$path" :auth="$auth" />
     <div class="grow flex flex-col">
         @if($path == '/')
         <livewire:home.home />
+        @elseif($path == 'classes')
+        <livewire:home.classes />
+        @elseif($path == 'private-groups')
+        <livewire:home.private-groups />
         @elseif($path == 'log-in')
         <livewire:log-in />
         @elseif($path == 'book-table')
@@ -74,8 +77,6 @@ mount(function () {
         <livewire:cart :cart="$cart" />
         @elseif($routeName == 'how-it-works')
         <livewire:how-it-works />
-
-        
         @elseif($path == 'booking')
         <livewire:booking.booking :url="$url" :auth="$auth" />
         @elseif($path == 'product' || Route::currentRouteName() == 'product-booking-id')

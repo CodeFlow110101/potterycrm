@@ -5,7 +5,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use function Livewire\Volt\{state, with, mount, rules, updated};
 
-state(['date', 'people' => 0, 'selectedTimeSlots' => [], 'startTime' => Carbon::createFromTime(9, 0, 0), 'endTime' => Carbon::createFromTime(22, 0, 0), 'interval' => 60]);
+state(['date', 'people' => 0, 'selectedTimeSlots' => [], 'startTime' => Carbon::createFromTime(0, 0, 0), 'endTime' => Carbon::createFromTime(23, 59, 59), 'interval' => 60]);
 
 rules(['date' => 'required', 'people' => 'integer|min:1', 'selectedTimeSlots' => 'required'])->messages([
     'selectedTimeSlots.required' => 'Atleast one :attribute is required.',

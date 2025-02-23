@@ -125,48 +125,48 @@ mount(function ($url, $auth) {
 
     @if($this->modal)
     <div class="fixed inset-0 flex justify-center items-center">
-        <form wire:submit="submit" class="w-1/2 bg-white shadow-lg border border-black/30 rounded-lg flex flex-col gap-3 p-4">
+        <form wire:submit="submit" class="w-1/2 backdrop-blur-3xl shadow-lg border border-white rounded-lg flex flex-col gap-3 p-4">
             <div class="flex justify-end items-center">
-                <button type="button" wire:click="toggleModal" class="hover:bg-black rounded-full group p-1">
-                    <svg class="w-5 h-5 text-black group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <button type="button" wire:click="toggleModal" class="hover:bg-black/30 rounded-full p-1">
+                    <svg class="w-5 h-5 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6" />
                     </svg>
                 </button>
             </div>
-            <div class="border border-black/30"></div>
+            <div class="border border-white"></div>
             <div class="grow">
-                <div class="border border-black/30 rounded-lg flex items-center justify-center p-2 py-24 h-full">
+                <div class="border border-white rounded-lg flex items-center justify-center p-2 py-24 h-full">
                     <div class="flex justify-stretch items-center w-11/12">
                         <div class="size-8 shrink-0 flex justify-center items-center relative">
-                            <button type="button" @click="$wire.status = 1;" :class="[1 , 2 , 3 , 4].includes(Number($wire.status)) ? 'bg-primary text-white border-primary' : 'hover:bg-primary hover:text-white hover:border-primary transition-colors duration-200 border-2 border-black/30'" class="rounded-full size-full flex justify-center items-center">1</button>
-                            <div :class="[1 , 2 , 3 , 4].includes(Number($wire.status)) ? 'text-primary' : 'text-black/30'" class="absolute pointer-events-none -translate-y-full pb-2 font-semibold text-center"><span class="whitespace-nowrap">Open</div>
+                            <button type="button" @click="$wire.status = 1;" :class="[1 , 2 , 3 , 4].includes(Number($wire.status)) ? 'bg-white text-black border-white' : 'hover:bg-white hover:text-black hover:border-white transition-colors duration-200 border-2 border-black/30'" class="rounded-full size-full flex justify-center items-center">1</button>
+                            <div :class="[1 , 2 , 3 , 4].includes(Number($wire.status)) ? 'text-white' : 'text-black/30'" class="absolute pointer-events-none -translate-y-full pb-2 font-semibold text-center"><span class="whitespace-nowrap">Open</div>
                         </div>
                         <div class="w-full border h-1.5 bg-black/30 rounded-full relative overflow-hidden">
                             <div class="absolute inset-0">
-                                <div :class="[2 , 3 , 4].includes(Number($wire.status))  ? 'w-full' : 'w-0'" class="h-full bg-primary transition-all duration-200"></div>
+                                <div :class="[2 , 3 , 4].includes(Number($wire.status))  ? 'w-full' : 'w-0'" class="h-full bg-white transition-all duration-200"></div>
                             </div>
                         </div>
                         <div class="size-8 shrink-0 flex justify-center items-center relative">
-                            <button type="button" @click="$wire.status = 2;" :class="[2 , 3 , 4].includes(Number($wire.status)) ? 'bg-primary text-white border-primary' : 'hover:bg-primary hover:text-white hover:border-primary transition-colors duration-200 border-2 border-black/30'" class="rounded-full size-full flex justify-center items-center">2</button>
-                            <div :class="[2 , 3 , 4].includes(Number($wire.status)) ? 'text-primary' : 'text-black/30'" class="absolute pointer-events-none translate-y-full pt-2 font-semibold text-center"><span class="whitespace-nowrap">Confirm</div>
+                            <button type="button" @click="$wire.status = 2;" :class="[2 , 3 , 4].includes(Number($wire.status)) ? 'bg-white text-black border-white' : 'hover:bg-white hover:text-black hover:border-white transition-colors duration-200 border-2 border-black/30'" class="rounded-full size-full flex justify-center items-center">2</button>
+                            <div :class="[2 , 3 , 4].includes(Number($wire.status)) ? 'text-white' : 'text-black/30'" class="absolute pointer-events-none translate-y-full pt-2 font-semibold text-center"><span class="whitespace-nowrap">Confirm</div>
                         </div>
                         <div class="w-full border h-1.5 bg-black/30 rounded-full relative overflow-hidden">
                             <div class="absolute inset-0">
-                                <div :class="[3 , 4].includes(Number($wire.status))  ? 'w-full' : 'w-0'" class="h-full bg-primary transition-all duration-200"></div>
+                                <div :class="[3 , 4].includes(Number($wire.status))  ? 'w-full' : 'w-0'" class="h-full bg-white transition-all duration-200"></div>
                             </div>
                         </div>
                         <div class="size-8 shrink-0 flex justify-center items-center relative">
-                            <button type="button" @click="$wire.status = 3;" :class="[3 , 4].includes(Number($wire.status)) ? 'bg-primary text-white border-primary' : 'hover:bg-primary hover:text-white hover:border-primary transition-colors duration-200 border-2 border-black/30'" class="rounded-full size-full flex justify-center items-center">3</button>
-                            <div :class="[3 , 4].includes(Number($wire.status)) ? 'text-primary' : 'text-black/30'" class="absolute pointer-events-none -translate-y-full pb-2 font-semibold text-center"><span class="whitespace-nowrap">Active</div>
+                            <button type="button" @click="$wire.status = 3;" :class="[3 , 4].includes(Number($wire.status)) ? 'bg-white text-black border-white' : 'hover:bg-white hover:text-black hover:border-white transition-colors duration-200 border-2 border-black/30'" class="rounded-full size-full flex justify-center items-center">3</button>
+                            <div :class="[3 , 4].includes(Number($wire.status)) ? 'text-white' : 'text-black/30'" class="absolute pointer-events-none -translate-y-full pb-2 font-semibold text-center"><span class="whitespace-nowrap">Active</div>
                         </div>
                         <div class="w-full border h-1.5 bg-black/30 rounded-full relative overflow-hidden">
                             <div class="absolute inset-0">
-                                <div :class="[4].includes(Number($wire.status))  ? 'w-full' : 'w-0'" class="h-full bg-primary transition-all duration-200"></div>
+                                <div :class="[4].includes(Number($wire.status))  ? 'w-full' : 'w-0'" class="h-full bg-white transition-all duration-200"></div>
                             </div>
                         </div>
                         <div class="size-8 shrink-0 flex justify-center items-center relative">
-                            <button type="button" @click="$wire.status = 4;" :class="[4].includes(Number($wire.status)) ? 'bg-primary text-white border-primary' : 'hover:bg-primary hover:text-white hover:border-primary transition-colors duration-200 border-2 border-black/30'" class="rounded-full size-full flex justify-center items-center">4</button>
-                            <div :class="[4].includes(Number($wire.status)) ? 'text-primary' : 'text-black/30'" class="absolute pointer-events-none translate-y-full pt-2 font-semibold text-center"><span class="whitespace-nowrap">Complete</div>
+                            <button type="button" @click="$wire.status = 4;" :class="[4].includes(Number($wire.status)) ? 'bg-white text-black border-white' : 'hover:bg-white hover:text-black hover:border-white transition-colors duration-200 border-2 border-black/30'" class="rounded-full size-full flex justify-center items-center">4</button>
+                            <div :class="[4].includes(Number($wire.status)) ? 'text-white' : 'text-black/30'" class="absolute pointer-events-none translate-y-full pt-2 font-semibold text-center"><span class="whitespace-nowrap">Complete</div>
                         </div>
                     </div>
                 </div>
@@ -176,28 +176,28 @@ mount(function ($url, $auth) {
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <div class="relative">
-                    <input disabled type="text" value="{{ $booking->user->first_name.' '.$booking->user->first_name }}" id="floating_outlined" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-2 border-primary appearance-none focus:outline-none focus:ring-0 focus:border-primary peer" placeholder=" " />
-                    <label for="floating_outlined" class="absolute text-sm text-primary duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-primary peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">Name</label>
+                    <input disabled type="text" value="{{ $booking->user->first_name.' '.$booking->user->first_name }}" id="floating_outlined" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-white bg-transparent rounded-lg border-2 border-white appearance-none focus:outline-none focus:ring-0 focus:border-primary peer" placeholder=" " />
+                    <label for="floating_outlined" class="absolute text-sm rounded-full text-black duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-primary peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">Name</label>
                 </div>
                 <div class="relative">
-                    <input disabled type="text" value="{{ $booking->user->phoneno }}" id="floating_outlined" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-2 border-primary appearance-none focus:outline-none focus:ring-0 focus:border-primary peer" placeholder=" " />
-                    <label for="floating_outlined" class="absolute text-sm text-primary duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-primary peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">Phone No</label>
+                    <input disabled type="text" value="{{ $booking->user->phoneno }}" id="floating_outlined" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-white bg-transparent rounded-lg border-2 border-white appearance-none focus:outline-none focus:ring-0 focus:border-primary peer" placeholder=" " />
+                    <label for="floating_outlined" class="absolute text-sm rounded-full text-black duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-primary peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">Phone No</label>
                 </div>
                 <div class="relative">
-                    <input disabled type="text" value="{{ $booking->no_of_people }}" id="floating_outlined" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-2 border-primary appearance-none focus:outline-none focus:ring-0 focus:border-primary peer" placeholder=" " />
-                    <label for="floating_outlined" class="absolute text-sm text-primary duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-primary peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">No of People</label>
+                    <input disabled type="text" value="{{ $booking->no_of_people }}" id="floating_outlined" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-white bg-transparent rounded-lg border-2 border-white appearance-none focus:outline-none focus:ring-0 focus:border-primary peer" placeholder=" " />
+                    <label for="floating_outlined" class="absolute text-sm rounded-full text-black duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-primary peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">No of People</label>
                 </div>
                 <div class="relative">
-                    <input disabled type="text" value="{{ $booking->booking_datetime }}" id="floating_outlined" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-2 border-primary appearance-none focus:outline-none focus:ring-0 focus:border-primary peer" placeholder=" " />
-                    <label for="floating_outlined" class="absolute text-sm text-primary duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-primary peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">Floating outlined</label>
+                    <input disabled type="text" value="{{ Carbon::parse($booking->timeSlot->date->date)->format('d M Y') }}" id="floating_outlined" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-white bg-transparent rounded-lg border-2 border-white appearance-none focus:outline-none focus:ring-0 focus:border-primary peer" placeholder=" " />
+                    <label for="floating_outlined" class="absolute text-sm rounded-full text-black duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-primary peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">Booking Data</label>
                 </div>
                 <div class="relative">
-                    <input disabled type="text" value="{{ $booking->status->name }}" id="floating_outlined" class="capitalize block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-2 border-primary appearance-none focus:outline-none focus:ring-0 focus:border-primary peer" placeholder=" " />
-                    <label for="floating_outlined" class="absolute text-sm text-primary duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-primary peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">Floating outlined</label>
+                    <input disabled type="text" value="{{ $booking->status->name }}" id="floating_outlined" class="capitalize block px-2.5 pb-2.5 pt-4 w-full text-sm text-white bg-transparent rounded-lg border-2 border-white appearance-none focus:outline-none focus:ring-0 focus:border-primary peer" placeholder=" " />
+                    <label for="floating_outlined" class="absolute text-sm rounded-full text-black duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-primary peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">Status</label>
                 </div>
             </div>
             <div class="flex justify-center">
-                <button type="submit" wire:loading.class="pointer-events-none" wire:dirty.class.remove="pointer-events-none opacity-50" class="pointer-events-none opacity-50 rounded-md text-center py-2 px-4 bg-primary mx-auto text-white text-xl relative">
+                <button type="submit" wire:loading.class="pointer-events-none" wire:dirty.class.remove="pointer-events-none opacity-50" class="text-black py-3 uppercase px-20 bg-white rounded-lg tracking-tight relative">
                     <div wire:loading.class="invisible" wire:target="submit">Submit</div>
                     <div wire:loading.class.remove="invisible" wire:target="submit" class="absolute inset-0 flex justify-center items-center invisible">
                         <svg aria-hidden="true" class="w-8 h-8 text-transparent animate-spin fill-white" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">

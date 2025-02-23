@@ -18,6 +18,8 @@ Volt::route('/product/{id}', 'landing-page')->name('product')->middleware('check
 Volt::route('/cart', 'landing-page')->name('cart');
 Volt::route('/checkout', 'landing-page')->name('checkout');
 Volt::route('/faq', 'landing-page')->name('faq');
+Volt::route('/classes', 'landing-page')->name('classes');
+Volt::route('/private-groups', 'landing-page')->name('private-groups');
 
 Route::middleware(['auth'])->group(function () {
     Route::middleware(['validate-booking'])->group(function () {
@@ -47,10 +49,3 @@ Route::post('/square-webhook', [PaymentController::class, 'webhook']);
 
 // OTP Page
 Volt::route('/otp', 'otp')->name('otp');
-Volt::route('/test', 'test')->name('test');
-Route::get('/preview-email', function () {
-    $booking = ['id' => 123, 'customer_name' => 'John Doe'];
-    $timeslot = '2025-02-22 7:00 PM';
-
-    return new BookingCapacityExceededMail($booking, $timeslot);
-});

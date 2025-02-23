@@ -8,10 +8,11 @@ use App\Models\User;
 use Illuminate\Support\Facades\App;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
-use function Livewire\Volt\{state, rules, with, mount};
+use function Livewire\Volt\{state, rules, with, computed};
 
 state(['first_name', 'last_name', 'email', 'phoneno', 'otp', 'generatedOtp', 'date' => null, 'people' => 1, 'selectedTimeSlot' => null, 'validateBooking', 'currentForm' => 'booking', 'summary']);
 
@@ -19,7 +20,9 @@ rules(fn() => [
     'first_name' => $this->currentForm == 'user' ?  ['required'] : ['exclude'],
     'last_name' => $this->currentForm == 'user' ?  ['required'] : ['exclude'],
     'email' => $this->currentForm == 'user' ?   ['required', 'email'] : ['exclude'],
-    'phoneno' => $this->currentForm == 'user' ?  ['required'] : ['exclude'],
+    'phoneno' => $this->currentForm == 'user' ?  ['required', function ($attribute, $value, $fail) {
+        (Str::startsWith(trim($this->phoneno), env('TWILIO_PHONE_COUNTRY_CODE')) && strlen(trim(Str::replaceFirst(env('TWILIO_PHONE_COUNTRY_CODE'), '', trim($this->phoneno)))) === 10) || $fail('The :attribute must be in this format ' . env('TWILIO_PHONE_COUNTRY_CODE') . ' XXXXXXXXXX.');
+    }] : ['exclude'],
     'people' => $this->currentForm == 'booking' ? ['integer', 'min:1'] : ['exclude'],
     'date' => $this->currentForm == 'booking' ? ['required'] : ['exclude'],
     'selectedTimeSlot' => $this->currentForm == 'booking' ? ['required'] : ['exclude'],
@@ -38,6 +41,10 @@ with(fn() => [
     }),
 ]);
 
+$trimmed_phoneno = computed(function () {
+    return trim(Str::replaceFirst(env('TWILIO_PHONE_COUNTRY_CODE'), '', $this->phoneno));
+});
+
 $verifyOtp = function () {
     $this->validate();
     $this->resetValidation();
@@ -52,7 +59,7 @@ $verifyOtp = function () {
     }
 
     $user = User::firstOrCreate(
-        ['phoneno' => $this->phoneno], // Condition to check existence
+        ['phoneno' => $this->trimmed_phoneno], // Condition to check existence
         [
             'email' => $this->email,
             'first_name' => $this->first_name,
@@ -83,15 +90,15 @@ $submitBooking = function () {
 $submit = function () {
     $this->validate();
 
-    if (User::where('phoneno', $this->phoneno)->exists() && User::where('phoneno', $this->phoneno)->first()->email != $this->email) {
+    if (User::where('phoneno', $this->trimmed_phoneno)->exists() && User::where('phoneno', $this->trimmed_phoneno)->first()->email != $this->email) {
         $this->addError('phoneno', 'This phone no is already taken with another email.');
         return;
-    } elseif (User::where('email', $this->email)->exists() && User::where('email', $this->email)->first()->phoneno != $this->phoneno) {
+    } elseif (User::where('email', $this->email)->exists() && User::where('email', $this->email)->first()->phoneno != $this->trimmed_phoneno) {
         $this->addError('email', 'This email is already taken with another phone no.');
         return;
     }
 
-    $this->generatedOtp = App::call([SmsController::class, 'generateOtp'], ['phoneno' => $this->phoneno]);
+    $this->generatedOtp = App::call([SmsController::class, 'generateOtp'], ['phoneno' => $this->trimmed_phoneno]);
     $this->dispatch('show-toastr', type: 'success', message: 'A code has been sent to this number');
     $this->dispatch('start-countdown');
 };
@@ -208,7 +215,7 @@ $submit = function () {
                         </div>
                         <div>
                             <label class="font-avenir-next-rounded-semibold text-xl">Phone Number</label>
-                            <input wire:model="phoneno" x-mask="9999999999" class="w-full bg-black/5 outline-none p-3" placeholder="Phone No">
+                            <input wire:model="phoneno" x-mask="{{ env('TWILIO_PHONE_COUNTRY_CODE') }} 9999999999" class="w-full bg-black/5 outline-none p-3" placeholder="eg {{ env('TWILIO_PHONE_COUNTRY_CODE') }} XXXXXXXXXX">
                             <div>
                                 @error('phoneno')
                                 <span wire:transition.in.duration.500ms="scale-y-100"

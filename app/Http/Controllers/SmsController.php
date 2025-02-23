@@ -8,19 +8,6 @@ use Twilio\Rest\Client;
 
 class SmsController extends Controller
 {
-    public static function send($phoneno, $message)
-    {
-        return;
-        $twilio = new Client(env('TWILIO_SID'), env('TWILIO_TOKEN'));
-
-        $message = $twilio->messages->create($phoneno, [
-            'from' => env('TWILIO_FROM'),
-            'body' => $message,
-        ]);
-
-        return $message;
-    }
-
     public static function generateOtp($phoneno)
     {
         $otp = Otp::create([

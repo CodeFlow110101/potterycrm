@@ -49,12 +49,13 @@ class SendBookingStatusNotification
             }
         }
 
-        // if($event->booking->status_id == 1){
+        $users = $event->booking->user;
 
-        // }
+        if ($event->booking->status_id == 1) {
+            $admins = User::where('role_id', 1)->get();
+            $users = $admins->push($event->booking->user)->unique('id');
+        }
 
-        $admins = User::where('role_id', 1)->get();
-        $users = $admins->push($event->booking->user)->unique('id');
         Notification::send($users, new BookingStatus($event->booking));
     }
 }

@@ -41,8 +41,7 @@ class BookingStatus extends Notification implements ShouldQueue
 
     public function toMail($notifiable)
     {
-        return (new BookingCapacityExceededMail($this->booking, $notifiable))->to(env('TEST_TO_MAIL'));
-        // ->to($notifiable->email);
+        return (new BookingCapacityExceededMail($this->booking, $notifiable))->to($notifiable->email);
     }
 
     /**
