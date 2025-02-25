@@ -63,9 +63,9 @@ $submit = function () {
 
 ?>
 
-<div x-data="otp" x-on:start-countdown.window="startCountdown()" class="grow flex flex-col gap-8 py-8 text-white w-11/12 mx-auto">
-    <div class="text-7xl font-avenir-next-bold text-white">Log In</div>
-    <form wire:submit="submit" class="w-3/5 mx-auto border border-white rounded-lg backdrop-blur-xl py-12 my-auto">
+<div x-data="otp" x-on:start-countdown.window="startCountdown()" class="grow flex flex-col gap-4 lg:gap-8 py-4 lg:py-8 text-white w-11/12 mx-auto">
+    <div class="text-5xl lg:text-7xl font-avenir-next-bold text-white">Log In</div>
+    <form wire:submit="submit" class="border border-white rounded-lg backdrop-blur-xl py-12 my-auto">
         <div class="w-4/5 mx-auto grid grid-cols-1 gap-8 font-avenir-next-rounded-light">
             <div>
                 <label class="font-avenir-next-rounded-semibold text-xl">Phone Number</label>

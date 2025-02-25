@@ -71,10 +71,10 @@ $submit = function () {
 };
 ?>
 
-<div class="grow flex flex-col gap-8 py-8 text-white w-11/12 mx-auto">
-    <div class="text-7xl font-avenir-next-bold">Contact Us</div>
+<div class="grow flex flex-col gap-4 lg:gap-8 py-4 lg:py-8 text-white w-11/12 mx-auto">
+    <div class="text-5xl lg:text-7xl font-avenir-next-bold">Contact Us</div>
     <div class="grow relative" x-data="{ height: 0 }" x-resize="height = $height">
-        <div class="overflow-y-auto hidden-scrollbar absolute inset-x-0 backdrop-blur-xl flex border border-white rounded-lg w-3/5 mx-auto" :style="'height: ' + height + 'px;'">
+        <div class="overflow-y-auto hidden-scrollbar absolute inset-x-0 backdrop-blur-xl flex border border-white rounded-lg" :style="'height: ' + height + 'px;'">
             @if($form == 'contact')
             <form x-data="otp" x-on:start-countdown.window="startCountdown()" wire:submit="submit" class="w-full">
                 <div class="w-4/5 mx-auto grid grid-cols-1 gap-8 font-avenir-next-rounded-light py-12">
@@ -144,7 +144,7 @@ $submit = function () {
                 </div>
             </form>
             @else
-            <div class="m-auto">Thank you for contacting us we will get back to you shortly.</div>
+            <div class="m-auto w-4/5 mx-auto">Thank you for contacting us we will get back to you shortly.</div>
             @endif
         </div>
     </div>

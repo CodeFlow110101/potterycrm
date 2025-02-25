@@ -30,8 +30,8 @@ mount(function () {
 });
 ?>
 
-<div class="grow flex flex-col gap-8 py-8 text-white w-11/12 mx-auto">
-    <div class="text-7xl font-avenir-next-bold">Cart</div>
+<div class="grow flex flex-col gap-4 lg:gap-8 py-4 lg:py-8 text-white w-11/12 mx-auto">
+    <div class="text-5xl lg:text-7xl font-avenir-next-bold">Cart</div>
     <div class="grow backdrop-blur-xl border border-white rounded-lg py-8 flex flex-col gap-6">
         <div class="flex flex-col gap-4 text-center my-auto">
             @if(count($cart) == 0)
@@ -50,13 +50,13 @@ mount(function () {
         </div>
         @if(count($cart) != 0)
         <div class="grow relative" x-data="{ height: 0 }" x-resize="height = $height">
-            <div class="absolute inset-x-0 overflow-y-auto" :style="'height: ' + height + 'px;'">
+            <div class="absolute inset-x-0 overflow-y-auto overflow-x-auto hidden-scrollbar" :style="'height: ' + height + 'px;'">
                 <table class="w-11/12 mx-auto table-auto text-center">
                     <thead>
                         <tr class="border-b">
                             <th class="text-left py-6">Product</th>
-                            <th class="py-6">Price</th>
-                            <th class="py-6">Quantity</th>
+                            <th class="py-6 max-sm:hidden">Price</th>
+                            <th class="py-6 max-sm:hidden">Quantity</th>
                             <th class="py-6">Total</th>
                         </tr>
                     </thead>
@@ -64,9 +64,15 @@ mount(function () {
                         @foreach($products as $product)
                         <tr class="border-b">
                             <td class="flex justify-start py-12">
-                                <div class="flex justify-start gap-4">
+                                <div class="flex max-sm:flex-col justify-start gap-4">
                                     <div>
                                         <img class="w-36 aspect-square" src="{{asset('storage/'.$product->thumbnail_path)}}">
+                                    </div>
+                                    <div class="flex items-center gap-4 sm:hidden">
+                                        <div class="text-xl">$ {{ $product->price }}</div>
+                                        <div>
+                                            <input x-mask="99" @input="if ($event.target.value.trim() === '' || $event.target.value.trim() === '00' || $event.target.value.trim() === '0') $event.target.value = 0" wire:change="updateCart({{ $product->id }} , $event.target.value)" value="{{ $cart[$product->id] }}" class="h-10 w-14 text-center border text-black outline-none">
+                                        </div>
                                     </div>
                                     <div class="flex flex-col gap-2 text-left text-xl">
                                         <div>{{ $product->name }}</div>
@@ -75,8 +81,8 @@ mount(function () {
                                     </div>
                                 </div>
                             </td>
-                            <td class="py-12">$ {{ $product->price }}</td>
-                            <td class="py-12">
+                            <td class="py-12 max-sm:hidden">$ {{ $product->price }}</td>
+                            <td class="py-12 max-sm:hidden">
                                 <input x-mask="99" @input="if ($event.target.value.trim() === '' || $event.target.value.trim() === '00' || $event.target.value.trim() === '0') $event.target.value = 0" wire:change="updateCart({{ $product->id }} , $event.target.value)" value="{{ $cart[$product->id] }}" class="h-14 w-20 text-center border text-black outline-none">
                             </td>
                             <td>$ {{ $product->price * $cart[$product->id]}}</td>

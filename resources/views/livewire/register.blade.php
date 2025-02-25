@@ -96,10 +96,10 @@ $submit = function () {
 
 ?>
 
-<div class="grow flex flex-col gap-8 py-8 text-white w-11/12 mx-auto">
-    <div class="text-7xl font-avenir-next-bold">Register</div>
+<div class="grow flex flex-col gap-4 lg:gap-8 py-4 lg:py-8 text-white w-11/12 mx-auto">
+    <div class="text-5xl lg:text-7xl font-avenir-next-bold">Register</div>
     <div class="grow relative" x-data="{ height: 0 }" x-resize="height = $height">
-        <div class="overflow-y-auto hidden-scrollbar absolute inset-x-0 w-3/5 flex mx-auto backdrop-blur-xl border border-white rounded-lg" :style="'height: ' + height + 'px;'">
+        <div class="overflow-y-auto hidden-scrollbar absolute inset-x-0 flex mx-auto backdrop-blur-xl border border-white rounded-lg" :style="'height: ' + height + 'px;'">
             @if($form == 'register')
             <form x-data="otp" x-on:reset="reset()" x-on:start-countdown.window="startCountdown()" wire:submit="submit" class="w-full">
                 <div class="h-min grid grid-cols-1 gap-8 w-4/5 mx-auto font-avenir-next-rounded-light py-12">

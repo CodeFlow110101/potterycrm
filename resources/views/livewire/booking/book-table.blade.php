@@ -104,22 +104,22 @@ $submit = function () {
 };
 ?>
 
-<div class="grow flex flex-col gap-8 py-8 text-white w-11/12 mx-auto">
-    <div class="text-7xl font-avenir-next-bold text-white">Book a Table</div>
+<div class="grow flex flex-col gap-4 lg:gap-8 py-4 lg:py-8 text-white w-11/12 mx-auto">
+    <div class="text-5xl lg:text-7xl font-avenir-next-bold text-white">Book a Table</div>
     <div class="grow relative" x-data="{ height: 0 }" x-resize="height = $height">
         <div class="overflow-y-auto hidden-scrollbar absolute inset-x-0 flex flex-col grow backdrop-blur-xl border border-white rounded-lg p-6 gap-6" :style="'height: ' + height + 'px;'">
-            <div class="flex items-center gap-2 text-sm w-3/4 mx-auto">
-                <div class="flex gap-2 items-center">
+            <div class="flex items-center max-sm:justify-center gap-2 text-sm w-3/4 mx-auto">
+                <div :class="$wire.currentForm != 'booking' && 'max-sm:hidden'" class="flex gap-2 items-center">
                     <div class="@if($currentForm == 'booking') bg-white @else bg-white/50 @endif text-black rounded-full size-6 flex justify-center items-center">1</div>
                     <div>Booking</div>
                 </div>
-                <div class="grow border-2 border-white rounded-full"></div>
-                <div class="flex gap-2 items-center">
+                <div class="grow border-2 border-white rounded-full max-sm:hidden"></div>
+                <div :class="$wire.currentForm != 'user' && 'max-sm:hidden'" class="flex gap-2 items-center ">
                     <div class="@if($currentForm == 'user') bg-white @else bg-white/50 @endif text-black rounded-full size-6 flex justify-center items-centeruser">2</div>
                     <div>Your Details</div>
                 </div>
-                <div class="grow border-2 border-white rounded-full"></div>
-                <div class="flex gap-2 items-center">
+                <div class="grow border-2 border-white rounded-full max-sm:hidden"></div>
+                <div :class="$wire.currentForm != 'summary' && 'max-sm:hidden'" class="flex gap-2 items-center">
                     <div class="@if($currentForm == 'summary') bg-white @else bg-white/50 @endif text-black rounded-full size-6 flex justify-center items-centeruser">3</div>
                     <div>Summary</div>
                 </div>
@@ -127,12 +127,12 @@ $submit = function () {
             @if($currentForm == 'booking')
             <div id="booking">
                 <form x-on:reset="reset()" wire:submit="submitBooking" class="grow flex flex-col gap-8">
-                    <div x-data="flatpickrDate(null,'{{$allowedDates}}')" class="grow flex gap-12">
+                    <div x-data="flatpickrDate(null,'{{$allowedDates}}')" class="grow flex max-sm:flex-col gap-12">
                         <div class="flex-1">
                             <input type="text" x-ref="dateInput" wire:model.live="date" class="hidden" placeholder="Select a date">
-                            <div class=" w-full flex justify-end">
+                            <div class="w-full flex justify-center overflow-hidden rounded-lg sm:justify-end">
                                 <div class="border-y border-l w-full rounded-l-lg flex">
-                                    <div class="mx-auto w-4/5 h-4/5 my-auto">
+                                    <div class="mx-auto w-4/5 h-4/5 my-auto max-sm:hidden">
                                         <div class="text-2xl" x-text="year('{{$date}}')"></div>
                                         <div x-text="date('{{$date}}')"></div>
                                     </div>

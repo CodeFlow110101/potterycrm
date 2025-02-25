@@ -164,10 +164,22 @@ mount(function () {
 });
 ?>
 
-<div class="grow flex flex-col gap-8 py-8 text-white w-11/12 mx-auto">
-    <div class="text-7xl font-avenir-next-bold text-white">Cart</div>
-    <div class="flex justify-between gap-12 grow">
-        <div class="w-full py-12 flex flex-col backdrop-blur-xl border border-white rounded-lg">
+<div class="grow flex flex-col gap-4 lg:gap-8 py-4 lg:py-8 text-white w-11/12 mx-auto">
+    <div class="flex justify-between items-center">
+        <div class="text-5xl lg:text-7xl font-avenir-next-bold">Checkout</div>
+        <a href="cart" wire:navigate class="text-black py-2 sm:py-3 uppercase px-4 sm:px-6 bg-white rounded-lg tracking-tight flex items-center gap-2 max-sm:text-sm sm:gap-4">
+            <div>
+                <svg class="w-6 h-6 text-black" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12l4-4m-4 4 4 4" />
+                </svg>
+            </div>
+            <div>
+                cart
+            </div>
+        </a>
+    </div>
+    <div class="flex max-sm:flex-col sm:justify-between gap-4 sm:gap-12 grow">
+        <div class="w-full py-12 grow flex flex-col backdrop-blur-xl border border-white rounded-lg">
             <div class="w-4/5 mx-auto relative grow" x-data="{ height: 0 }" x-resize="height = $height">
                 <div class="overflow-y-auto absolute inset-x-0 hidden-scrollbar" :style="'height: ' + height + 'px;'">
                     @if(!$auth)
@@ -228,7 +240,7 @@ mount(function () {
                         <button type="submit" :class="interval && 'pointer-events-none opacity-50'" class="text-black py-3 uppercase px-20 bg-white rounded-lg tracking-tight w-min mx-auto whitespace-nowrap">{{$generatedOtp ? 'Resend Code' : 'Send Code'}}</button>
                     </form>
                     @else
-                    <form wire:submit="submitAndPay" class="h-min grid grid-cols-1 gap-8 w-4/5 mx-auto py-12 font-avenir-next-rounded-light">
+                    <form wire:submit="submitAndPay" class="h-min grid grid-cols-1 gap-8 sm:w-4/5 mx-auto sm:py-12 font-avenir-next-rounded-light">
                         <div class="font-avenir-next-rounded-regular text-lg">Shipping Preference</div>
                         <div class="flex justify-evenly">
                             <div :class="$wire.shipping_preference == 1 && 'border-blue-500'" @click="$wire.shipping_preference = 1;" class="cursor-pointer flex items-center gap-4 border rounded-md py-2 px-4">
@@ -293,7 +305,7 @@ mount(function () {
             </div>
         </div>
         <div class="flex flex-col gap-2 p-12 font-avenir-next-rounded-semibold w-full backdrop-blur-xl border border-white rounded-lg">
-            <div class="grow relative" x-data="{ height: 0 }" x-resize="height = $height">
+            <div class="max-sm:hidden grow relative" x-data="{ height: 0 }" x-resize="height = $height">
                 <div class="overflow-y-auto absolute inset-x-0 py-8 flex flex-col gap-12" :style="'height: ' + height + 'px;'">
                     @foreach($products as $product)
                     <div class="flex">

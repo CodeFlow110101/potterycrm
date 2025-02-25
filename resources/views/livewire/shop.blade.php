@@ -43,15 +43,15 @@ mount(function ($auth) {
 });
 ?>
 
-<div class="w-11/12 mx-auto grow py-4 flex flex-col">
-    <div class="flex justify-between items-center py-4">
-        <div class="text-7xl font-avenir-next-bold text-white">Shop</div>
+<div class="w-11/12 mx-auto grow gap-4 lg:gap-8 py-4 lg:py-8 flex flex-col">
+    <div class="flex justify-between items-center">
+        <div class="text-5xl lg:text-7xl font-avenir-next-bold text-white">Shop</div>
         @if($role == 'administrator')
         <a href="/manage-product" wire:navigate class="text-black py-3 uppercase px-6 bg-white rounded-lg tracking-tight">Manage Product</a>
         @endif
     </div>
     <div class="grow relative" x-data="{ height: 0 }" x-resize="height = $height">
-        <div class="grid grid-cols-5 gap-6 text-white overflow-y-auto hidden-scrollbar absolute inset-x-0" :style="'height: ' + height + 'px;'">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 text-white overflow-y-auto hidden-scrollbar absolute inset-x-0" :style="'height: ' + height + 'px;'">
             @foreach($products as $product)
             <a href=" /product/{{ $product->id . ($booking_id ? '/' . $booking_id : '')}}" wire:navigate class="flex flex-col h-min backdrop-blur-xl border border-white p-4 rounded-lg gap-2">
                 <div class="font-avenir-next-rounded-bold text-center">
