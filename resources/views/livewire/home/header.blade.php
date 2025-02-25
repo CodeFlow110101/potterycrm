@@ -31,7 +31,7 @@ mount(function ($cart, $path, $auth, $routeName) {
 
 <div x-data="{ show: false }" :class="show && 'max-lg:backdrop-blur-xl max-lg:fixed max-lg:inset-0 max-lg:z-50 relative'" x-resize="height = $height">
     <nav :class="show && 'w-11/12 mx-auto'" class="flex justify-between items-center max-lg:items-start max-lg:w-11/12 pt-5 mx-auto uppercase font-avenir-next-bold text-white">
-        <div class="flex-1 flex max-lg:flex-col gap-4">
+        <div class="flex-1 flex max-lg:flex-col gap-5">
             <a :class="show && 'text-center'" href="/" wire:navigate class="text-3xl lg:mx-14 tracking-widest">ICONA</a>
             <div :class="show ? 'flex-col gap-4' : 'max-lg:hidden'" class="flex justify-evenly items-center w-full *:underline-offset-4">
                 @if(!$auth)
@@ -84,7 +84,7 @@ mount(function ($cart, $path, $auth, $routeName) {
             </div>
         </div>
         <div @click="show = !show" class="lg:hidden">
-            <svg x-show="!show" class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <svg x-show="!show" class="w-8 h-8 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                 <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M5 7h14M5 12h14M5 17h14" />
             </svg>
         </div>
