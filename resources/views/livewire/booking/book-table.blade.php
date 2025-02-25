@@ -131,7 +131,7 @@ $submit = function () {
                         <div class="flex-1">
                             <input type="text" x-ref="dateInput" wire:model.live="date" class="hidden" placeholder="Select a date">
                             <div class="w-full flex justify-center overflow-hidden rounded-lg sm:justify-end">
-                                <div class="border-y border-l w-full rounded-l-lg flex">
+                                <div class="max-sm:border-y max-sm:border-l w-full rounded-l-lg flex">
                                     <div class="mx-auto w-4/5 h-4/5 my-auto max-sm:hidden">
                                         <div class="text-2xl" x-text="year('{{$date}}')"></div>
                                         <div x-text="date('{{$date}}')"></div>
