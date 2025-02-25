@@ -29,7 +29,7 @@ mount(function ($cart, $path, $auth, $routeName) {
 });
 ?>
 
-<div x-data="{ show: false }" :class="show && 'max-lg:backdrop-blur-xl max-lg:fixed max-lg:inset-0 max-lg:z-50 relative'" x-resize="height = $height">
+<div x-data="{ show: false }" :class="show && 'max-lg:backdrop-blur-xl max-lg:fixed max-lg:inset-0 max-lg:z-50 relative bg-black/40'" x-resize="height = $height">
     <nav :class="show && 'w-11/12 mx-auto'" class="flex justify-between items-center max-lg:items-start max-lg:w-11/12 pt-5 mx-auto uppercase font-avenir-next-bold text-white">
         <div class="flex-1 flex max-lg:flex-col gap-5">
             <a :class="show && 'text-center'" href="/" wire:navigate class="text-3xl lg:mx-14 tracking-widest">ICONA</a>
