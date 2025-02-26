@@ -50,7 +50,6 @@ $submit = function () {
     $this->validate();
     $this->selected_item->update(['status_id' => $this->item_status, 'item_id' => $this->item_id]);
     $this->selected_item->refresh();
-    // App::call([SmsController::class, 'send'], ['phoneno' => env('TWILIO_PHONE_COUNTRY_CODE') . $this->selected_item->purchase->user->phoneno, 'message' => 'Your purchased item with item id ' . $this->selected_item->item_id . ' is ' . $this->selected_item->status->name . '.']);
     $this->toggleModal();
 };
 
@@ -62,32 +61,32 @@ mount(function ($auth) {
 });
 ?>
 
-<div class="grow flex flex-col gap-8 py-8 text-white w-11/12 mx-auto">
-    <div class="text-7xl font-avenir-next-bold text-white">Orders</div>
-    <div class="grow flex flex-col w-full">
+<div class="grow flex flex-col gap-4 lg:gap-8 py-4 lg:py-8 text-white w-11/12 mx-auto">
+    <div class="text-5xl lg:text-7xl font-avenir-next-bold text-white">Orders</div>
+    <div class="grow flex flex-col w-full whitespace-nowrap">
         <div class="font-medium text-black/60 h-full flex flex-col grow">
             <div class="grow relative" x-data="{ height: 0 }" x-resize="height = $height">
-                <div class="overflow-y-auto absolute inset-x-0 border border-white rounded-lg" :style="'height: ' + height + 'px;'">
+                <div class="overflow-auto hidden-scrollbar absolute inset-x-0 border border-white rounded-lg" :style="'height: ' + height + 'px;'">
                     <table class="w-full overflow-y-hidden backdrop-blur-xl">
                         <thead class="bg-white text-black sticky top-0">
-                            <tr class="bg-white">
-                                <th class="font-normal py-2">
+                            <tr class="bg-white *:p-3">
+                                <th class="font-normal">
                                     #
                                 </th>
-                                <th class="font-normal py-2">
+                                <th class="font-normal">
                                     Name
                                 </th>
-                                <th class="font-normal py-2">
+                                <th class="font-normal">
                                     Price
                                 </th>
-                                <th class="font-normal py-2">
+                                <th class="font-normal">
                                     Item Id
                                 </th>
-                                <th class="font-normal py-2">
+                                <th class="font-normal">
                                     Item Status
                                 </th>
                                 @if($this->auth->role->name == 'administrator')
-                                <th class="font-normal py-2">
+                                <th class="font-normal max-sm:hidden">
                                     Status
                                 </th>
                                 @endif
@@ -101,14 +100,14 @@ mount(function ($auth) {
                         @php
                         $iteration++;
                         @endphp
-                        <tr class="hover:bg-black/10 transition-colors duration-200 text-white">
-                            <td class="text-center font-normal py-3">{{$iteration}}</td>
-                            <td class="text-center font-normal py-3">{{$item->product->name}}</td>
-                            <td class="text-center font-normal py-3">$ {{number_format($item->product->price, 2, '.', '')}}</td>
-                            <td class="text-center font-normal py-3">{{$item->item_id}}</td>
-                            <td class="text-center font-normal py-3 capitalize">{{$item->status ? $item->status->name : ''}}</td>
+                        <tr class="hover:bg-black/10 transition-colors duration-200 text-white *:p-3">
+                            <td class="text-center font-normal">{{$iteration}}</td>
+                            <td class="text-center font-normal">{{$item->product->name}}</td>
+                            <td class="text-center font-normal">$ {{number_format($item->product->price, 2, '.', '')}}</td>
+                            <td class="text-center font-normal">{{$item->item_id}}</td>
+                            <td class="text-center font-normal capitalize">{{$item->status ? $item->status->name : ''}}</td>
                             @if($this->auth->role->name == 'administrator')
-                            <td class="text-center font-normal py-3 flex justify-center items-center gap-2">
+                            <td class="text-center font-normal flex justify-center items-center gap-2 max-sm:hidden">
                                 <button wire:click="toggleModal({{$item->id}})">
                                     <svg class="w-6 h-6 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
                                         <path fill-rule="evenodd" d="M11.32 6.176H5c-1.105 0-2 .949-2 2.118v10.588C3 20.052 3.895 21 5 21h11c1.105 0 2-.948 2-2.118v-7.75l-3.914 4.144A2.46 2.46 0 0 1 12.81 16l-2.681.568c-1.75.37-3.292-1.263-2.942-3.115l.536-2.839c.097-.512.335-.983.684-1.352l2.914-3.086Z" clip-rule="evenodd" />

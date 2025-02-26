@@ -43,7 +43,7 @@ mount(function ($cart, $path, $auth, $routeName) {
                 @if($auth)
                 <a href="booking" wire:current="font-bold text-white" wire:navigate :class="$wire.routeName === $el.getAttribute('href') && 'underline'">Booking</a>
                 @if(Gate::check('admin'))
-                <a href="/register" wire:navigate :class="$wire.routeName === $el.getAttribute('href') && 'underline'">Register</a>
+                <a href="register" wire:navigate :class="$wire.routeName === $el.getAttribute('href') && 'underline'">Register</a>
                 @endif
                 <a href="purchase" wire:navigate :class="$wire.routeName === $el.getAttribute('href') && 'underline'">Purchase</a>
                 <a href="order" wire:navigate :class="$wire.routeName === $el.getAttribute('href') && 'underline'">Order</a>

@@ -45,49 +45,49 @@ mount(function ($url, $auth) {
 });
 ?>
 
-<div x-data="flatpickrDate(null,null)" class="grow flex flex-col gap-8 py-8 text-white w-11/12 mx-auto">
+<div x-data="flatpickrDate(null,null)" class="grow flex flex-col gap-4 lg:gap-8 py-4 lg:py-8 text-white w-11/12 mx-auto">
     <div class="flex justify-between items-center">
-        <div class="text-7xl font-avenir-next-bold text-white">Bookings</div>
+        <div class="text-5xl lg:text-7xl font-avenir-next-bold text-white">Bookings</div>
         @if($role == 'administrator')
-        <a href="/manage-booking" wire:navigate class="text-black py-3 uppercase px-6 font-normal bg-white rounded-lg tracking-tight w-min whitespace-nowrap">Manage Booking</a>
+        <a href="/manage-booking" wire:navigate class="text-black max-sm:hidden py-3 uppercase px-6 font-normal bg-white rounded-lg tracking-tight w-min whitespace-nowrap">Manage Booking</a>
         @endif
     </div>
-    <div class="grow relative" x-data="{ height: 0 }" x-resize="height = $height">
-        <div class="overflow-y-auto absolute inset-x-0 border border-white rounded-lg" :style="'height: ' + height + 'px;'">
+    <div class="grow relative whitespace-nowrap" x-data="{ height: 0 }" x-resize="height = $height">
+        <div class="overflow-auto hidden-scrollbar absolute inset-x-0 border border-white rounded-lg" :style="'height: ' + height + 'px;'">
             <table class="w-full overflow-y-hidden backdrop-blur-xl">
                 <thead class="bg-white text-black sticky top-0">
-                    <tr class="bg-white">
-                        <th class="font-normal py-2">
+                    <tr class="bg-white *:p-3">
+                        <th class="font-normal">
                             No
                         </th>
                         @if($this->auth->role->name == 'administrator')
-                        <th class="font-normal py-2">
+                        <th class="font-normal">
                             First Name
                         </th>
-                        <th class="font-normal py-2">
+                        <th class="font-normal">
                             Last Name
                         </th>
-                        <th class="font-normal py-2">
+                        <th class="font-normal">
                             Phone no
                         </th>
                         @endif
-                        <th class="font-normal py-2">
+                        <th class="font-normal">
                             No of People
                         </th>
-                        <th class="font-normal py-2">
+                        <th class="font-normal">
                             Booked on
                         </th>
-                        <th class="font-normal py-2">
+                        <th class="font-normal">
                             Booking Date
                         </th>
-                        <th class="font-normal py-2">
+                        <th class="font-normal">
                             Time Slot
                         </th>
-                        <th class="font-normal py-2">
+                        <th class="font-normal">
                             Status
                         </th>
                         @if($this->auth->role->name == 'administrator')
-                        <th class="font-normal py-2">
+                        <th class="font-normal max-sm:hidden">
                             Acton
                         </th>
                         @endif
@@ -95,20 +95,20 @@ mount(function ($url, $auth) {
                 </thead>
                 <tbody>
                     @foreach($bookings as $booking)
-                    <tr class="hover:bg-black/10 transition-colors duration-200 text-white">
-                        <td class="text-center font-normal py-3">{{$loop->iteration}}</td>
+                    <tr class="hover:bg-black/10 transition-colors duration-200 text-white *:p-3">
+                        <td class="text-center font-normal">{{$loop->iteration}}</td>
                         @if($this->auth->role->name == 'administrator')
-                        <td class="text-center font-normal py-3">{{$booking->user->first_name}}</td>
-                        <td class="text-center font-normal py-3">{{$booking->user->last_name}}</td>
-                        <td class="text-center font-normal py-3">{{$booking->user->phoneno}}</td>
+                        <td class="text-center font-normal">{{$booking->user->first_name}}</td>
+                        <td class="text-center font-normal">{{$booking->user->last_name}}</td>
+                        <td class="text-center font-normal">{{$booking->user->phoneno}}</td>
                         @endif
-                        <td class="text-center font-normal py-3">{{$booking->no_of_people}}</td>
-                        <td class="text-center font-normal py-3">{{Carbon::parse($booking->created_at)->format('d M Y')}}</td>
-                        <td class="text-center font-normal py-3">{{Carbon::parse($booking->timeSlot->date->date)->format('d M Y')}}</td>
-                        <td class="text-center font-normal py-3" x-text="timeSlot('{{ $booking->timeSlot->start_time . ' - ' . $booking->timeSlot->end_time }}')"></td>
-                        <td class="text-center font-normal py-3 capitalize">{{$booking->status->name}}</td>
+                        <td class="text-center font-normal">{{$booking->no_of_people}}</td>
+                        <td class="text-center font-normal">{{Carbon::parse($booking->created_at)->format('d M Y')}}</td>
+                        <td class="text-center font-normal">{{Carbon::parse($booking->timeSlot->date->date)->format('d M Y')}}</td>
+                        <td class="text-center font-normal" x-text="timeSlot('{{ $booking->timeSlot->start_time . ' - ' . $booking->timeSlot->end_time }}')"></td>
+                        <td class="text-center font-normal capitalize">{{$booking->status->name}}</td>
                         @if($this->auth->role->name == 'administrator')
-                        <td class="text-center font-normal py-3 capitalize flex justify-center">
+                        <td class="text-center font-normal capitalize flex justify-center max-sm:hidden">
                             <button wire:click="toggleModal({{ $booking->id }})">
                                 <svg class="w-6 h-6 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
