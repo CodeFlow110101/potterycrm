@@ -8,11 +8,11 @@ use function Livewire\Volt\{state};
 
 <div class="grow flex flex-col overflow-y-auto hidden-scrollbar text-white">
     <div class="grow relative" x-data="{ height: 0 }" x-resize="height = $height">
-        <div class="absolute inset-x-0 flex max-lg:flex-col grow">
+        <div class="absolute inset-x-0 flex max-lg:flex-col grow" :style="'height: ' + height + 'px;'">
             <div class="grow flex max-lg:flex-col relative">
                 <div class="absolute inset-0 pointer-events-none flex flex-col max-lg:hidden">
                     <div class="overflow-hidden size-full">
-                        <img class="translate-y-2/4 size-full" src="{{ asset('images/home_hand.png') }}">
+                        <img class="translate-y-1/2 size-full" src="{{ asset('images/home_hand.png') }}">
                     </div>
                 </div>
                 <div class="grow flex flex-col lg:py-16">
