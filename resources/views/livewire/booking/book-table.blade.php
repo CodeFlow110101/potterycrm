@@ -126,7 +126,7 @@ $submit = function () {
                 </div>
             </div>
             @if($currentForm == 'booking')
-            <div id="booking">
+            <div id="booking" class="grow flex flex-col">
                 <form x-on:reset="reset()" wire:submit="submitBooking" class="grow flex flex-col gap-8">
                     <div x-data="flatpickrDate(null,'{{$allowedDates}}')" class="grow flex max-sm:flex-col gap-12">
                         <div class="flex-1">
@@ -181,7 +181,7 @@ $submit = function () {
                 </form>
             </div>
             @elseif($currentForm == 'user')
-            <div id="user">
+            <div id="user" class="grow flex flex-col">
                 <form wire:submit="submit" class="py-8">
                     <div x-data="otp" x-on:start-countdown.window="startCountdown()" class="h-min grid grid-cols-1 gap-8 w-4/5 mx-auto font-avenir-next-rounded-light text-white">
                         <div>
