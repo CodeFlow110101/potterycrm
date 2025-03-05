@@ -7,9 +7,10 @@ use App\Notifications\ConfirmationCode;
 use Illuminate\Support\Facades\App;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
-use function Livewire\Volt\{state, rules, computed};
+use function Livewire\Volt\{state, rules, computed, mount};
 
 state(['phoneno', 'otp', 'generatedOtp']);
 
@@ -17,7 +18,7 @@ rules(fn() => [
     'phoneno' => [
         'required',
         function ($attribute, $value, $fail) {
-            (Str::startsWith(trim($this->phoneno), env('TWILIO_PHONE_COUNTRY_CODE')) && strlen(trim(Str::replaceFirst(env('TWILIO_PHONE_COUNTRY_CODE'), '', trim($this->phoneno)))) === 10) || $fail('The :attribute must be in this format ' . env('TWILIO_PHONE_COUNTRY_CODE') . ' XXXXXXXXXX.');
+            Gate::allows('valid-phone-number', $this->phoneno) || $fail('The :attribute must be in this format ' . env('TWILIO_PHONE_COUNTRY_CODE') . ' ' . Str::replace('9', 'X', env('PHONE_NUMBER_VALIDATION_PATTERN')));
         }
     ],
 ])->messages([
@@ -69,7 +70,7 @@ $submit = function () {
         <div class="w-4/5 mx-auto grid grid-cols-1 gap-8 font-avenir-next-rounded-light">
             <div>
                 <label class="font-avenir-next-rounded-semibold text-xl">Phone Number</label>
-                <input x-mask="{{ env('TWILIO_PHONE_COUNTRY_CODE') }} 9999999999" wire:model="phoneno" type="text" class="w-full bg-black/20 outline-none p-3 placeholder:text-white/80" placeholder="eg {{ env('TWILIO_PHONE_COUNTRY_CODE') }} XXXXXXXXXX">
+                <input x-mask="{{ env('TWILIO_PHONE_COUNTRY_CODE') }} {{ env('PHONE_NUMBER_VALIDATION_PATTERN') }}" wire:model="phoneno" type="text" class="w-full bg-black/20 outline-none p-3 placeholder:text-white/80" placeholder="eg {{ env('TWILIO_PHONE_COUNTRY_CODE') }} {{Str::replace('9', 'X', env('PHONE_NUMBER_VALIDATION_PATTERN'))}}">
                 @error('phoneno')
                 <div wire:transition.in.scale.origin.top.duration.1000ms class="text-white text-sm">
                     <span class="error">{{ $message }}</span>

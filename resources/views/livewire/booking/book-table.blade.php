@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Gate;
 
 use function Livewire\Volt\{state, rules, with, computed};
 
@@ -21,7 +22,7 @@ rules(fn() => [
     'last_name' => $this->currentForm == 'user' ?  ['required'] : ['exclude'],
     'email' => $this->currentForm == 'user' ?   ['required', 'email'] : ['exclude'],
     'phoneno' => $this->currentForm == 'user' ?  ['required', function ($attribute, $value, $fail) {
-        (Str::startsWith(trim($this->phoneno), env('TWILIO_PHONE_COUNTRY_CODE')) && strlen(trim(Str::replaceFirst(env('TWILIO_PHONE_COUNTRY_CODE'), '', trim($this->phoneno)))) === 10) || $fail('The :attribute must be in this format ' . env('TWILIO_PHONE_COUNTRY_CODE') . ' XXXXXXXXXX.');
+        Gate::allows('valid-phone-number', $this->phoneno) || $fail('The :attribute must be in this format ' . env('TWILIO_PHONE_COUNTRY_CODE') . ' ' . Str::replace('9', 'X', env('PHONE_NUMBER_VALIDATION_PATTERN')));
     }] : ['exclude'],
     'people' => $this->currentForm == 'booking' ? ['integer', 'min:1'] : ['exclude'],
     'date' => $this->currentForm == 'booking' ? ['required'] : ['exclude'],
@@ -131,7 +132,7 @@ $submit = function () {
                         <div class="flex-1">
                             <input type="text" x-ref="dateInput" wire:model.live="date" class="hidden" placeholder="Select a date">
                             <div class="w-full flex justify-center overflow-hidden rounded-lg sm:justify-end">
-                                <div class="max-sm:border-y max-sm:border-l w-full rounded-l-lg flex">
+                                <div class="sm:border-y sm:border-l w-full rounded-l-lg flex">
                                     <div class="mx-auto w-4/5 h-4/5 my-auto max-sm:hidden">
                                         <div class="text-2xl" x-text="year('{{$date}}')"></div>
                                         <div x-text="date('{{$date}}')"></div>
@@ -215,7 +216,7 @@ $submit = function () {
                         </div>
                         <div>
                             <label class="font-avenir-next-rounded-semibold text-xl">Phone Number</label>
-                            <input wire:model="phoneno" x-mask="{{ env('TWILIO_PHONE_COUNTRY_CODE') }} 9999999999" class="w-full bg-black/5 outline-none p-3" placeholder="eg {{ env('TWILIO_PHONE_COUNTRY_CODE') }} XXXXXXXXXX">
+                            <input wire:model="phoneno" x-mask="{{ env('TWILIO_PHONE_COUNTRY_CODE') }} {{ env('PHONE_NUMBER_VALIDATION_PATTERN') }}" class="w-full bg-black/5 outline-none p-3" placeholder="eg {{ env('TWILIO_PHONE_COUNTRY_CODE') }} {{Str::replace('9', 'X', env('PHONE_NUMBER_VALIDATION_PATTERN'))}}">
                             <div>
                                 @error('phoneno')
                                 <span wire:transition.in.duration.500ms="scale-y-100"

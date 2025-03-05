@@ -65,6 +65,8 @@ mount(function () {
         <livewire:home.about-us />
         @elseif($path == 'contact-us')
         <livewire:contact-us />
+        @elseif($path == 'user')
+        <livewire:user />
         @elseif($routeName == 'shop')
         <livewire:shop :auth="$auth" />
         @elseif($path == 'faq')

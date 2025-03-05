@@ -22,18 +22,11 @@ Volt::route('/classes', 'landing-page')->name('classes');
 Volt::route('/private-groups', 'landing-page')->name('private-groups');
 
 Route::middleware(['auth'])->group(function () {
-    Route::middleware(['validate-booking'])->group(function () {
-        Volt::route('/product/{id}/{booking_id}', 'landing-page')->name('product')->middleware('check-product-availability');
-        Volt::route('/shop/{booking_id}', 'landing-page')->name('shop');
-        Volt::route('/cart/{booking_id}', 'landing-page')->name('cart');
-        Volt::route('/checkout/{booking_id}', 'landing-page')->name('checkout');
-    });
-    Route::middleware(['admin'])->group(function () {
-        Volt::route('/register', 'landing-page')->name('register');
-        Volt::route('/manage-coupon', 'landing-page')->name('manage-coupon');
-        Volt::route('/manage-booking', 'landing-page')->name('manage-booking');
-    });
-    Volt::route('/manage-product', 'landing-page')->name('manage-product');
+    Volt::route('/register', 'landing-page')->name('register')->can('register-user');
+    Volt::route('/manage-coupon', 'landing-page')->name('manage-coupon')->can('create-product')->can('update-product');
+    Volt::route('/manage-booking', 'landing-page')->name('manage-booking')->can('create-date')->can('update-date');
+    Volt::route('/manage-product', 'landing-page')->name('manage-product')->can('create-product')->can('update-product');
+    Volt::route('/user', 'landing-page')->name('user')->can('update-product');
     Volt::route('/purchase', 'landing-page')->name('purchase');
     Volt::route('/order', 'landing-page')->name('order');
     Volt::route('/coupon', 'landing-page')->name('coupon');

@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\App;
 use App\Http\Controllers\SmsController;
 use App\Models\PurchaseItemStatus;
 use Livewire\Attributes\Validate;
+use Illuminate\Support\Facades\Gate;
 
 usesPagination();
 
@@ -26,8 +27,8 @@ on(['echo:order,.admin' => function ($request) {
 }]);
 
 with(fn() => [
-    'purchases' => Purchase::with(['items.product'])
-        ->when($this->role !== 'administrator', function ($query) {
+    'purchases' => Purchase::with(['items.product', 'user'])
+        ->when(!Gate::allows('view-any-order'), function ($query) {
             $query->where('user_id', Auth::user()->id);
         })
         ->get()
@@ -73,6 +74,11 @@ mount(function ($auth) {
                                 <th class="font-normal">
                                     #
                                 </th>
+                                @can('view-customer-detail-columns-order')
+                                <th class="font-normal">
+                                    Customer Name
+                                </th>
+                                @endcan
                                 <th class="font-normal">
                                     Name
                                 </th>
@@ -85,11 +91,11 @@ mount(function ($auth) {
                                 <th class="font-normal">
                                     Item Status
                                 </th>
-                                @if($this->auth->role->name == 'administrator')
+                                @can('view-customer-detail-columns-order')
                                 <th class="font-normal max-sm:hidden">
                                     Status
                                 </th>
-                                @endif
+                                @endcan
                             </tr>
                         </thead>
                         @php
@@ -102,11 +108,14 @@ mount(function ($auth) {
                         @endphp
                         <tr class="hover:bg-black/10 transition-colors duration-200 text-white *:p-3">
                             <td class="text-center font-normal">{{$iteration}}</td>
+                            @can('view-customer-detail-columns-order')
+                            <td class="text-center font-normal">{{$purchase->user->first_name . ' ' . $purchase->user->last_name}}</td>
+                            @endcan
                             <td class="text-center font-normal">{{$item->product->name}}</td>
                             <td class="text-center font-normal">$ {{number_format($item->product->price, 2, '.', '')}}</td>
                             <td class="text-center font-normal">{{$item->item_id}}</td>
                             <td class="text-center font-normal capitalize">{{$item->status ? $item->status->name : ''}}</td>
-                            @if($this->auth->role->name == 'administrator')
+                            @can('view-customer-detail-columns-order')
                             <td class="text-center font-normal flex justify-center items-center gap-2 max-sm:hidden">
                                 <button wire:click="toggleModal({{$item->id}})">
                                     <svg class="w-6 h-6 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
@@ -115,7 +124,7 @@ mount(function ($auth) {
                                     </svg>
                                 </button>
                             </td>
-                            @endif
+                            @endcan
                         </tr>
                         @endforeach
                         @endforeach

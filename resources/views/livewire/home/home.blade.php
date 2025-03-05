@@ -8,7 +8,7 @@ use function Livewire\Volt\{state};
 
 <div class="grow flex flex-col overflow-y-auto hidden-scrollbar text-white">
     <div class="grow relative" x-data="{ height: 0 }" x-resize="height = $height">
-        <div class="absolute inset-x-0 flex max-lg:flex-col grow" :style="'height: ' + height + 'px;'">
+        <div class="absolute inset-x-0 flex max-lg:flex-col gap-4 grow" :style="'height: ' + height + 'px;'">
             <div class="grow flex max-lg:flex-col relative">
                 <div class="absolute inset-0 pointer-events-none flex flex-col max-lg:hidden">
                     <div class="overflow-hidden size-full">
@@ -24,9 +24,10 @@ use function Livewire\Volt\{state};
                     <div class="mt-auto w-11/12 mx-auto text-sm lg:text-2xl font-avenir-next-rounded-light tracking-wider uppercase">Welcome to<br>our website</div>
                 </div>
                 <div class="flex flex-col gap-4 sm:gap-12">
-                    <div class="overflow-x-hidden">
+                    <div class="overflow-x-hidden hidden-scrollbar">
                         <div class="aspect-square sm:rounded-full mt-10 ml-auto max-sm:w-11/12 max-sm:mx-auto rounded-2xl p-4 sm:translate-x-16 sm:pl-8 sm:pr-20 flex justify-center items-center bg-indigo-800/90 text-right leading-tight">
                             <div class="flex flex-col gap-4">
+                                <div class="text-center text-lg">Walk-ins Welcome!</div>
                                 <div>
                                     Welcome to the perfect place for creativity and fun!
                                 </div>
@@ -75,6 +76,17 @@ use function Livewire\Volt\{state};
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div class="w-11/12 mx-auto gap-6 lg:gap-8 py-4 lg:py-8 text-white grow flex flex-col sm:hidden">
+                <livewire:section.header header="How does it work?" />
+                <livewire:section.how-it-works />
+
+                <livewire:section.header header="Private Groups" />
+                <livewire:section.private-groups />
+
+                <livewire:section.header header="Classes" />
+                <livewire:section.classes />
             </div>
         </div>
     </div>

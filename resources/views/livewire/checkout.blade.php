@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\SmsController;
+use App\Models\Booking;
 use App\Models\Coupon;
 use App\Models\Product;
 use App\Models\User;
@@ -12,22 +13,20 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Gate;
 
-use function Livewire\Volt\{state, with, computed, rules, mount, on};
+use function Livewire\Volt\{state, with, computed, rules, mount, on, updated};
 
 state(['cart'])->reactive();
 
-state(['first_name', 'last_name', 'email', 'phoneno', 'otp', 'generatedOtp', 'auth', 'address_name', 'shipping_preference', 'address_name', 'address', 'postal_code', 'coupon_code', 'booking_id', 'coupon', 'terminal_status' => 'Submit & Pay']);
+state(['first_name', 'last_name', 'email', 'phoneno', 'otp', 'generatedOtp', 'auth', 'coupon_code', 'booking_id', 'coupon', 'checkout_for', 'terminal_status' => 'Submit & Pay']);
 
-with(fn() => ['products' => Product::whereIn('id', $this->cart ? array_keys($this->cart) : [])->when($this->booking_id, function ($query) {
-    $query->whereHas('type', function ($typeQuery) {
-        $typeQuery->where('name', 'in store');
-    });
-}, function ($query) {
-    $query->whereHas('type', function ($typeQuery) {
-        $typeQuery->where('name', 'online');
-    });
-})->get()]);
+with(fn() => [
+    'products' => Product::whereIn('id', $this->cart ? array_keys($this->cart) : [])->get(),
+    'bookings' => Booking::with(['user'])->whereHas('timeSlot.date', function (Builder $query) {
+        $query->where('date', Carbon::today()->format('Y-m-d'));
+    })->get(),
+]);
 
 on([
     (Auth::user() ? 'echo-private:payment-user-' . Auth::user()->id . ',TerminalPaymentEvent' : '') => function ($request) {
@@ -40,17 +39,15 @@ rules(fn() => [
     'last_name' => $this->auth ? ['exclude'] : ['required'],
     'email' => $this->auth ? ['exclude'] : ['required', 'email'],
     'phoneno' => $this->auth ? ['exclude'] : ['required', function ($attribute, $value, $fail) {
-        (Str::startsWith(trim($this->phoneno), env('TWILIO_PHONE_COUNTRY_CODE')) && strlen(trim(Str::replaceFirst(env('TWILIO_PHONE_COUNTRY_CODE'), '', trim($this->phoneno)))) === 10) || $fail('The :attribute must be in this format ' . env('TWILIO_PHONE_COUNTRY_CODE') . ' XXXXXXXXXX.');
+        Gate::allows('valid-phone-number', $this->phoneno) || $fail('The :attribute must be in this format ' . env('TWILIO_PHONE_COUNTRY_CODE') . ' ' . Str::replace('9', 'X', env('PHONE_NUMBER_VALIDATION_PATTERN')));
     }],
-    'shipping_preference' => $this->auth ? ['required'] : ['exclude'],
-    'address_name' => $this->auth && $this->shipping_preference == 2 ? ['required'] : ['exclude'],
-    'address' => $this->auth && $this->shipping_preference == 2 ? ['required'] : ['exclude'],
-    'postal_code' => $this->auth && $this->shipping_preference == 2 ? ['required', 'exists:postal_codes,postcode'] : ['exclude'],
+    'checkout_for' => $this->auth && Gate::allows('terminal-checkout-user') ? ['required'] : ['exclude'],
+    'booking_id' => $this->auth && $this->checkout_for == 1 && Gate::allows('terminal-checkout-user') ? ['required'] : ['exclude'],
 ])->messages([
-    'address_name.required_if' => 'The :attribute is required.',
-    'address.required_if' => 'The :attribute is required.',
-    'postal_code.required_if' => 'The :attribute is required.',
+    'checkout_for.required' => 'Please select an option.',
 ]);
+
+updated(['checkout_for' => fn() => $this->checkout_for == "1" && $this->reset('booking_id')]);
 
 $trimmed_phoneno = computed(function () {
     return trim(Str::replaceFirst(env('TWILIO_PHONE_COUNTRY_CODE'), '', $this->phoneno));
@@ -109,24 +106,16 @@ $submit = function () {
 $submitAndPay = function () {
     $this->validate();
 
-    if ($this->booking_id) {
-        $this->terminal_status = 'processing';
-        App::call([PaymentController::class, 'terminalPayment'], ['cart' => $this->cart, 'user' => $this->auth, 'coupon' => $this->coupon]);
+    if (Gate::allows('terminal-checkout-user')) {
+        $this->terminal_status = 'connecting';
+        App::call([PaymentController::class, 'terminalPayment'], ['cart' => $this->cart, 'user' => $this->booking_id ? Booking::find($this->booking_id)->user : $this->auth, 'coupon' => $this->coupon]);
     } else {
         App::call([PaymentController::class, 'onlinePayment'], ['cart' => $this->cart, 'user' => $this->auth, 'coupon' => $this->coupon]);
     }
 };
 
 $total = computed(function () {
-    return Product::whereIn('id', $this->cart ? array_keys($this->cart) : [])->when($this->booking_id, function ($query) {
-        $query->whereHas('type', function ($typeQuery) {
-            $typeQuery->where('name', 'in store');
-        });
-    }, function ($query) {
-        $query->whereHas('type', function ($typeQuery) {
-            $typeQuery->where('name', 'online');
-        });
-    })->get()->map(function ($item) {
+    return Product::whereIn('id', $this->cart ? array_keys($this->cart) : [])->get()->map(function ($item) {
         return $item->price * $this->cart[$item->id];
     })->sum();
 });
@@ -160,7 +149,6 @@ $submitCoupon = function () {
 
 mount(function () {
     $this->auth = Auth::user();
-    $this->booking_id = request()->route('booking_id');
 });
 ?>
 
@@ -216,7 +204,7 @@ mount(function () {
                         </div>
                         <div>
                             <label class="font-avenir-next-rounded-semibold text-xl">Phone No</label>
-                            <input wire:model="phoneno" x-mask="{{ env('TWILIO_PHONE_COUNTRY_CODE') }} 9999999999" class="w-full bg-black/5 outline-none p-3" placeholder="eg {{ env('TWILIO_PHONE_COUNTRY_CODE') }} XXXXXXXXXX">
+                            <input wire:model="phoneno" x-mask="{{ env('TWILIO_PHONE_COUNTRY_CODE') }} {{ env('PHONE_NUMBER_VALIDATION_PATTERN') }}" class="w-full bg-black/5 outline-none p-3" placeholder="eg {{ env('TWILIO_PHONE_COUNTRY_CODE') }} {{ Str::replace('9', 'X', env('PHONE_NUMBER_VALIDATION_PATTERN')) }}">
                             <div>
                                 @error('phoneno')
                                 <span wire:transition.in.duration.500ms="scale-y-100"
@@ -240,57 +228,62 @@ mount(function () {
                         <button type="submit" :class="interval && 'pointer-events-none opacity-50'" class="text-black py-3 uppercase px-20 bg-white rounded-lg tracking-tight w-min mx-auto whitespace-nowrap">{{$generatedOtp ? 'Resend Code' : 'Send Code'}}</button>
                     </form>
                     @else
-                    <form wire:submit="submitAndPay" class="h-min grid grid-cols-1 gap-8 sm:w-4/5 mx-auto sm:py-12 font-avenir-next-rounded-light">
-                        <div class="font-avenir-next-rounded-regular text-lg">Shipping Preference</div>
-                        <div class="flex justify-evenly">
-                            <div :class="$wire.shipping_preference == 1 && 'border-blue-500'" @click="$wire.shipping_preference = 1;" class="cursor-pointer flex items-center gap-4 border rounded-md py-2 px-4">
-                                <div>
-                                    <input type="radio" value="1" wire:model="shipping_preference">
-                                </div>
-                                <div>Pickup</div>
+                    <form wire:submit="submitAndPay" class="h-min flex flex-col grow gap-8 mx-auto font-avenir-next-rounded-light">
+                        @can('terminal-checkout-user')
+                        <div class="flex justify-around items-center">
+                            <div @click="$refs.selectbooking.click()" class="cursor-pointer rounded-md border border-white flex items-center gap-4 p-2">
+                                <input x-ref="selectbooking" wire:model.live="checkout_for" value="1" class="size-4 outline-none" type="radio">
+                                <div class="font-bold">Select Booking</div>
                             </div>
-                            <div :class="$wire.shipping_preference == 2 && 'border-blue-500'" @click="$wire.shipping_preference = 2;" class="cursor-pointer flex items-center gap-4 border rounded-md py-2 px-4">
-                                <div>
-                                    <input x-ref="shipping_preference-deliver" type="radio" value="2" wire:model="shipping_preference">
-                                </div>
-                                <div>Deliver</div>
+                            <div @click="$refs.checkoutforself.click()" class="cursor-pointer rounded-md border border-white flex items-center gap-4 p-2">
+                                <input x-ref="checkoutforself" wire:model.live="checkout_for" value="2" class="size-4 outline-none" type="radio">
+                                <div class="font-bold">Checkout for Self</div>
                             </div>
                         </div>
-                        @error('shipping_preference')
-                        <span wire:transition.in.duration.500ms="scale-y-100"
-                            wire:transition.out.duration.500ms="scale-y-0">{{ $message }}</span>
-                        @enderror
-                        <div x-show="$wire.shipping_preference == 2">
-                            <label class="font-avenir-next-rounded-semibold text-xl">Address Name</label>
-                            <input wire:model="address_name" class="w-full bg-black/5 outline-none p-3" placeholder="Address Name">
+                        <div>
+                            @error('checkout_for')
+                            <span wire:transition.in.duration.500ms="scale-y-100"
+                                wire:transition.out.duration.500ms="scale-y-0" class="text-white">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        @if($checkout_for == 1)
+                        <div class="flex flex-col gap-2">
+                            <label class="font-avenir-next-rounded-semibold text-xl">Select Booking</label>
+                            <select wire:model="booking_id" class="w-full bg-black/5 outline-none p-3">
+                                <option value="">Select a Booking by Customer Name</option>
+                                @foreach($bookings as $booking)
+                                <option value="{{ $booking->id }}">{{ $booking->user->first_name . ' ' . $booking->user->last_name }}</option>
+                                @endforeach
+                            </select>
                             <div>
-                                @error('address_name')
+                                @error('booking_id')
                                 <span wire:transition.in.duration.500ms="scale-y-100"
-                                    wire:transition.out.duration.500ms="scale-y-0">{{ $message }}</span>
+                                    wire:transition.out.duration.500ms="scale-y-0" class="text-white">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
-                        <div x-show="$wire.shipping_preference == 2">
-                            <label class="font-avenir-next-rounded-semibold text-xl">Address</label>
-                            <textarea wire:model="address" class="w-full bg-black/5 outline-none p-3" placeholder="Address"></textarea>
-                            <div>
-                                @error('address')
-                                <span wire:transition.in.duration.500ms="scale-y-100"
-                                    wire:transition.out.duration.500ms="scale-y-0">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                        <div x-show="$wire.shipping_preference == 2">
-                            <label class="font-avenir-next-rounded-semibold text-xl">Postal Code</label>
-                            <input wire:model="postal_code" x-mask="999999" class="w-full bg-black/5 outline-none p-3" placeholder="Postal Code">
-                            <div>
-                                @error('postal_code')
-                                <span wire:transition.in.duration.500ms="scale-y-100"
-                                    wire:transition.out.duration.500ms="scale-y-0">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                        <button type="submit" :class="$wire.terminal_status == 'processing' && 'pointer-events-none'" class="relative uppercase text-center py-2 px-4 bg-white mx-auto text-black rounded-lg">
+                        @endif
+                        @endcan
+                        @cannot('terminal-checkout-user')
+                        <ol class="list-decimal list-inside space-y-6 text-">
+                            <li>
+                                Order Your Kit: Visit our ‘Shop’ tab to order your DIY pottery painting kit. Each kit includes everything you need to paint at home.
+                            </li>
+                            <li>
+                                Paint at Your Leisure: Take your time and paint your pottery with the colors and designs of your choice.
+                            </li>
+                            <li>
+                                Drop It Off: Once you’re finished, bring your pottery back to our shop for firing.
+                            </li>
+                            <li>
+                                We Fire It: We’ll take care of the glazing and firing.
+                            </li>
+                            <li>
+                                Pick Up: We’ll let you know when your pottery is ready to be picked up. Come and collect your handiwork!
+                            </li>
+                        </ol>
+                        @endcannot
+                        <button type="submit" :class="$wire.terminal_status == 'processing' && 'pointer-events-none'" class="relative uppercase text-center py-2 px-4 bg-white mx-auto text-black rounded-lg mt-auto">
                             <div wire:loading.class="invisible" wire:target="submitAndPay">{{ str_replace("_", " ", $terminal_status) }}</div>
                             <div wire:loading.class.remove="invisible" wire:target="submitAndPay" class="invisible absolute inset-0 p-2">
                                 <svg aria-hidden="true" class="size-full text-transparent animate-spin fill-black" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">

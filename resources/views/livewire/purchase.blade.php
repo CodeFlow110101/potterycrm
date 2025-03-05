@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Gate;
 
 state(['auth']);
 
@@ -15,8 +16,8 @@ on(['echo:purchase,.admin' => function ($request) {
     $this->reset();
 }]);
 
-with(fn() => ['purchases' => Purchase::with(['payment'])
-    ->when($this->auth->role->name !== 'administrator', function ($query) {
+with(fn() => ['purchases' => Purchase::with(['payment', 'user'])
+    ->when(!Gate::allows('view-any-purchase'), function ($query) {
         $query->where('user_id', $this->auth->id);
     })
     ->get()]);
@@ -38,6 +39,11 @@ mount(function ($auth) {
                                 <th class="font-medium">
                                     #
                                 </th>
+                                @can('view-customer-detail-columns-purchase')
+                                <th class="font-medium">
+                                    Name
+                                </th>
+                                @endcan
                                 <th class="font-medium">
                                     Amount
                                 </th>
@@ -61,6 +67,9 @@ mount(function ($auth) {
                         @foreach($purchases as $purchase)
                         <tr class="hover:bg-black/10 transition-colors duration-200 text-white *:p-3">
                             <td class="text-center font-normal">{{$loop->iteration}}</td>
+                            @can('view-customer-detail-columns-purchase')
+                            <td class="text-center font-normal">{{$purchase->user->first_name . ' ' . $purchase->user->last_name}}</td>
+                            @endcan
                             <td class="text-center font-normal">$ {{number_format($purchase->payment->amount/100, 2, '.', '')}}</td>
                             <td class="text-center font-normal">{{$purchase->payment->source}}</td>
                             <td class="text-center font-normal">{{$purchase->payment->type}}</td>

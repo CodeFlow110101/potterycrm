@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
-
+use Illuminate\Support\Facades\Gate;
 
 use function Livewire\Volt\{state, rules, computed};
 
@@ -25,7 +25,7 @@ rules(fn() => [
     'phoneno' => [
         'required',
         function ($attribute, $value, $fail) {
-            (Str::startsWith(trim($this->phoneno), env('TWILIO_PHONE_COUNTRY_CODE')) && strlen(trim(Str::replaceFirst(env('TWILIO_PHONE_COUNTRY_CODE'), '', trim($this->phoneno)))) === 10) || $fail('The :attribute must be in this format ' . env('TWILIO_PHONE_COUNTRY_CODE') . ' XXXXXXXXXX.');
+            Gate::allows('valid-phone-number', $this->phoneno) || $fail('The :attribute must be in this format ' . env('TWILIO_PHONE_COUNTRY_CODE') . ' ' . Str::replace('9', 'X', env('PHONE_NUMBER_VALIDATION_PATTERN')));
         },
         function ($attribute, $value, $fail) {
             Date::where('date', $this->date)->whereHas('timeSlots', function (Builder $query) {
@@ -145,7 +145,7 @@ $submit = function () {
                     </div>
                     <div>
                         <label class="font-avenir-next-rounded-semibold text-xl">Phone Number</label>
-                        <input wire:model="phoneno" x-mask="{{ env('TWILIO_PHONE_COUNTRY_CODE') }} 9999999999" class="w-full bg-black/5 outline-none p-3" placeholder="eg {{ env('TWILIO_PHONE_COUNTRY_CODE') }} XXXXXXXXXX">
+                        <input wire:model="phoneno" x-mask="{{ env('TWILIO_PHONE_COUNTRY_CODE') }} {{ env('PHONE_NUMBER_VALIDATION_PATTERN') }}" class="w-full bg-black/5 outline-none p-3" placeholder="eg {{ env('TWILIO_PHONE_COUNTRY_CODE') }} {{Str::replace('9', 'X', env('PHONE_NUMBER_VALIDATION_PATTERN'))}}">
                         <div>
                             @error('phoneno')
                             <span wire:transition.in.duration.500ms="scale-y-100"

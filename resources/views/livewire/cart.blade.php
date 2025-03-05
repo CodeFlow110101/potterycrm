@@ -5,17 +5,8 @@ use App\Models\Product;
 use function Livewire\Volt\{state, with, mount};
 
 state(['cart'])->reactive();
-state(['booking_id']);
 
-with(fn() => ['products' => Product::whereIn('id', array_keys($this->cart))->when($this->booking_id, function ($query) {
-    $query->whereHas('type', function ($typeQuery) {
-        $typeQuery->where('name', 'in store');
-    });
-}, function ($query) {
-    $query->whereHas('type', function ($typeQuery) {
-        $typeQuery->where('name', 'online');
-    });
-})->get()]);
+with(fn() => ['products' => Product::whereIn('id', array_keys($this->cart))->get()]);
 
 $updateCart = function ($id, $quantity) {
     $this->dispatch('update-cart', id: $id, quantity: $quantity);
@@ -25,9 +16,6 @@ $removeCart = function ($id) {
     $this->dispatch('remove-cart', id: $id);
 };
 
-mount(function () {
-    $this->booking_id = request()->route('booking_id');
-});
 ?>
 
 <div class="grow flex flex-col gap-4 lg:gap-8 py-4 lg:py-8 text-white w-11/12 mx-auto">
