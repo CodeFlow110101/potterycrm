@@ -236,7 +236,7 @@ mount(function () {
                         <button type="submit" :class="interval && 'pointer-events-none opacity-50'" class="text-black py-3 uppercase px-20 bg-white rounded-lg tracking-tight w-min mx-auto whitespace-nowrap">{{$generatedOtp ? 'Resend Code' : 'Send Code'}}</button>
                     </form>
                     @else
-                    <form x-data="androidHardwareUrl('{{ env('SQUARE_POS_WEB_CALLBACK_URI') }}','{{ env('SQUARE_POS_APPLICATION_ID') }}')" wire:submit="submitAndPay" class="h-min flex flex-col grow gap-8 mx-auto font-avenir-next-rounded-light">
+                    <form x-data="androidHardwareUrl('{{ env('SQUARE_POS_WEB_CALLBACK_URI') }}','{{ env('SQUARE_POS_APPLICATION_ID') }}','{{ env('SQUARE_POS_CURRENCY') }}')" wire:submit="submitAndPay" class="h-min flex flex-col grow gap-8 mx-auto font-avenir-next-rounded-light">
                         @can('terminal-checkout-user')
                         <div class="flex justify-around items-center">
                             <div @click="$refs.selectbooking.click()" class="cursor-pointer rounded-md border border-white flex items-center gap-4 p-2">
