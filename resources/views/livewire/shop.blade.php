@@ -26,26 +26,31 @@ with(fn() => [
     <div class="flex justify-between items-center">
         <div class="text-5xl lg:text-7xl font-avenir-next-bold text-white">Shop</div>
         @canany(['create-product','update-product'])
-        <a href="/manage-product" wire:navigate class="text-black py-3 max-sm:hidden uppercase px-6 font-normal bg-white rounded-lg tracking-tight w-min whitespace-nowrap">Manage Product</a>
+        <a href="manage-product" wire:navigate class="text-black py-3 max-sm:hidden uppercase px-6 font-normal bg-white rounded-lg tracking-tight w-min whitespace-nowrap">Manage Product</a>
         @endcanany
     </div>
     <div class="grow relative" x-data="{ height: 0 }" x-resize="height = $height">
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 text-white overflow-y-auto hidden-scrollbar absolute inset-x-0" :style="'height: ' + height + 'px;'">
             @foreach($products as $product)
-            <a href="/product/{{ $product->id }}" wire:navigate class="flex flex-col h-min backdrop-blur-xl border border-white p-4 rounded-lg gap-2">
-                <div class="font-avenir-next-rounded-bold text-center">
-                    {{$product->name}}
-                </div>
-                <div class="w-full aspect-square">
-                    <img class="size-full rounded-lg" src="{{asset('storage/'.$product->thumbnail_path)}}">
-                </div>
-                <div class="flex flex-col">
-                    <div class="font-avenir-next-rounded-regular">
-                        {{$product->description}}
+            <div class="flex flex-col gap-4">
+                <a href="/product/{{ $product->id }}" wire:navigate class="flex flex-col h-min backdrop-blur-xl border border-white p-4 rounded-lg gap-2">
+                    <div class="font-avenir-next-rounded-bold text-center">
+                        {{$product->name}}
                     </div>
-                    <div class="mt-auto">${{$product->price}}</div>
-                </div>
-            </a>
+                    <div class="w-full aspect-square">
+                        <img class="size-full rounded-lg" src="{{asset('storage/'.$product->thumbnail_path)}}">
+                    </div>
+                    <div class="flex flex-col">
+                        <div class="font-avenir-next-rounded-regular">
+                            {{$product->description}}
+                        </div>
+                        <div class="mt-auto">${{$product->price}}</div>
+                    </div>
+                </a>
+                @can('update-product')
+                <a href="/manage-product/{{ $product->id }}" wire:navigate class="text-black py-3 px-20 bg-white rounded-lg tracking-tight text-center">Update</a>
+                @endcan
+            </div>
             @endforeach
         </div>
     </div>

@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Gate;
 
 usesPagination();
 
-state(['modal' => false, 'selected_item', 'item_status', 'item_id', 'statuses', 'auth', 'role']);
+state(['modal' => false, 'selected_item', 'item_status', 'item_id', 'statuses', 'auth', 'role', 'notify' => true]);
 
 rules(['item_id' => 'required', 'item_status' => 'required'])->attributes(['item_id' => 'item id', 'item_status' => 'status']);
 
@@ -27,7 +27,9 @@ on(['echo:order,.admin' => function ($request) {
 }]);
 
 with(fn() => [
-    'purchases' => Purchase::with(['items.product', 'user'])
+    'purchases' => Purchase::with(['items.product' => function ($query) {
+        $query->withTrashed();
+    }, 'user'])
         ->when(!Gate::allows('view-any-order'), function ($query) {
             $query->where('user_id', Auth::user()->id);
         })
@@ -37,19 +39,25 @@ with(fn() => [
 $toggleModal = function ($id = null) {
     $this->modal = !$this->modal;
     if ($id) {
-        $this->selected_item = PurchaseItem::with(['purchase.user', 'product', 'status'])->find($id);
+        $this->selected_item = PurchaseItem::with(['purchase.user', 'product' => function ($query) {
+            $query->withTrashed();
+        }, 'status'])->find($id);
         $this->item_id = $this->selected_item->item_id ? $this->selected_item->item_id : '';
         $this->item_status = $this->selected_item->status_id;
         $this->statuses = PurchaseItemStatus::get();
+        $this->notify = true;
     } else {
         $this->reset(['selected_item', 'item_id', 'item_status', 'statuses']);
+        $this->notify = true;
         $this->resetValidation();
     }
 };
 
 $submit = function () {
     $this->validate();
-    $this->selected_item->update(['status_id' => $this->item_status, 'item_id' => $this->item_id]);
+
+    $this->notify && $this->selected_item->update(['status_id' => $this->item_status, 'item_id' => $this->item_id]);
+    $this->notify ||  $this->selected_item->updateQuietly(['status_id' => $this->item_status, 'item_id' => $this->item_id]);
     $this->selected_item->refresh();
     $this->toggleModal();
 };
@@ -199,7 +207,7 @@ mount(function ($auth) {
                 </div>
                 <div class="flex justify-center items-center capitalize">Status: {{$selected_item->status ? $selected_item->status->name : ''}}</div>
             </div>
-            <div class="flex justify-center items-center">
+            <div class="flex justify-center items-center gap-6">
                 <button type="submit" wire:loading.class="pointer-events-none" wire:dirty.class.remove="pointer-events-none opacity-50" class="text-black py-3 uppercase px-20 bg-white rounded-lg tracking-tight relative">
                     <div wire:loading.class="invisible" wire:target="submit">Submit</div>
                     <div wire:loading.class.remove="invisible" wire:target="submit" class="absolute inset-0 flex justify-center items-center invisible">
@@ -209,6 +217,13 @@ mount(function ($auth) {
                         </svg>
                     </div>
                 </button>
+                <div class="flex justify-center items-center gap-4">
+                    <label class="inline-flex items-center cursor-pointer">
+                        <input type="checkbox" wire:model="notify" class="sr-only peer">
+                        <div class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        <span class="ms-3 text-sm font-medium text-white">Notify Customer</span>
+                    </label>
+                </div>
             </div>
         </form>
     </div>

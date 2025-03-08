@@ -23,7 +23,7 @@ state(['first_name', 'last_name', 'email', 'phoneno', 'otp', 'generatedOtp', 'au
 
 with(fn() => [
     'products' => Product::whereIn('id', $this->cart ? array_keys($this->cart) : [])->get(),
-    'bookings' => Booking::with(['user'])->whereHas('timeSlot.date', function (Builder $query) {
+    'bookings' => Booking::with(['user'])->where('status_id', 3)->whereHas('timeSlot.date', function (Builder $query) {
         $query->where('date', Carbon::today()->format('Y-m-d'));
     })->get(),
 ]);
@@ -43,6 +43,14 @@ rules(fn() => [
     }],
     'checkout_for' => $this->auth && Gate::allows('terminal-checkout-user') ? ['required'] : ['exclude'],
     'booking_id' => $this->auth && $this->checkout_for == 1 && Gate::allows('terminal-checkout-user') ? ['required'] : ['exclude'],
+    'cart' => [
+        'required',
+        'array',
+        'min:1',
+        function ($attribute, $value, $fail) {
+            Product::where('id', array_keys($this->cart))->onlyTrashed()->exists() && $fail('Some of the items are out of stock in your :attribute');
+        },
+    ],
 ])->messages([
     'checkout_for.required' => 'Please select an option.',
 ]);
@@ -318,6 +326,12 @@ mount(function () {
                     </div>
                     @endforeach
                 </div>
+            </div>
+            <div>
+                @error('cart')
+                <span wire:transition.in.duration.500ms="scale-y-100"
+                    wire:transition.out.duration.500ms="scale-y-0" class="text-white">{{ $message }}</span>
+                @enderror
             </div>
             <div class="flex flex-col gap-2">
                 @if($auth)

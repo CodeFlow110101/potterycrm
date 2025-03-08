@@ -42,7 +42,7 @@ function otp() {
 
 function imageUploader() {
   return {
-    preview: "",
+    preview: this.$wire.entangle("preview"),
     imageTextField: this.$wire.entangle("thumbnail"),
     previewImage(event) {
       this.imageTextField = "";
@@ -58,7 +58,7 @@ function imageUploader() {
         };
         reader.readAsDataURL(file);
       } else {
-        this.preview = "";
+        this.preview = null;
       }
     }
   };

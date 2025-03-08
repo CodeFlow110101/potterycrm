@@ -2,14 +2,27 @@
 
 use App\Models\Product;
 use App\Models\ProductType;
+use Illuminate\Http\Request;
+use Twilio\Rest\Preview;
 
-use function Livewire\Volt\{state, rules, on, with};
+use function Livewire\Volt\{state, rules, on, with, mount};
 
-state(['name', 'description', 'thumbnail', 'price', 'type']);
+state(['name', 'description', 'thumbnail', 'price', 'type', 'product', 'preview']);
 
 rules(['name' => 'required|min:3', 'description' => 'required|min:6', 'price' => 'required', 'thumbnail' => "required|lt:100", 'type' => "required"])->messages([
     'thumbnail.lt' => 'The :attribute must be less than 100kb.',
 ]);
+
+rules(fn() => [
+    'name' => ['required', 'min:3'],
+    'description' => ['required', 'min:6'],
+    'price' => ['required'],
+    'thumbnail' => $this->product ? ['exclude'] : ['required', 'lt:100'],
+    'type' => ['required'],
+])->messages([
+    'thumbnail.lt' => 'The :attribute must be less than 100kb.',
+]);
+
 
 with(fn() => ['producttypes' => ProductType::get()]);
 
@@ -27,13 +40,41 @@ on(['store' => function ($file) {
     $this->reset();
     $this->dispatch('reset-file-input');
     $this->dispatch('loader', show: false);
-    $this->redirect('shop', navigate: true);
+    $this->redirect('/shop', navigate: true);
 }]);
 
 $submit = function () {
     $this->validate();
-    $this->dispatch('file-upload');
+
+    $this->product && Product::find($this->product->id)?->update([
+        'name' => $this->name,
+        'description' => $this->description,
+        'price' => $this->price,
+        'type_id' => $this->type,
+    ]);
+
+    $this->product && $this->redirect('/shop', navigate: true);
+
+
+    $this->product || $this->dispatch('file-upload');
 };
+
+$delete = function () {
+    $this->product->delete();
+    $this->redirect('/shop', navigate: true);
+};
+
+mount(function (Request $request) {
+    $this->product = Product::find($request->route('id'));
+    if ($this->product) {
+        $this->name = $this->product->name;
+        $this->description = $this->product->description;
+        $this->thumbnail = $this->product->thumbnail_path;
+        $this->price = $this->product->price;
+        $this->type = $this->product->type_id;
+        $this->preview = asset('storage/' . $this->product->thumbnail_path);
+    }
+});
 
 ?>
 
@@ -42,7 +83,12 @@ $submit = function () {
         <div class="flex justify-between items-center">
             <div class="text-7xl font-avenir-next-bold text-white">Bookings</div>
             <div class="flex items-center gap-3">
-                <a href="shop" wire:navigate class="text-black py-3 uppercase px-6 bg-white rounded-lg tracking-tight">Cancel</a>
+                @if($this->product)
+                <button type="button" wire:click="delete" class="text-black py-3 uppercase px-6 bg-white rounded-lg tracking-tight">
+                    Delete
+                </button>
+                @endif
+                <a href="/shop" wire:navigate class="text-black py-3 uppercase px-6 bg-white rounded-lg tracking-tight">Cancel</a>
                 <button type="submit" class="text-black py-3 uppercase px-6 bg-white rounded-lg tracking-tight">
                     Save
                 </button>
@@ -54,7 +100,7 @@ $submit = function () {
                     <div class="flex justify-between grow gap-4">
                         <div class="grow flex flex-col w-2/5">
                             <div class="grow flex flex-col gap-4">
-                                <div class="h-1/2 flex flex-col gap-4 border border-white backdrop-blur-xl hidden-scrollbar rounded-lg shadow-lg p-4">
+                                <div class="h-1/2 flex flex-col gap-4 border border-white backdrop-blur-xl hidden-scrollbar rounded-lg shadow-lg p-4 @if($product) pointer-events-none @endif">
                                     <div class="text-xl text-white">Thumbnail</div>
                                     <div x-show="!preview"
                                         x-transition:enter="transition ease-out duration-500"

@@ -25,7 +25,7 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('/register', 'landing-page')->name('register')->can('register-user');
     Volt::route('/manage-coupon', 'landing-page')->name('manage-coupon')->can('create-product')->can('update-product');
     Volt::route('/manage-booking', 'landing-page')->name('manage-booking')->can('create-date')->can('update-date');
-    Volt::route('/manage-product', 'landing-page')->name('manage-product')->can('create-product')->can('update-product');
+    Volt::route('/manage-product/{id?}', 'landing-page')->name('manage-product')->can('create-product')->can('update-product');
     Volt::route('/user', 'landing-page')->name('user')->can('update-product');
     Volt::route('/purchase', 'landing-page')->name('purchase');
     Volt::route('/order', 'landing-page')->name('order');

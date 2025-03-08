@@ -23,6 +23,8 @@ class PaymentController extends Controller
 
     function webhook(Request $request)
     {
+        Log::info($request);
+        return;
         if ($request->type == "payment.updated") {
             $this->store($request);
         } elseif ($request->type == "terminal.checkout.updated") {

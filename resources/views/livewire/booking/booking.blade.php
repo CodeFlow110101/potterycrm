@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\App;
 
 use function Livewire\Volt\{mount, state, with, on};
 
-state(['modal' => false, 'booking', 'status', 'url', 'auth', 'notify' => true]);
+state(['modal' => false, 'booking', 'status', 'url', 'auth']);
 
 with(fn() => ['bookings' => Booking::with(['user', 'status', 'timeSlot.date'])
     ->when(!Gate::allows('view-any-booking'), function ($query) {
@@ -29,17 +29,15 @@ $toggleModal = function ($booking = null) {
     if ($booking) {
         $this->booking = Booking::with(['user', 'status'])->find($booking);
         $this->status = $this->booking->status_id;
-        $this->notify = true;
     } else {
         $this->reset(['booking', 'status']);
-        $this->notify = true;
     }
 };
 
 $submit = function () {
     $this->modal = !$this->modal;
-    $this->notify && $this->booking->update(['status_id' => $this->status]);
-    $this->notify || $this->booking->updateQuietly(['status_id' => $this->status]);
+    $this->booking->update(['status_id' => $this->status]);
+    $this->booking->updateQuietly(['status_id' => $this->status]);
 };
 
 mount(function ($url, $auth) {
@@ -198,13 +196,7 @@ mount(function ($url, $auth) {
                     <input disabled type="text" value="{{ $booking->status->name }}" id="floating_outlined" class="capitalize block px-2.5 pb-2.5 pt-4 w-full text-sm text-white bg-transparent rounded-lg border-2 border-white appearance-none focus:outline-none focus:ring-0 focus:border-primary peer" placeholder=" " />
                     <label for="floating_outlined" class="absolute text-sm rounded-full text-black duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-primary peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">Status</label>
                 </div>
-                <div class="flex justify-center items-center gap-4">
-                    <label class="inline-flex items-center cursor-pointer">
-                        <input type="checkbox" wire:model="notify" class="sr-only peer">
-                        <div class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                        <span class="ms-3 text-sm font-medium text-white">Notify Customer</span>
-                    </label>
-                </div>
+                <button @click="$wire.status = 5;" type="button" class="text-black py-3 uppercase bg-white rounded-lg tracking-tight">Cancel Booking</button>
             </div>
             <div class="flex justify-around gap-4">
                 <button type="submit" wire:loading.class="pointer-events-none" wire:dirty.class.remove="pointer-events-none opacity-50" class="text-black py-3 uppercase px-20 bg-white rounded-lg tracking-tight relative">
@@ -216,7 +208,6 @@ mount(function ($url, $auth) {
                         </svg>
                     </div>
                 </button>
-                <button @click="$wire.status = 5;" type="button" class="text-black py-3 px-20 uppercase bg-white rounded-lg tracking-tight">Cancel Booking</button>
             </div>
         </form>
     </div>

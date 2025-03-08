@@ -1,13 +1,13 @@
 <?php
 
 use App\Models\Booking;
+use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-use function Livewire\Volt\{state, layout, mount, title, on, uses};
+use function Livewire\Volt\{state, layout, mount, title, on, uses, with};
 
 layout('components.layouts.app');
-
 
 state(['path', 'url', 'auth', 'routeName', 'cart' => session('cart', [])]);
 
@@ -38,6 +38,11 @@ on([
 ]);
 
 mount(function () {
+    Product::where('id', array_keys($this->cart))->onlyTrashed()->get()->pluck('id')->each(function ($id) {
+        unset($this->cart[$id]);
+        session(['cart' => $this->cart]);
+    });
+
     $this->path = request()->path();
     $this->url = request()->url();
     $this->auth = Auth::user();
@@ -83,7 +88,7 @@ mount(function () {
         <livewire:booking.booking :url="$url" :auth="$auth" />
         @elseif($path == 'product' || Route::currentRouteName() == 'product-booking-id')
         <livewire:product.shop />
-        @elseif($path == 'manage-product')
+        @elseif($routeName == 'manage-product')
         <livewire:product.manage-product />
         @elseif($path == 'purchase')
         <livewire:purchase :auth="$auth" />

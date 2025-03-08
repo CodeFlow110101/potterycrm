@@ -35,29 +35,29 @@ mount(function ($cart, $path, $auth, $routeName) {
             <a :class="show && 'text-center'" href="/" wire:navigate class="text-3xl lg:mx-14 tracking-widest">ICONA</a>
             <div :class="show ? 'flex-col gap-4' : 'max-lg:hidden'" class="flex justify-evenly items-center w-full *:underline-offset-4">
                 @if(!$auth)
-                <a href="how-it-works" wire:navigate class="max-sm:hidden" :class="$wire.routeName === $el.getAttribute('href') && 'underline'">How it Works</a>
-                <a href="private-groups" wire:navigate class="max-sm:hidden" :class="$wire.routeName === $el.getAttribute('href') && 'underline'">Private Groups</a>
-                <a href="classes" wire:navigate class="max-sm:hidden" :class="$wire.routeName === $el.getAttribute('href') && 'underline'">Classes</a>
+                <a href="/how-it-works" wire:navigate class="max-sm:hidden" :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">How it Works</a>
+                <a href="/private-groups" wire:navigate class="max-sm:hidden" :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">Private Groups</a>
+                <a href="/classes" wire:navigate class="max-sm:hidden" :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">Classes</a>
                 @endif
-                <a href="shop" wire:navigate :class="$wire.routeName === $el.getAttribute('href') && 'underline'">Shop</a>
+                <a href="/shop" wire:navigate :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">Shop</a>
                 @if($auth)
-                <a href="booking" wire:current="font-bold text-white" wire:navigate :class="$wire.routeName === $el.getAttribute('href') && 'underline'">Booking</a>
+                <a href="/booking" wire:current="font-bold text-white" wire:navigate :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">Booking</a>
                 @can('register-user')
-                <a href="register" wire:navigate :class="$wire.routeName === $el.getAttribute('href') && 'underline'">Register</a>
+                <a href="/register" wire:navigate :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">Register</a>
                 @endcan
-                <a href="purchase" wire:navigate :class="$wire.routeName === $el.getAttribute('href') && 'underline'">Purchase</a>
-                <a href="order" wire:navigate :class="$wire.routeName === $el.getAttribute('href') && 'underline'">Order</a>
-                <a href="coupon" wire:navigate :class="$wire.routeName === $el.getAttribute('href') && 'underline'">Coupon</a>
+                <a href="/purchase" wire:navigate :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">Purchase</a>
+                <a href="/order" wire:navigate :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">Order</a>
+                <a href="/coupon" wire:navigate :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">Coupon</a>
                 @can('update-user')
-                <a href="user" wire:navigate :class="$wire.routeName === $el.getAttribute('href') && 'underline'">User</a>
+                <a href="/user" wire:navigate :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">User</a>
                 @endcan
                 @endif
                 @if(!$auth)
-                <a href="book-table" wire:navigate :class="$wire.routeName === $el.getAttribute('href') && 'underline'">Book a Table</a>
-                <a href="log-in" wire:navigate :class="$wire.routeName === $el.getAttribute('href') && 'underline'">Log In</a>
-                <a href="about-us" wire:navigate :class="$wire.routeName === $el.getAttribute('href') && 'underline'">About Us</a>
-                <a href="contact-us" wire:navigate :class="$wire.routeName === $el.getAttribute('href') && 'underline'">Contact</a>
-                <a href="faq" wire:navigate :class="$wire.routeName === $el.getAttribute('href') && 'underline'">FAQ</a>
+                <a href="/book-table" wire:navigate :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">Book a Table</a>
+                <a href="/log-in" wire:navigate :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">Log In</a>
+                <a href="/about-us" wire:navigate :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">About Us</a>
+                <a href="/contact-us" wire:navigate :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">Contact</a>
+                <a href="/faq" wire:navigate :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">FAQ</a>
                 @endif
                 @if($auth)
                 <div class="flex justify-between items-center relative group">
