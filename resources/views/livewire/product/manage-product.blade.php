@@ -2,22 +2,26 @@
 
 use App\Models\Product;
 use App\Models\ProductType;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Twilio\Rest\Preview;
+use Illuminate\Database\Eloquent\Builder;
 
 use function Livewire\Volt\{state, rules, on, with, mount};
 
-state(['name', 'description', 'thumbnail', 'price', 'type', 'product', 'preview']);
-
-rules(['name' => 'required|min:3', 'description' => 'required|min:6', 'price' => 'required', 'thumbnail' => "required|lt:100", 'type' => "required"])->messages([
-    'thumbnail.lt' => 'The :attribute must be less than 100kb.',
-]);
+state(['name', 'description', 'thumbnail', 'price', 'type', 'product', 'preview', 'can_update_product']);
 
 rules(fn() => [
     'name' => ['required', 'min:3'],
     'description' => ['required', 'min:6'],
     'price' => ['required'],
     'thumbnail' => $this->product ? ['exclude'] : ['required', 'lt:100'],
+    'can_update_product' => $this->product ?  [
+        function ($attribute, $value, $fail) {
+            User::whereHas('purchases.items.product', function (Builder $query) {
+                $query->where('id', $this->product->id);
+            })->exists() && $fail('The product have some purchases please prefer to delete and add a new one.');
+        },
+    ] : ['exclude'],
     'type' => ['required'],
 ])->messages([
     'thumbnail.lt' => 'The :attribute must be less than 100kb.',
@@ -82,16 +86,22 @@ mount(function (Request $request) {
     <form wire:submit="submit" class="grow flex flex-col gap-8">
         <div class="flex justify-between items-center">
             <div class="text-7xl font-avenir-next-bold text-white">Bookings</div>
-            <div class="flex items-center gap-3">
-                @if($this->product)
-                <button type="button" wire:click="delete" class="text-black py-3 uppercase px-6 bg-white rounded-lg tracking-tight">
-                    Delete
-                </button>
-                @endif
-                <a href="/shop" wire:navigate class="text-black py-3 uppercase px-6 bg-white rounded-lg tracking-tight">Cancel</a>
-                <button type="submit" class="text-black py-3 uppercase px-6 bg-white rounded-lg tracking-tight">
-                    Save
-                </button>
+            <div class="flex flex-col gap-2 items-end">
+                <div class="flex items-center gap-3">
+                    @if($this->product)
+                    <button type="button" wire:click="delete" class="text-black py-3 uppercase px-6 bg-white rounded-lg tracking-tight">
+                        Delete
+                    </button>
+                    @endif
+                    <a href="/shop" wire:navigate class="text-black py-3 uppercase px-6 bg-white rounded-lg tracking-tight">Cancel</a>
+                    <button type="submit" class="text-black py-3 uppercase px-6 bg-white rounded-lg tracking-tight">
+                        Save
+                    </button>
+                </div>
+                @error('can_update_product')
+                <span wire:transition.in.duration.500ms="scale-y-100"
+                    wire:transition.out.duration.500ms="scale-y-0" class="text-white">{{ $message }}</span>
+                @enderror
             </div>
         </div>
         <div class="grow flex flex-col relative " x-data="{ height: 0 }" x-resize="height = $height">
