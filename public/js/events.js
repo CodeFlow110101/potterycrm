@@ -30,12 +30,7 @@ document.addEventListener("livewire:init", () => {
   });
 
   Livewire.on("open-square-app", event => {
-    url = event.url;
-    // console.log(typeof event.url);
-    setTimeout(() => {
-      // window.location.href = event.url;
-      window.open(url);
-  }, 1000);
-    console.log(url);
+    window.open(event.url);
+    alert("hi");
   });
 });
