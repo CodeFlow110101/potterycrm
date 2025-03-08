@@ -110,8 +110,9 @@ $submitAndPay = function () {
 
     if (Gate::allows('terminal-checkout-user')) {
         $url = App::call([PaymentController::class, 'hardwarePayment'], ['cart' => $this->cart, 'user' => $this->booking_id ? Booking::find($this->booking_id)->user : $this->auth, 'coupon' => $this->coupon, 'amount' => $this->coupon ? $this->total * $this->discount : $this->total]);
-        $this->dispatch('open-square-app', url: $url);
+        // $this->dispatch('open-square-app', url: $url);
         $this->url = $url;
+        $this->dispatch('test');
     } else {
         App::call([PaymentController::class, 'onlinePayment'], ['cart' => $this->cart, 'user' => $this->auth, 'coupon' => $this->coupon]);
     }
@@ -295,7 +296,7 @@ mount(function () {
                                 </svg>
                             </div>
                         </button>
-                        <a href="{{ $url }}">Click here</a>
+                        <a x-on:test.window="$el.click(); console.log('hello');" href="{{ $url }}">Click here</a>
                     </form>
                     @endif
                 </div>
