@@ -168,8 +168,18 @@ class PaymentController extends Controller
     }
 
 
-    static function hardwarePayment($cart, $user, $coupon) {
-        dd('hello');
+    static function hardwarePayment($cart, $user, $coupon, $amount)
+    {
+        return "intent:#Intent;" .
+            "action=com.squareup.pos.action.CHARGE;" .
+            "package=com.squareup;" .
+            "S.com.squareup.pos.WEB_CALLBACK_URI=" . env('SQUARE_POS_WEB_CALLBACK_URI') . ";" .
+            "S.com.squareup.pos.CLIENT_ID=" . env('sq0idp-iDpH3a-AE-nZYBsI-2So2Q') . ";" .
+            "S.com.squareup.pos.API_VERSION=v2.0;" .
+            "i.com.squareup.pos.TOTAL_AMOUNT=" . $amount * 100 . ";" .
+            "S.com.squareup.pos.CURRENCY_CODE=" . env('SQUARE_POS_CURRENCY') . ";" .
+            "S.com.squareup.pos.TENDER_TYPES=com.squareup.pos.TENDER_CARD,com.squareup.pos.TENDER_CASH;" .
+            "end;";
     }
 
 

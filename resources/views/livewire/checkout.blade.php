@@ -19,19 +19,13 @@ use function Livewire\Volt\{state, with, computed, rules, mount, on, updated};
 
 state(['cart'])->reactive();
 
-state(['first_name', 'last_name', 'email', 'phoneno', 'otp', 'generatedOtp', 'auth', 'coupon_code', 'booking_id', 'coupon', 'checkout_for', 'terminal_status' => 'Submit & Pay']);
+state(['first_name', 'last_name', 'email', 'phoneno', 'otp', 'generatedOtp', 'auth', 'coupon_code', 'booking_id', 'coupon', 'checkout_for']);
 
 with(fn() => [
     'products' => Product::whereIn('id', $this->cart ? array_keys($this->cart) : [])->get(),
     'bookings' => Booking::with(['user'])->where('status_id', 3)->whereHas('timeSlot.date', function (Builder $query) {
         $query->where('date', Carbon::today()->format('Y-m-d'));
     })->get(),
-]);
-
-on([
-    (Auth::user() ? 'echo-private:payment-user-' . Auth::user()->id . ',TerminalPaymentEvent' : '') => function ($request) {
-        $this->terminal_status = $request['request']['data']['object']['checkout']['status'];
-    },
 ]);
 
 rules(fn() => [
@@ -115,8 +109,8 @@ $submitAndPay = function () {
     $this->validate();
 
     if (Gate::allows('terminal-checkout-user')) {
-        $this->terminal_status = 'connecting';
-        App::call([PaymentController::class, 'hardwarePayment'], ['cart' => $this->cart, 'user' => $this->booking_id ? Booking::find($this->booking_id)->user : $this->auth, 'coupon' => $this->coupon]);
+        $url = App::call([PaymentController::class, 'hardwarePayment'], ['cart' => $this->cart, 'user' => $this->booking_id ? Booking::find($this->booking_id)->user : $this->auth, 'coupon' => $this->coupon, 'amount' => $this->coupon ? $this->total * $this->discount : $this->total]);
+        $this->dispatch('open-square-app', url: $url);
     } else {
         App::call([PaymentController::class, 'onlinePayment'], ['cart' => $this->cart, 'user' => $this->auth, 'coupon' => $this->coupon]);
     }
@@ -236,7 +230,7 @@ mount(function () {
                         <button type="submit" :class="interval && 'pointer-events-none opacity-50'" class="text-black py-3 uppercase px-20 bg-white rounded-lg tracking-tight w-min mx-auto whitespace-nowrap">{{$generatedOtp ? 'Resend Code' : 'Send Code'}}</button>
                     </form>
                     @else
-                    <form x-data="androidHardwareUrl('{{ env('SQUARE_POS_WEB_CALLBACK_URI') }}','{{ env('SQUARE_POS_APPLICATION_ID') }}','{{ env('SQUARE_POS_CURRENCY') }}')" wire:submit="submitAndPay" class="h-min flex flex-col grow gap-8 mx-auto font-avenir-next-rounded-light">
+                    <form wire:submit="submitAndPay" class="h-min flex flex-col grow gap-8 mx-auto font-avenir-next-rounded-light">
                         @can('terminal-checkout-user')
                         <div class="flex justify-around items-center">
                             <div @click="$refs.selectbooking.click()" class="cursor-pointer rounded-md border border-white flex items-center gap-4 p-2">
@@ -291,8 +285,8 @@ mount(function () {
                             </li>
                         </ol>
                         @endcannot
-                        <button type="submit" :class="$wire.terminal_status == 'processing' && 'pointer-events-none'" class="relative uppercase text-center py-2 px-4 bg-white mx-auto text-black rounded-lg mt-auto">
-                            <div wire:loading.class="invisible" wire:target="submitAndPay">{{ str_replace("_", " ", $terminal_status) }}</div>
+                        <button type="submit" class="relative uppercase text-center py-2 px-4 bg-white mx-auto text-black rounded-lg mt-auto">
+                            <div wire:loading.class="invisible" wire:target="submitAndPay">Submit & Pay</div>
                             <div wire:loading.class.remove="invisible" wire:target="submitAndPay" class="invisible absolute inset-0 p-2">
                                 <svg aria-hidden="true" class="size-full text-transparent animate-spin fill-black" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
@@ -300,7 +294,6 @@ mount(function () {
                                 </svg>
                             </div>
                         </button>
-                        <a :href="url">Click here</a>
                     </form>
                     @endif
                 </div>
