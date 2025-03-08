@@ -128,7 +128,7 @@ class PaymentController extends Controller
         }
 
         $line_items = $all_order_line_item;
-        $metadata = ['user_id' => (string)$user->id, 'coupon_id' => ($coupon ? $coupon->id : 0)];
+        $metadata = ['user_id' => (string)$user->id, 'coupon_id' => (string)($coupon ? $coupon->id : 0)];
         $order = new \Square\Models\Order(env('SQUARE_POS_LOCATION_ID'));
         $order->setLineItems($line_items);
         $order->setMetadata($metadata);
@@ -166,6 +166,12 @@ class PaymentController extends Controller
             $errors = $api_response->getErrors();
         }
     }
+
+
+    static function hardwarePayment($cart, $user, $coupon) {
+        dd('hello');
+    }
+
 
     function store(Request $request)
     {

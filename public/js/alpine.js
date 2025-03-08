@@ -144,3 +144,31 @@ function flatpickrDate(tomorrow, allowedDates) {
     }
   };
 }
+
+function androidHardwareUrl(callback_url, client_id, currency_code) {
+  return {
+    callback_url: callback_url,
+    client_id: client_id,
+    currency_code: currency_code,
+    url: null,
+    init() {
+      this.url =
+        "intent:#Intent;" +
+        "action=com.squareup.pos.action.CHARGE;" +
+        "package=com.squareup;" +
+        "S.com.squareup.pos.WEB_CALLBACK_URI=" +
+        this.callback_url +
+        ";" +
+        "S.com.squareup.pos.CLIENT_ID=" +
+        this.client_id +
+        ";" +
+        "S.com.squareup.pos.API_VERSION=v2.0;" +
+        "i.com.squareup.pos.TOTAL_AMOUNT=100;" +
+        "S.com.squareup.pos.CURRENCY_CODE=" +
+        this.currency_code +
+        ";" +
+        "S.com.squareup.pos.TENDER_TYPES=com.squareup.pos.TENDER_CARD,com.squareup.pos.TENDER_CASH;" +
+        "end;";
+    }
+  };
+}
