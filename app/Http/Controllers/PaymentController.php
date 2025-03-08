@@ -12,7 +12,6 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\Product;
 use App\Models\Purchase;
-use Illuminate\Support\Facades\Log;
 use Square\Models\CheckoutOptions;
 use Square\Models\CreatePaymentLinkRequest;
 use Illuminate\Support\Str;
@@ -23,7 +22,6 @@ class PaymentController extends Controller
 
     function webhook(Request $request)
     {
-        Log::info($request);
         return;
         if ($request->type == "payment.updated") {
             $this->store($request);
