@@ -30,14 +30,9 @@ document.addEventListener("livewire:init", () => {
   });
 
   Livewire.on("open-square-app", event => {
-    let link = document.createElement("a");
-    link.href = event.url;
-    link.style.display = "none"; // Hide the link
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    // window.open(event.url);
-    // window.location.href = event.url;
+    url = event.url;
+    // console.log(typeof event.url);
+    console.log(url);
+    window.open(url);
   });
 });
