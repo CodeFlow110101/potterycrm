@@ -68,7 +68,6 @@ class AppServiceProvider extends ServiceProvider
 
         Gate::define('ios', function (?User $user) {
             $userAgent = Request::header('User-Agent');
-            dd($userAgent);
             return stripos($userAgent, 'iphone') !== false || stripos($userAgent, 'ipad') !== false || stripos($userAgent, 'ipod') !== false;
         });
 
