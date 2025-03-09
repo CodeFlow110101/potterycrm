@@ -19,7 +19,7 @@ use function Livewire\Volt\{state, with, computed, rules, mount, on, updated};
 
 state(['cart'])->reactive();
 
-state(['first_name', 'last_name', 'email', 'phoneno', 'otp', 'generatedOtp', 'auth', 'coupon_code', 'booking_id', 'coupon', 'checkout_for', 'url']);
+state(['first_name', 'last_name', 'email', 'phoneno', 'otp', 'generatedOtp', 'auth', 'coupon_code', 'booking_id', 'coupon', 'checkout_for']);
 
 with(fn() => [
     'products' => Product::whereIn('id', $this->cart ? array_keys($this->cart) : [])->get(),
@@ -35,8 +35,8 @@ rules(fn() => [
     'phoneno' => $this->auth ? ['exclude'] : ['required', function ($attribute, $value, $fail) {
         Gate::allows('valid-phone-number', $this->phoneno) || $fail('The :attribute must be in this format ' . env('TWILIO_PHONE_COUNTRY_CODE') . ' ' . Str::replace('9', 'X', env('PHONE_NUMBER_VALIDATION_PATTERN')));
     }],
-    'checkout_for' => $this->auth && Gate::allows('terminal-checkout-user') ? ['required'] : ['exclude'],
-    'booking_id' => $this->auth && $this->checkout_for == 1 && Gate::allows('terminal-checkout-user') ? ['required'] : ['exclude'],
+    'checkout_for' => $this->auth && Gate::allows('hardware-checkout-user') ? ['required'] : ['exclude'],
+    'booking_id' => $this->auth && $this->checkout_for == 1 && Gate::allows('hardware-checkout-user') ? ['required'] : ['exclude'],
     'cart' => [
         'required',
         'array',
@@ -50,6 +50,12 @@ rules(fn() => [
 ]);
 
 updated(['checkout_for' => fn() => $this->checkout_for == "1" && $this->reset('booking_id')]);
+
+$url = computed(function () {
+    if (collect($this->cart)->isNotEmpty() && ($this->checkout_for == 2 || ($this->checkout_for == 1 && $this->booking_id))) {
+        return App::call([PaymentController::class, 'hardwarePayment'], ['cart' => $this->cart, 'user' => $this->booking_id ? Booking::find($this->booking_id)->user : $this->auth, 'coupon' => $this->coupon, 'amount' => $this->coupon ? $this->total * $this->discount : $this->total]);
+    }
+});
 
 $trimmed_phoneno = computed(function () {
     return trim(Str::replaceFirst(env('TWILIO_PHONE_COUNTRY_CODE'), '', $this->phoneno));
@@ -107,15 +113,7 @@ $submit = function () {
 
 $submitAndPay = function () {
     $this->validate();
-
-    if (Gate::allows('terminal-checkout-user')) {
-        $url = App::call([PaymentController::class, 'hardwarePayment'], ['cart' => $this->cart, 'user' => $this->booking_id ? Booking::find($this->booking_id)->user : $this->auth, 'coupon' => $this->coupon, 'amount' => $this->coupon ? $this->total * $this->discount : $this->total]);
-        $this->dispatch('open-square-app', url: $url);
-        // $this->url = $url;
-        // $this->dispatch('test');
-    } else {
-        App::call([PaymentController::class, 'onlinePayment'], ['cart' => $this->cart, 'user' => $this->auth, 'coupon' => $this->coupon]);
-    }
+    App::call([PaymentController::class, 'onlinePayment'], ['cart' => $this->cart, 'user' => $this->auth, 'coupon' => $this->coupon]);
 };
 
 $total = computed(function () {
@@ -151,7 +149,7 @@ $submitCoupon = function () {
     $this->coupon = Coupon::where('name', $this->coupon_code)->first();
 };
 
-mount(function () {
+mount(function (Request $request) {
     $this->auth = Auth::user();
 });
 ?>
@@ -233,7 +231,7 @@ mount(function () {
                     </form>
                     @else
                     <form wire:submit="submitAndPay" class="h-min flex flex-col grow gap-8 mx-auto font-avenir-next-rounded-light">
-                        @can('terminal-checkout-user')
+                        @can('hardware-checkout-user')
                         <div class="flex justify-around items-center">
                             <div @click="$refs.selectbooking.click()" class="cursor-pointer rounded-md border border-white flex items-center gap-4 p-2">
                                 <input x-ref="selectbooking" wire:model.live="checkout_for" value="1" class="size-4 outline-none" type="radio">
@@ -253,7 +251,7 @@ mount(function () {
                         @if($checkout_for == 1)
                         <div class="flex flex-col gap-2">
                             <label class="font-avenir-next-rounded-semibold text-xl">Select Booking</label>
-                            <select wire:model="booking_id" class="w-full bg-black/5 outline-none p-3">
+                            <select wire:model.live="booking_id" class="w-full bg-black/5 outline-none p-3">
                                 <option value="">Select a Booking by Customer Name</option>
                                 @foreach($bookings as $booking)
                                 <option value="{{ $booking->id }}">{{ $booking->user->first_name . ' ' . $booking->user->last_name }}</option>
@@ -268,7 +266,7 @@ mount(function () {
                         </div>
                         @endif
                         @endcan
-                        @cannot('terminal-checkout-user')
+                        @cannot('hardware-checkout-user')
                         <ol class="list-decimal list-inside space-y-6 text-">
                             <li>
                                 Order Your Kit: Visit our ‘Shop’ tab to order your DIY pottery painting kit. Each kit includes everything you need to paint at home.
@@ -286,7 +284,6 @@ mount(function () {
                                 Pick Up: We’ll let you know when your pottery is ready to be picked up. Come and collect your handiwork!
                             </li>
                         </ol>
-                        @endcannot
                         <button type="submit" class="relative uppercase text-center py-2 px-4 bg-white mx-auto text-black rounded-lg mt-auto">
                             <div wire:loading.class="invisible" wire:target="submitAndPay">Submit & Pay</div>
                             <div wire:loading.class.remove="invisible" wire:target="submitAndPay" class="invisible absolute inset-0 p-2">
@@ -296,7 +293,10 @@ mount(function () {
                                 </svg>
                             </div>
                         </button>
-                        <a x-on:test.window="$el.click(); console.log('hello');" href="{{ $url }}">Click here</a>
+                        @endcannot
+                        @can('hardware-checkout-user')
+                        <a class="text-black py-3 uppercase px-4 mx-auto bg-white rounded-lg tracking-tight w-min whitespace-nowrap @if(!$this->url) opacity-50 pointer-events-none @endif" href="">Submit & Pay</a>
+                        @endcan
                     </form>
                     @endif
                 </div>

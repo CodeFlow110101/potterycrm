@@ -10,6 +10,7 @@ use App\Policies\OrderPolicy;
 use App\Policies\ProductPolicy;
 use App\Policies\PurchasePolicy;
 use App\Policies\UserPolicy;
+use Jenssegers\Agent\Agent;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -53,10 +54,31 @@ class AppServiceProvider extends ServiceProvider
 
         Gate::define('register-user', [UserPolicy::class, 'register']);
         Gate::define('update-user', [UserPolicy::class, 'update']);
-        Gate::define('terminal-checkout-user', [UserPolicy::class, 'terminalCheckout']);
+        Gate::define('hardware-checkout-user', [UserPolicy::class, 'terminalCheckout']);
+        Gate::define('online-checkout-user', [UserPolicy::class, 'terminalCheckout']);
 
         Gate::define('valid-phone-number', function (?User $user, $number) {
             return Str::startsWith(trim($number), env('TWILIO_PHONE_COUNTRY_CODE')) && strlen(trim(Str::replaceFirst(env('TWILIO_PHONE_COUNTRY_CODE'), '', trim($number)))) === strlen(trim(env('PHONE_NUMBER_VALIDATION_PATTERN')));
+        });
+
+        Gate::define('android', function (?User $user) {
+            $agent = new Agent();
+            return $agent->isAndroid();
+        });
+
+        Gate::define('ios', function (?User $user) {
+            $agent = new Agent();
+            return $agent->isiOS();
+        });
+
+        Gate::define('mobile-device', function (?User $user) {
+            $agent = new Agent();
+            return $agent->isiOS() || $agent->isAndroid();
+        });
+
+        Gate::define('pc', function (?User $user) {
+            $agent = new Agent();
+            return $agent->isDesktop();
         });
     }
 }

@@ -28,11 +28,4 @@ document.addEventListener("livewire:init", () => {
   Livewire.on("reload", () => {
     Livewire.navigate(window.location.href);
   });
-
-  Livewire.on("open-square-app", event => {
-    setTimeout(() => {
-      window.open(event.url);
-      alert("hi");
-    }, 500);
-  });
 });
