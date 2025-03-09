@@ -26,6 +26,7 @@ class PaymentController extends Controller
     {
 
         Log::info($request, array_key_exists('order_id', $request['data']['object']['payment']));
+        return;
 
         if ($request->type == "payment.updated") {
             $this->store($request);
