@@ -63,25 +63,28 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Gate::define('android', function (?User $user) {
-            $agent = new Agent();
-            $agent->setUserAgent(Request::header('User-Agent'));
-            dd(Request::header('User-Agent'), $agent->isAndroid());
-            return $agent->isAndroid();
+            $userAgent = Request::header('User-Agent');
+            return stripos($userAgent, 'android') !== false;
         });
 
         Gate::define('ios', function (?User $user) {
-            $agent = new Agent();
-            return $agent->isiOS();
+            $userAgent = Request::header('User-Agent');
+            return stripos($userAgent, 'iphone') !== false || stripos($userAgent, 'ipad') !== false || stripos($userAgent, 'ipod') !== false;
         });
 
         Gate::define('mobile-device', function (?User $user) {
-            $agent = new Agent();
-            return $agent->isiOS() || $agent->isAndroid();
+            $userAgent = Request::header('User-Agent');
+            return stripos($userAgent, 'android') !== false ||
+                stripos($userAgent, 'iphone') !== false ||
+                stripos($userAgent, 'ipad') !== false ||
+                stripos($userAgent, 'ipod') !== false;
         });
 
         Gate::define('pc', function (?User $user) {
-            $agent = new Agent();
-            return $agent->isDesktop();
+            $userAgent = Request::header('User-Agent');
+            return stripos($userAgent, 'windows') !== false ||
+                stripos($userAgent, 'macintosh') !== false ||
+                stripos($userAgent, 'linux') !== false;
         });
     }
 }
