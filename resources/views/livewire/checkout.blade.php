@@ -53,7 +53,7 @@ updated(['checkout_for' => fn() => $this->checkout_for == "1" && $this->reset('b
 
 $url = computed(function () {
     if (collect($this->cart)->isNotEmpty() && ($this->checkout_for == 2 || ($this->checkout_for == 1 && $this->booking_id))) {
-        return App::call([PaymentController::class, 'hardwarePayment'], ['cart' => $this->cart, 'user' => $this->booking_id ? Booking::find($this->booking_id)->user : $this->auth, 'coupon' => $this->coupon, 'amount' => $this->coupon ? $this->total * $this->discount : $this->total, 'android' => Gate::allows('android'), 'ios' => Gate::allows('ios')]);
+        return App::call([PaymentController::class, 'hardwarePayment'], ['cart' => $this->cart, 'user' => $this->booking_id ? Booking::find($this->booking_id)->user : $this->auth, 'coupon' => $this->coupon, 'amount' => $this->coupon ? $this->total * $this->discount : $this->total]);
     }
 });
 
@@ -297,7 +297,6 @@ mount(function (Request $request) {
                         @can('hardware-checkout-user')
                         <a class="text-black py-3 uppercase px-4 mx-auto bg-white rounded-lg tracking-tight w-min whitespace-nowrap @if(!$this->url) opacity-50 pointer-events-none @endif" href="{{ $this->url }}">Submit & Pay</a>
                         @endcan
-                        @dump($this->url,Gate::allows('android'))
                     </form>
                     @endif
                 </div>
