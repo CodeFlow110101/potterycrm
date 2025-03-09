@@ -11,6 +11,10 @@ class UserPolicy
     public function before(User $user, string $ability): bool|null
     {
 
+        if ($ability == 'online-checkout-user') {
+            return null;
+        }
+
         if ($user->role->name == "administrator") {
             return true;
         }
@@ -34,6 +38,11 @@ class UserPolicy
     public function terminalCheckout(User $user): bool
     {
         return $user->role->name == "staff";
+    }
+
+    public function onlineCheckout(User $user): bool
+    {
+        return $user->role->name == "customer";
     }
 
     /**

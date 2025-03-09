@@ -266,7 +266,7 @@ mount(function (Request $request) {
                         </div>
                         @endif
                         @endcan
-                        @cannot('hardware-checkout-user')
+                        @can('online-checkout-user')
                         <ol class="list-decimal list-inside space-y-6 text-">
                             <li>
                                 Order Your Kit: Visit our ‘Shop’ tab to order your DIY pottery painting kit. Each kit includes everything you need to paint at home.
@@ -293,11 +293,10 @@ mount(function (Request $request) {
                                 </svg>
                             </div>
                         </button>
-                        @endcannot
+                        @endcan
                         @can('hardware-checkout-user')
                         <a class="text-black py-3 uppercase px-4 mx-auto bg-white rounded-lg tracking-tight w-min whitespace-nowrap @if(!$this->url) opacity-50 pointer-events-none @endif" href="{{ $this->url }}">Submit & Pay</a>
                         @endcan
-                        @dump(Gate::allows('pc'))
                     </form>
                     @endif
                 </div>

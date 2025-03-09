@@ -17,7 +17,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->validateCsrfTokens(except: [
-            '/square-webhook'
+            '/square-webhook',
+            '/square-hardware',
         ]);
         $middleware->alias([
             'auth' => Authenticate::class,

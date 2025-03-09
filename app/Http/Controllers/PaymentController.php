@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\Product;
 use App\Models\Purchase;
+use Illuminate\Support\Facades\Log;
 use Square\Models\CheckoutOptions;
 use Square\Models\CreatePaymentLinkRequest;
 use Illuminate\Support\Str;
@@ -25,9 +26,11 @@ class PaymentController extends Controller
     {
         if ($request->type == "payment.updated") {
             $this->store($request);
-        } elseif ($request->type == "terminal.checkout.updated") {
-            $this->terminalUpdated($request);
         }
+    }
+
+    function hardware() {
+        Log::info('hello');
     }
 
     static function onlinePayment($cart, $user, $coupon)
@@ -96,79 +99,6 @@ class PaymentController extends Controller
         }
     }
 
-    static function terminalPayment($cart, $user, $coupon)
-    {
-        $products = Product::whereIn('id', array_keys($cart))->get();
-
-        $client = new SquareClient([
-            'accessToken' => env('SQUARE_POS_ACCESS_TOKEN'),
-            'environment' => env('SQUARE_POS_ENVIRONMENT'),
-        ]);
-
-        $all_order_line_item = [];
-
-        foreach ($cart as $id => $quantitiy) {
-            $metadata = ['id' => (string)$id];
-            $base_price_money = new \Square\Models\Money();
-            $base_price_money->setAmount($products->where('id', $id)->first()->price * 100);
-            $base_price_money->setCurrency(env('SQUARE_POS_CURRENCY'));
-
-            $order_line_item = new \Square\Models\OrderLineItem($quantitiy);
-            $order_line_item->setName($products->where('id', $id)->first()->name);
-            $order_line_item->setMetadata($metadata);
-            $order_line_item->setBasePriceMoney($base_price_money);
-            $all_order_line_item[] = $order_line_item;
-        }
-
-        $discounts  = null;
-        if ($coupon) {
-            $order_line_item_discount = new OrderLineItemDiscount();
-            $order_line_item_discount->setPercentage((string)$coupon->discount_value);
-            $order_line_item_discount->setName($coupon->discount_value . '% Discount'); // Required field
-            $discounts = [$order_line_item_discount];
-        }
-
-        $line_items = $all_order_line_item;
-        $metadata = ['user_id' => (string)$user->id, 'coupon_id' => (string)($coupon ? $coupon->id : 0)];
-        $order = new \Square\Models\Order(env('SQUARE_POS_LOCATION_ID'));
-        $order->setLineItems($line_items);
-        $order->setMetadata($metadata);
-        if ($coupon) {
-            $order->setDiscounts($discounts);
-        }
-
-        $body = new \Square\Models\CreateOrderRequest();
-        $body->setOrder($order);
-
-        $api_response = $client->getOrdersApi()->createOrder($body);
-
-        if ($api_response->isSuccess()) {
-            $order_id = $api_response->getResult()->getOrder();
-        }
-
-        $amount_money = new \Square\Models\Money();
-        $amount_money->setAmount($order_id->getTotalMoney()->getAmount());
-        $amount_money->setCurrency(env('SQUARE_POS_CURRENCY'));
-
-        $device_options = new \Square\Models\DeviceCheckoutOptions(env('SQUARE_POS_DEVICE_ID'));
-        $device_options->setSkipReceiptScreen(false);
-        $device_options->setShowItemizedCart(true);
-
-        $checkout = new \Square\Models\TerminalCheckout($amount_money, $device_options);
-        $checkout->setOrderId($order_id->getId());
-
-        $body = new \Square\Models\CreateTerminalCheckoutRequest(Str::uuid(), $checkout);
-
-        $api_response = $client->getTerminalApi()->createTerminalCheckout($body);
-
-        if ($api_response->isSuccess()) {
-            $result = $api_response->getResult();
-        } else {
-            $errors = $api_response->getErrors();
-        }
-    }
-
-
     static function hardwarePayment($cart, $user, $coupon, $amount)
     {
 
@@ -185,7 +115,7 @@ class PaymentController extends Controller
             "S.com.squareup.pos.TENDER_TYPES=com.squareup.pos.TENDER_CARD,com.squareup.pos.TENDER_CASH;" .
             "end;";
 
-        Gate::allows('pc') && $url = "square-commerce-v1://payment/create?data=" . urlencode(json_encode([
+        Gate::allows('apple') && $url = "square-commerce-v1://payment/create?data=" . urlencode(json_encode([
             "amount_money" => [
                 "amount" => $amount * 100,
                 "currency_code" => env('SQUARE_POS_CURRENCY'),

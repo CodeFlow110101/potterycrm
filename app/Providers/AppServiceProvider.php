@@ -55,7 +55,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('register-user', [UserPolicy::class, 'register']);
         Gate::define('update-user', [UserPolicy::class, 'update']);
         Gate::define('hardware-checkout-user', [UserPolicy::class, 'terminalCheckout']);
-        Gate::define('online-checkout-user', [UserPolicy::class, 'terminalCheckout']);
+        Gate::define('online-checkout-user', [UserPolicy::class, 'onlineCheckout']);
 
         Gate::define('valid-phone-number', function (?User $user, $number) {
             return Str::startsWith(trim($number), env('TWILIO_PHONE_COUNTRY_CODE')) && strlen(trim(Str::replaceFirst(env('TWILIO_PHONE_COUNTRY_CODE'), '', trim($number)))) === strlen(trim(env('PHONE_NUMBER_VALIDATION_PATTERN')));
@@ -66,30 +66,14 @@ class AppServiceProvider extends ServiceProvider
             return stripos($userAgent, 'android') !== false;
         });
 
-        Gate::define('ios', function (?User $user) {
-            $userAgent = Request::header('User-Agent');
-
-            return stripos($userAgent, 'iphone') !== false ||
-                stripos($userAgent, 'ipod') !== false ||
-                stripos($userAgent, 'ipad') !== false ||
-                (stripos($userAgent, 'macintosh') !== false && Request::header('Sec-CH-UA-Platform') === 'iOS');
-        });
-
-
         Gate::define('mobile-device', function (?User $user) {
             $userAgent = Request::header('User-Agent');
-            return stripos($userAgent, 'android') !== false ||
-                stripos($userAgent, 'iphone') !== false ||
-                stripos($userAgent, 'ipad') !== false ||
-                stripos($userAgent, 'ipod') !== false;
+            return stripos($userAgent, 'android') !== false || stripos($userAgent, 'macintosh') !== false;
         });
 
-        Gate::define('pc', function (?User $user) {
+        Gate::define('apple', function (?User $user) {
             $userAgent = Request::header('User-Agent');
-
-            return stripos($userAgent, 'windows') !== false ||
-                stripos($userAgent, 'macintosh') !== false ||
-                stripos($userAgent, 'linux') !== false;
+            return stripos($userAgent, 'macintosh') !== false;
         });
     }
 }
