@@ -297,6 +297,7 @@ mount(function (Request $request) {
                         @can('hardware-checkout-user')
                         <a class="text-black py-3 uppercase px-4 mx-auto bg-white rounded-lg tracking-tight w-min whitespace-nowrap @if(!$this->url) opacity-50 pointer-events-none @endif" href="{{ $this->url }}">Submit & Pay</a>
                         @endcan
+                        @dump(Gate::allows('ios'))
                     </form>
                     @endif
                 </div>
