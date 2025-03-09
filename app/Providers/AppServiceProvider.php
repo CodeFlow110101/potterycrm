@@ -81,6 +81,7 @@ class AppServiceProvider extends ServiceProvider
 
         Gate::define('pc', function (?User $user) {
             $userAgent = Request::header('User-Agent');
+            dd($userAgent);
             return stripos($userAgent, 'windows') !== false ||
                 stripos($userAgent, 'macintosh') !== false ||
                 stripos($userAgent, 'linux') !== false;
