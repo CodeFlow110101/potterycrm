@@ -187,8 +187,6 @@ class PaymentController extends Controller
 
         $ios && $url = null;
 
-        return Gate::allows('android');
-
         return $url;
     }
 
