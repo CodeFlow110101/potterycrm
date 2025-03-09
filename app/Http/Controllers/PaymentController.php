@@ -25,7 +25,7 @@ class PaymentController extends Controller
     function webhook(Request $request)
     {
 
-        Log::info($request, array_key_exists('order_id', $request['data']['object']['payment']));
+        Log::info($request,  $request['data']['object']['payment']);
         return;
 
         if ($request->type == "payment.updated") {
