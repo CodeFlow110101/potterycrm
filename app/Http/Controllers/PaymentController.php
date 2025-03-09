@@ -185,7 +185,25 @@ class PaymentController extends Controller
             "S.com.squareup.pos.TENDER_TYPES=com.squareup.pos.TENDER_CARD,com.squareup.pos.TENDER_CASH;" .
             "end;";
 
-        Gate::allows('ios') && $url = null;
+        Gate::allows('ios') && $url = "square-commerce-v1://payment/create?data=" . urlencode(json_encode([
+            "amount_money" => [
+                "amount" => $amount * 100,
+                "currency_code" => env('SQUARE_POS_CURRENCY'),
+            ],
+            "callback_url" => env('SQUARE_POS_WEB_CALLBACK_URI'),
+            "client_id" => env('SQUARE_POS_APPLICATION_ID'),
+            "version" => "1.3",
+            "notes" => "notes for the transaction",
+            "options" => [
+                "supported_tender_types" => [
+                    "CREDIT_CARD",
+                    "CASH",
+                    "OTHER",
+                    "SQUARE_GIFT_CARD",
+                    "CARD_ON_FILE"
+                ]
+            ]
+        ]));
 
         return $url;
     }
