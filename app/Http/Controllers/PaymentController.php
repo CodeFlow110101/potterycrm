@@ -169,12 +169,12 @@ class PaymentController extends Controller
     }
 
 
-    static function hardwarePayment($cart, $user, $coupon, $amount)
+    static function hardwarePayment($cart, $user, $coupon, $amount, $android, $ios)
     {
 
         $url = null;
 
-        Gate::allows('android') &&  $url = "intent:#Intent;" .
+        $android &&  $url = "intent:#Intent;" .
             "action=com.squareup.pos.action.CHARGE;" .
             "package=com.squareup;" .
             "S.com.squareup.pos.WEB_CALLBACK_URI=" . env('SQUARE_POS_WEB_CALLBACK_URI') . ";" .
@@ -185,7 +185,7 @@ class PaymentController extends Controller
             "S.com.squareup.pos.TENDER_TYPES=com.squareup.pos.TENDER_CARD,com.squareup.pos.TENDER_CASH;" .
             "end;";
 
-        Gate::allows('ios') && $url = null;
+        $ios && $url = null;
 
         return Gate::allows('android');
 

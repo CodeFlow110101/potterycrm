@@ -53,7 +53,7 @@ updated(['checkout_for' => fn() => $this->checkout_for == "1" && $this->reset('b
 
 $url = computed(function () {
     if (collect($this->cart)->isNotEmpty() && ($this->checkout_for == 2 || ($this->checkout_for == 1 && $this->booking_id))) {
-        return App::call([PaymentController::class, 'hardwarePayment'], ['cart' => $this->cart, 'user' => $this->booking_id ? Booking::find($this->booking_id)->user : $this->auth, 'coupon' => $this->coupon, 'amount' => $this->coupon ? $this->total * $this->discount : $this->total]);
+        return App::call([PaymentController::class, 'hardwarePayment'], ['cart' => $this->cart, 'user' => $this->booking_id ? Booking::find($this->booking_id)->user : $this->auth, 'coupon' => $this->coupon, 'amount' => $this->coupon ? $this->total * $this->discount : $this->total, 'android' => Gate::allows('android'), 'ios' => Gate::allows('ios')]);
     }
 });
 
