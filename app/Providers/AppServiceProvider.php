@@ -65,6 +65,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('android', function (?User $user) {
             $agent = new Agent();
             $agent->setUserAgent(Request::header('User-Agent'));
+            dd(Request::header('User-Agent'));
             return $agent->isAndroid();
         });
 
