@@ -11,6 +11,7 @@ use App\Policies\ProductPolicy;
 use App\Policies\PurchasePolicy;
 use App\Policies\UserPolicy;
 use Jenssegers\Agent\Agent;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -63,6 +64,7 @@ class AppServiceProvider extends ServiceProvider
 
         Gate::define('android', function (?User $user) {
             $agent = new Agent();
+            $agent->setUserAgent(Request::header('User-Agent'));
             return $agent->isAndroid();
         });
 
