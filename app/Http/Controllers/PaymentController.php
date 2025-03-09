@@ -24,13 +24,20 @@ class PaymentController extends Controller
 
     function webhook(Request $request)
     {
+        $client = new SquareClient([
+            'accessToken' => env('SQUARE_POS_ACCESS_TOKEN'),
+            'environment' => env('SQUARE_POS_ENVIRONMENT'),
+        ]);
 
-        Log::info($request,  $request['data']['object']['payment']);
-        return;
+        $payment = $request['data']['object']['payment'];
 
-        if ($request->type == "payment.updated") {
-            $this->store($request);
+        $api_response = $client->getOrdersApi()->retrieveOrder($payment['order_id']);
+
+        if (!$api_response->isSuccess()) {
+            dd($api_response->getErrors());
         }
+
+        $api_response->getResult()->getorder()->getmetadata() && $this->store($request);
     }
 
     function hardware()
