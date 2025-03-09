@@ -6,6 +6,7 @@ use App\Events\TerminalPaymentEvent;
 use App\Models\IssuedCoupon;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Broadcast;
 use Square\SquareClient;
 use Carbon\Carbon;
@@ -170,7 +171,10 @@ class PaymentController extends Controller
 
     static function hardwarePayment($cart, $user, $coupon, $amount)
     {
-        return "intent:#Intent;" .
+
+        $url = null;
+
+        Gate::allows('android') &&  $url = "intent:#Intent;" .
             "action=com.squareup.pos.action.CHARGE;" .
             "package=com.squareup;" .
             "S.com.squareup.pos.WEB_CALLBACK_URI=" . env('SQUARE_POS_WEB_CALLBACK_URI') . ";" .
@@ -180,6 +184,10 @@ class PaymentController extends Controller
             "S.com.squareup.pos.CURRENCY_CODE=" . env('SQUARE_POS_CURRENCY') . ";" .
             "S.com.squareup.pos.TENDER_TYPES=com.squareup.pos.TENDER_CARD,com.squareup.pos.TENDER_CASH;" .
             "end;";
+
+        Gate::allows('ios') && $url = null;
+
+        return $url;
     }
 
 
