@@ -68,8 +68,13 @@ class AppServiceProvider extends ServiceProvider
 
         Gate::define('ios', function (?User $user) {
             $userAgent = Request::header('User-Agent');
-            return stripos($userAgent, 'iphone') !== false || stripos($userAgent, 'ipad') !== false || stripos($userAgent, 'ipod') !== false;
+
+            return stripos($userAgent, 'iphone') !== false ||
+                stripos($userAgent, 'ipod') !== false ||
+                stripos($userAgent, 'ipad') !== false ||
+                (stripos($userAgent, 'macintosh') !== false && Request::header('Sec-CH-UA-Platform') === 'iOS');
         });
+
 
         Gate::define('mobile-device', function (?User $user) {
             $userAgent = Request::header('User-Agent');
@@ -81,7 +86,7 @@ class AppServiceProvider extends ServiceProvider
 
         Gate::define('pc', function (?User $user) {
             $userAgent = Request::header('User-Agent');
-            dd($userAgent);
+
             return stripos($userAgent, 'windows') !== false ||
                 stripos($userAgent, 'macintosh') !== false ||
                 stripos($userAgent, 'linux') !== false;
