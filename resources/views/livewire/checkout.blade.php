@@ -168,7 +168,7 @@ mount(function (Request $request) {
             </div>
         </a>
     </div>
-    {{ request()->url() }}
+    {{ url('/') }}
     <div class="flex max-sm:flex-col sm:justify-between gap-4 sm:gap-12 grow">
         <div class="w-full py-12 grow flex flex-col backdrop-blur-xl border border-white rounded-lg">
             <div class="w-4/5 mx-auto relative grow" x-data="{ height: 0 }" x-resize="height = $height">
