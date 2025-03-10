@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\Product;
 use App\Models\Purchase;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Square\Models\CheckoutOptions;
 use Square\Models\CreatePaymentLinkRequest;
@@ -37,10 +38,11 @@ class PaymentController extends Controller
             dd($api_response->getErrors());
         }
 
-        if (!$api_response->getResult()->getorder()->getmetadata()) {
-            return;
-        }
+        $api_response->getResult()->getorder()->getmetadata() && $this->storeOnlinePurchase($payment);
+    }
 
+    public function storeOnlinePurchase($payment)
+    {
         if (Purchase::where('order_id', $payment['order_id'])->exists()) {
             return;
         }
@@ -141,9 +143,14 @@ class PaymentController extends Controller
         $customData = json_encode([
             'user_id' => $user_id,
             'coupon_id' => 0,
-            'cart' => [2 => 1]
+            'cart' => [
+                2 => 1
+            ]
         ]);
 
+        $encodedData = base64_encode($customData);
+
+        // dd($encodedData, Crypt::encrypt(json_encode($cart)));
         Gate::allows('android') && $url = "intent:#Intent;" .
             "action=com.squareup.pos.action.CHARGE;" .
             "package=com.squareup;" .
@@ -153,8 +160,7 @@ class PaymentController extends Controller
             "i.com.squareup.pos.TOTAL_AMOUNT=" . $amount * 100 . ";" .
             "S.com.squareup.pos.CURRENCY_CODE=" . env('SQUARE_POS_CURRENCY') . ";" .
             "S.com.squareup.pos.TENDER_TYPES=com.squareup.pos.TENDER_CARD,com.squareup.pos.TENDER_CASH;" .
-            // "S.com.squareup.pos.NOTE=" . urlencode($customData) . ";" .
-            "S.com.squareup.pos.REFERENCE_ID=" . urlencode(base64_encode($customData)) . ";" . // Use reference_id instead of notes
+            "S.com.squareup.pos.NOTE=" . urlencode(Crypt::encrypt(json_encode($cart))) . ";" .
             "end;";
 
         $customData = [
