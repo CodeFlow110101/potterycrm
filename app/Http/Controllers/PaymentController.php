@@ -137,7 +137,7 @@ class PaymentController extends Controller
     {
 
         $url = null;
-        dd($user_id, $coupon_id, $cart, $amount);
+        // dd($user_id, $coupon_id, $cart, $amount);
         $customData = json_encode([
             'user_id' => $user_id,
             'coupon_id' => 0,
