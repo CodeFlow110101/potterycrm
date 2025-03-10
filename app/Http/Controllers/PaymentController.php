@@ -37,12 +37,34 @@ class PaymentController extends Controller
             dd($api_response->getErrors());
         }
 
-        $api_response->getResult()->getorder()->getmetadata() && $this->store($request);
-    }
+        if (!$api_response->getResult()->getorder()->getmetadata()) {
+            return;
+        }
 
-    function hardware()
-    {
-        Log::info('hello');
+        if (Purchase::where('order_id', $payment['order_id'])->exists()) {
+            return;
+        }
+
+        $client = new SquareClient([
+            'accessToken' => env('SQUARE_POS_ACCESS_TOKEN'),
+            'environment' => env('SQUARE_POS_ENVIRONMENT'),
+        ]);
+
+        $api_response = $client->getOrdersApi()->retrieveOrder($payment['order_id']);
+
+        if (!$api_response->isSuccess()) {
+            dd($api_response->getErrors());
+        }
+
+        $orders = $api_response->getResult();
+
+        $cart = [];
+
+        foreach ($orders->getorder()->getlineItems() as $order) {
+            $cart[$order->getmetadata()['id']] = $order->getquantity();
+        }
+
+        $this->store($cart, $orders->getorder()->getmetadata()['user_id'], $orders->getorder()->getmetadata()['coupon_id'], $payment, $orders->getorder()->gettenders()[0]->gettransactionId());
     }
 
     static function onlinePayment($cart, $user, $coupon)
@@ -116,10 +138,18 @@ class PaymentController extends Controller
 
         $url = null;
 
+        $queryParams = http_build_query([
+            'user_id' => $user,
+            'coupon_id' => $coupon ? $coupon->id : 0,
+            'cart' => json_encode($cart),
+        ]);
+
+        $callbackUrl = request()->url() . '?' . $queryParams;
+
         Gate::allows('android') && $url = "intent:#Intent;" .
             "action=com.squareup.pos.action.CHARGE;" .
             "package=com.squareup;" .
-            "S.com.squareup.pos.WEB_CALLBACK_URI=" . env('SQUARE_POS_WEB_CALLBACK_URI') . ";" .
+            "S.com.squareup.pos.WEB_CALLBACK_URI=" . urlencode($callbackUrl) . ";" .
             "S.com.squareup.pos.CLIENT_ID=" . env('SQUARE_POS_APPLICATION_ID') . ";" .
             "S.com.squareup.pos.API_VERSION=v2.0;" .
             "i.com.squareup.pos.TOTAL_AMOUNT=" . $amount * 100 . ";" .
@@ -132,7 +162,7 @@ class PaymentController extends Controller
                 "amount" => $amount * 100,
                 "currency_code" => env('SQUARE_POS_CURRENCY'),
             ],
-            "callback_url" => env('SQUARE_POS_WEB_CALLBACK_URI'),
+            "callback_url" => urlencode($callbackUrl),
             "client_id" => env('SQUARE_POS_APPLICATION_ID'),
             "version" => "1.3",
             "notes" => "notes for the transaction",
@@ -150,36 +180,15 @@ class PaymentController extends Controller
         return $url;
     }
 
-
-    function store(Request $request)
+    static function store($cart, $user_id, $coupon_id, $payment, $transaction_id)
     {
-        $payment = $request['data']['object']['payment'];
-
-        if (Purchase::where('order_id', $payment['order_id'])->exists()) {
-            return;
-        }
-
-        $client = new SquareClient([
-            'accessToken' => env('SQUARE_POS_ACCESS_TOKEN'),
-            'environment' => env('SQUARE_POS_ENVIRONMENT'),
-        ]);
-
-        $api_response = $client->getOrdersApi()->retrieveOrder($payment['order_id']);
-
-        if (!$api_response->isSuccess()) {
-            dd($api_response->getErrors());
-        }
-
-        $orders = $api_response->getResult();
         $purchasedItems = [];
-
-        foreach ($orders->getorder()->getlineItems() as $order) {
-            for ($i = 1; $i <= $order->getquantity(); $i++) {
-                $purchasedItems[] = ['product_id' => $order->getmetadata()['id']];
+        foreach ($cart as $id => $quantitiy) {
+            for ($i = 1; $i <= $quantitiy; $i++) {
+                $purchasedItems[] = ['product_id' => $id];
             }
         }
-
-        $user = User::find($orders->getorder()->getmetadata()['user_id']);
+        $user = User::find($user_id);
 
         $purchase = $user->purchases()->create([
             'order_id' => $payment['order_id'],
@@ -188,39 +197,22 @@ class PaymentController extends Controller
         $purchase->payment()->create([
             'payment_id' => $payment['id'],
             'amount' => $payment['amount_money']['amount'],
-            'source' => array_key_exists('external_details', $payment) ? $payment['external_details']['source'] : "Terminal Device",
-            'type' => array_key_exists('external_details', $payment) ? $payment['external_details']['type'] : "Terminal Device",
+            'source' => $payment['external_details']['source'],
+            'type' => $payment['external_details']['type'],
             'receipt_url' => $payment['receipt_url'],
             'status' => $payment['status'],
-            'transaction_id' => $orders->getorder()->gettenders()[0]->gettransactionId(),
+            'transaction_id' => $transaction_id,
         ]);
 
         $purchase->items()->createMany($purchasedItems);
 
         IssuedCoupon::where('is_used', false)->whereHas('user', function (Builder $query) use ($user) {
             $query->where('id', $user->id);
-        })->whereHas('coupon', function (Builder $query) use ($orders) {
-            $query->where('id', $orders->getorder()->getmetadata()['coupon_id']);
+        })->whereHas('coupon', function (Builder $query) use ($coupon_id) {
+            $query->where('id', $coupon_id);
         })->first()?->update([
             'is_used' => true,
             'used_at' => Carbon::now()->format('Y-m-d H:i:s')
         ]);
-
-        Broadcast::on('purchase')->as('admin')->with($request)->sendNow();
-        Broadcast::on('order')->as('admin')->with($request)->sendNow();
-    }
-
-    function terminalUpdated(Request $request)
-    {
-
-        $client = new SquareClient([
-            'accessToken' => env('SQUARE_POS_ACCESS_TOKEN'),
-            'environment' => env('SQUARE_POS_ENVIRONMENT'),
-        ]);
-
-        $api_response = $client->getOrdersApi()->retrieveOrder($request['data']['object']['checkout']['order_id']);
-        $user_id = $api_response->getResult()->getorder()->getmetadata()['user_id'];
-
-        TerminalPaymentEvent::dispatch($user_id, $request);
     }
 }

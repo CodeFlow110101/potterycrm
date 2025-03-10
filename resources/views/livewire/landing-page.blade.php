@@ -96,6 +96,8 @@ mount(function () {
         <livewire:order :auth="$auth" />
         @elseif($path == 'manage-coupon')
         <livewire:manage-coupon :auth="$auth" />
+        @elseif($path == 'process-payment')
+        <livewire:process-payment />
         @elseif($path == 'coupon')
         <livewire:coupon :auth="$auth" />
         @elseif($path == 'manage-booking')

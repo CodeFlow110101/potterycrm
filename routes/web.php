@@ -31,6 +31,7 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('/order', 'landing-page')->name('order');
     Volt::route('/coupon', 'landing-page')->name('coupon');
     Volt::route('/booking', 'landing-page')->name('booking');
+    Volt::route('/process-payment', 'landing-page')->name('process-payment')->middleware('validate-payment');
 
     // File Uploads
     Route::post('/upload-file', [FileUploadController::class, 'store']);
@@ -39,7 +40,6 @@ Route::middleware(['auth'])->group(function () {
 
 // Square Webhook
 Route::post('/square-webhook', [PaymentController::class, 'webhook']);
-Route::post('/square-hardware', [PaymentController::class, 'hardware']);
 
 // OTP Page
 Volt::route('/otp', 'otp')->name('otp');
