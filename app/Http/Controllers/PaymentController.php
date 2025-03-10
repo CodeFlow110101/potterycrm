@@ -144,7 +144,7 @@ class PaymentController extends Controller
             'cart' => json_encode($cart),
         ]);
 
-        $callbackUrl = url('/') . '?' . $queryParams;
+        $callbackUrl = url('/') . '/' . '?' . $queryParams;
 
         Gate::allows('android') && $url = "intent:#Intent;" .
             "action=com.squareup.pos.action.CHARGE;" .
