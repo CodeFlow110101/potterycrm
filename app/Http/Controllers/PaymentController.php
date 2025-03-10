@@ -153,7 +153,7 @@ class PaymentController extends Controller
             "i.com.squareup.pos.TOTAL_AMOUNT=" . $amount * 100 . ";" .
             "S.com.squareup.pos.CURRENCY_CODE=" . env('SQUARE_POS_CURRENCY') . ";" .
             "S.com.squareup.pos.TENDER_TYPES=com.squareup.pos.TENDER_CARD,com.squareup.pos.TENDER_CASH;" .
-            "S.com.squareup.pos.NOTES=" . urlencode($customData) . ";" .
+            "S.com.squareup.pos.NOTE=" . urlencode($customData) . ";" .
             "end;";
 
         Gate::allows('apple') && $url = "square-commerce-v1://payment/create?data=" . urlencode(json_encode([
