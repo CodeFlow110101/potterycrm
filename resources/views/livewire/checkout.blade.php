@@ -52,8 +52,11 @@ rules(fn() => [
 updated(['checkout_for' => fn() => $this->checkout_for == "1" && $this->reset('booking_id')]);
 
 $url = computed(function () {
+
     if (collect($this->cart)->isNotEmpty() && ($this->checkout_for == 2 || ($this->checkout_for == 1 && $this->booking_id))) {
-        return App::call([PaymentController::class, 'hardwarePayment'], ['cart' => $this->cart, 'user' => $this->booking_id ? Booking::find($this->booking_id)->user : $this->auth, 'coupon' => $this->coupon, 'amount' => $this->coupon ? $this->total * $this->discount : $this->total]);
+        session(['checkout_user_id' => $this->booking_id ? Booking::find($this->booking_id)->user : $this->auth]);
+        session(['checkout_coupon_id' => $this->coupon ? $this->coupon->id : 0]);
+        return App::call([PaymentController::class, 'hardwarePayment'], ['amount' => $this->coupon ? $this->total * $this->discount : $this->total]);
     }
 });
 
@@ -168,7 +171,6 @@ mount(function (Request $request) {
             </div>
         </a>
     </div>
-    {{ url('/') }}
     <div class="flex max-sm:flex-col sm:justify-between gap-4 sm:gap-12 grow">
         <div class="w-full py-12 grow flex flex-col backdrop-blur-xl border border-white rounded-lg">
             <div class="w-4/5 mx-auto relative grow" x-data="{ height: 0 }" x-resize="height = $height">

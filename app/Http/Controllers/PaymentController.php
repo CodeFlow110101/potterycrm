@@ -133,23 +133,15 @@ class PaymentController extends Controller
         }
     }
 
-    static function hardwarePayment($cart, $user, $coupon, $amount)
+    static function hardwarePayment($amount)
     {
 
         $url = null;
 
-        $queryParams = http_build_query([
-            'user_id' => $user,
-            'coupon_id' => $coupon ? $coupon->id : 0,
-            'cart' => json_encode($cart),
-        ]);
-
-        $callbackUrl = url('/') . '/' . '?' . $queryParams;
-
         Gate::allows('android') && $url = "intent:#Intent;" .
             "action=com.squareup.pos.action.CHARGE;" .
             "package=com.squareup;" .
-            "S.com.squareup.pos.WEB_CALLBACK_URI=" . $callbackUrl . ";" .
+            "S.com.squareup.pos.WEB_CALLBACK_URI=" . url('/') . ";" .
             "S.com.squareup.pos.CLIENT_ID=" . env('SQUARE_POS_APPLICATION_ID') . ";" .
             "S.com.squareup.pos.API_VERSION=v2.0;" .
             "i.com.squareup.pos.TOTAL_AMOUNT=" . $amount * 100 . ";" .
@@ -162,7 +154,7 @@ class PaymentController extends Controller
                 "amount" => $amount * 100,
                 "currency_code" => env('SQUARE_POS_CURRENCY'),
             ],
-            "callback_url" => $callbackUrl,
+            "callback_url" => url('/'),
             "client_id" => env('SQUARE_POS_APPLICATION_ID'),
             "version" => "1.3",
             "notes" => "notes for the transaction",
