@@ -133,13 +133,13 @@ class PaymentController extends Controller
         }
     }
 
-    static function hardwarePayment($amount)
+    static function hardwarePayment($user_id, $coupon_id, $cart, $amount)
     {
 
         $url = null;
-
+        dd($user_id, $coupon_id, $cart, $amount);
         $customData = json_encode([
-            'user_id' => 1,
+            'user_id' => $user_id,
             'coupon_id' => 0,
             'cart' => [2 => 1]
         ]);
@@ -153,8 +153,15 @@ class PaymentController extends Controller
             "i.com.squareup.pos.TOTAL_AMOUNT=" . $amount * 100 . ";" .
             "S.com.squareup.pos.CURRENCY_CODE=" . env('SQUARE_POS_CURRENCY') . ";" .
             "S.com.squareup.pos.TENDER_TYPES=com.squareup.pos.TENDER_CARD,com.squareup.pos.TENDER_CASH;" .
-            "S.com.squareup.pos.NOTE=" . urlencode($customData) . ";" .
+            // "S.com.squareup.pos.NOTE=" . urlencode($customData) . ";" .
+            "S.com.squareup.pos.REFERENCE_ID=" . urlencode(base64_encode($customData)) . ";" . // Use reference_id instead of notes
             "end;";
+
+        $customData = [
+            "user_id" => 1,
+            "coupon_id" => 0,
+            "cart" => [2 => 1]
+        ];
 
         Gate::allows('apple') && $url = "square-commerce-v1://payment/create?data=" . urlencode(json_encode([
             "amount_money" => [
@@ -164,7 +171,7 @@ class PaymentController extends Controller
             "callback_url" => url('/process-payment'),
             "client_id" => env('SQUARE_POS_APPLICATION_ID'),
             "version" => "1.3",
-            "notes" => "notes for the transaction",
+            "notes" => json_encode($customData),
             "options" => [
                 "supported_tender_types" => [
                     "CREDIT_CARD",
