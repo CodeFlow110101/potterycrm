@@ -54,7 +54,7 @@ updated(['checkout_for' => fn() => $this->checkout_for == "1" && $this->reset('b
 $url = computed(function () {
 
     if (collect($this->cart)->isNotEmpty() && ($this->checkout_for == 2 || ($this->checkout_for == 1 && $this->booking_id))) {
-        session(['checkout_user_id' => $this->booking_id ? Booking::find($this->booking_id)->user : $this->auth]);
+        session(['checkout_user_id' => $this->booking_id ? Booking::find($this->booking_id)->user->id : $this->auth->id]);
         session(['checkout_coupon_id' => $this->coupon ? $this->coupon->id : 0]);
         return App::call([PaymentController::class, 'hardwarePayment'], ['amount' => $this->coupon ? $this->total * $this->discount : $this->total]);
     }

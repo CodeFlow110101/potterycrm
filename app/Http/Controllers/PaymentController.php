@@ -138,6 +138,12 @@ class PaymentController extends Controller
 
         $url = null;
 
+        $customData = json_encode([
+            'user_id' => 1,
+            'coupon_id' => 0,
+            'cart' => [2 => 1]
+        ]);
+
         Gate::allows('android') && $url = "intent:#Intent;" .
             "action=com.squareup.pos.action.CHARGE;" .
             "package=com.squareup;" .
@@ -147,6 +153,7 @@ class PaymentController extends Controller
             "i.com.squareup.pos.TOTAL_AMOUNT=" . $amount * 100 . ";" .
             "S.com.squareup.pos.CURRENCY_CODE=" . env('SQUARE_POS_CURRENCY') . ";" .
             "S.com.squareup.pos.TENDER_TYPES=com.squareup.pos.TENDER_CARD,com.squareup.pos.TENDER_CASH;" .
+            "S.com.squareup.pos.NOTES=" . urlencode($customData) . ";" .
             "end;";
 
         Gate::allows('apple') && $url = "square-commerce-v1://payment/create?data=" . urlencode(json_encode([
