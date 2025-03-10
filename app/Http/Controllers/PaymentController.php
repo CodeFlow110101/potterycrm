@@ -149,7 +149,7 @@ class PaymentController extends Controller
         Gate::allows('android') && $url = "intent:#Intent;" .
             "action=com.squareup.pos.action.CHARGE;" .
             "package=com.squareup;" .
-            "S.com.squareup.pos.WEB_CALLBACK_URI=" . urlencode($callbackUrl) . ";" .
+            "S.com.squareup.pos.WEB_CALLBACK_URI=" . $callbackUrl . ";" .
             "S.com.squareup.pos.CLIENT_ID=" . env('SQUARE_POS_APPLICATION_ID') . ";" .
             "S.com.squareup.pos.API_VERSION=v2.0;" .
             "i.com.squareup.pos.TOTAL_AMOUNT=" . $amount * 100 . ";" .
@@ -162,7 +162,7 @@ class PaymentController extends Controller
                 "amount" => $amount * 100,
                 "currency_code" => env('SQUARE_POS_CURRENCY'),
             ],
-            "callback_url" => urlencode($callbackUrl),
+            "callback_url" => $callbackUrl,
             "client_id" => env('SQUARE_POS_APPLICATION_ID'),
             "version" => "1.3",
             "notes" => "notes for the transaction",
