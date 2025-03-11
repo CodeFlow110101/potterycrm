@@ -40,7 +40,7 @@ class PaymentController extends Controller
 
         $api_response->getResult()->getorder()->getmetadata() && $this->storeOnlinePurchase($payment);
 
-        Log::info($api_response->getResult()->getorder()->getmetadata());
+        Log::info($api_response->getResult()->getorder());
     }
 
     public function storeOnlinePurchase($payment)
