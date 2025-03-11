@@ -38,17 +38,36 @@ class PaymentController extends Controller
             dd($api_response->getErrors());
         }
 
-        $api_response->getResult()->getorder()->getmetadata() && $this->storeOnlinePurchase($payment);
-
-        Log::info(json_encode($api_response->getResult()->getorder()));
-    }
-
-    public function storeOnlinePurchase($payment)
-    {
         if (Purchase::where('order_id', $payment['order_id'])->exists()) {
             return;
         }
 
+        $api_response->getResult()->getorder()->getmetadata() && $this->storeOnlinePurchase($payment);
+        $api_response->getResult()->getorder()->getmetadata() || $this->hardwareOnlinePurchase($payment);
+    }
+
+    public function hardwareOnlinePurchase($payment)
+    {
+        $client = new SquareClient([
+            'accessToken' => env('SQUARE_POS_ACCESS_TOKEN'),
+            'environment' => env('SQUARE_POS_ENVIRONMENT'),
+        ]);
+
+        $api_response = $client->getOrdersApi()->retrieveOrder($payment['order_id']);
+
+        if (!$api_response->isSuccess()) {
+            dd($api_response->getErrors());
+        }
+
+        $orders = $api_response->getResult();
+
+        Log::info('hello');
+
+        Log::info(collect($orders->getorder()->getlineItems())->first()->getNote());
+    }
+
+    public function storeOnlinePurchase($payment)
+    {
         $client = new SquareClient([
             'accessToken' => env('SQUARE_POS_ACCESS_TOKEN'),
             'environment' => env('SQUARE_POS_ENVIRONMENT'),
