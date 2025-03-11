@@ -199,11 +199,7 @@ class PaymentController extends Controller
 
     static function store($cart, $user_id, $coupon_id, $payment, $transaction_id)
     {
-
-        Log::info(json_encode($payment));
-
-        return;
-
+        
         $purchasedItems = [];
         foreach ($cart as $id => $quantitiy) {
             for ($i = 1; $i <= $quantitiy; $i++) {
@@ -219,8 +215,8 @@ class PaymentController extends Controller
         $purchase->payment()->create([
             'payment_id' => $payment['id'],
             'amount' => $payment['amount_money']['amount'],
-            'source' => $payment['external_details']['source'],
-            'type' => $payment['external_details']['type'],
+            'source' => array_key_exists('external_details', $payment) ? $payment['external_details']['source'] : $payment['source_type'],
+            'type' => array_key_exists('external_details', $payment) ? $payment['external_details']['type'] : $payment['source_type'],
             'receipt_url' => $payment['receipt_url'],
             'status' => $payment['status'],
             'transaction_id' => $transaction_id,
