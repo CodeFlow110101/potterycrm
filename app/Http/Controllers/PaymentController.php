@@ -199,6 +199,11 @@ class PaymentController extends Controller
 
     static function store($cart, $user_id, $coupon_id, $payment, $transaction_id)
     {
+
+        Log::info(json_encode($payment));
+
+        return;
+
         $purchasedItems = [];
         foreach ($cart as $id => $quantitiy) {
             for ($i = 1; $i <= $quantitiy; $i++) {
