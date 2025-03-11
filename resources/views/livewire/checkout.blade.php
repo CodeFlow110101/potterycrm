@@ -3,6 +3,7 @@
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\SmsController;
 use App\Models\Booking;
+use App\Models\Checkout;
 use App\Models\Coupon;
 use App\Models\Product;
 use App\Models\User;
@@ -19,7 +20,7 @@ use function Livewire\Volt\{state, with, computed, rules, mount, on, updated};
 
 state(['cart'])->reactive();
 
-state(['first_name', 'last_name', 'email', 'phoneno', 'otp', 'generatedOtp', 'auth', 'coupon_code', 'booking_id', 'coupon', 'checkout_for']);
+state(['first_name', 'last_name', 'email', 'phoneno', 'otp', 'generatedOtp', 'auth', 'coupon_code', 'booking_id', 'coupon', 'checkout_for', 'checkout_no']);
 
 with(fn() => [
     'products' => Product::whereIn('id', $this->cart ? array_keys($this->cart) : [])->get(),
@@ -53,8 +54,18 @@ updated(['checkout_for' => fn() => $this->checkout_for == "1" && $this->reset('b
 
 $url = computed(function () {
 
-    if (collect($this->cart)->isNotEmpty() && ($this->checkout_for == 2 || ($this->checkout_for == 1 && $this->booking_id))) {
-        return App::call([PaymentController::class, 'hardwarePayment'], ['user_id' => $this->booking_id ? Booking::find($this->booking_id)->user->id : $this->auth->id, 'coupon_id' => $this->coupon ? $this->coupon->id : 0, 'cart' => $this->cart, 'amount' => $this->coupon ? $this->total * $this->discount : $this->total]);
+    if (collect($this->cart)->isNotEmpty() && ($this->checkout_for == 2 || ($this->checkout_for == 1 && $this->booking_id)) && Gate::allows('hardware-checkout-user')) {
+
+        $this->checkout_no = Checkout::updateOrCreate(
+            ['id' => $this->checkout_no], // Find by this condition
+            [
+                'user_id' => $this->booking_id ? Booking::find($this->booking_id)->user->id : $this->auth->id,
+                'coupon_id' => $this->coupon ? $this->coupon->id : 0,
+                'cart' => json_encode($this->cart),
+            ]
+        )->id;
+        
+        return App::call([PaymentController::class, 'hardwarePayment'], ['amount' => $this->coupon ? $this->total * $this->discount : $this->total, 'checkout_id' => $this->checkout_no]);
     }
 });
 
@@ -169,6 +180,7 @@ mount(function (Request $request) {
             </div>
         </a>
     </div>
+    {{$checkout_no}}
     <div class="flex max-sm:flex-col sm:justify-between gap-4 sm:gap-12 grow">
         <div class="w-full py-12 grow flex flex-col backdrop-blur-xl border border-white rounded-lg">
             <div class="w-4/5 mx-auto relative grow" x-data="{ height: 0 }" x-resize="height = $height">
