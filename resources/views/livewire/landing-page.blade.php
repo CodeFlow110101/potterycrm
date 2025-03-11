@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Booking;
+use App\Models\Checkout;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;

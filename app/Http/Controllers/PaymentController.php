@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\TerminalPaymentEvent;
+use App\Models\Checkout;
 use App\Models\IssuedCoupon;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -61,9 +62,9 @@ class PaymentController extends Controller
 
         $orders = $api_response->getResult();
 
-        Log::info('hello');
+        $checkout = Checkout::find(collect($orders->getorder()->getlineItems())->first()->getNote());
 
-        Log::info(collect($orders->getorder()->getlineItems())->first()->getNote());
+        $this->store(collect(json_decode($checkout->cart))->all(), $checkout->user_id, $checkout->coupon_id, $payment, $orders->getorder()->gettenders()[0]->gettransactionId());
     }
 
     public function storeOnlinePurchase($payment)
