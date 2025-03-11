@@ -62,7 +62,7 @@ class PaymentController extends Controller
 
         $orders = $api_response->getResult();
 
-        $checkout = Checkout::find(collect($orders->getorder()->getlineItems())->first()->getNote());
+        $checkout = Checkout::find(preg_replace('/\D/', '', collect($orders->getorder()->getlineItems())->first()->getNote()));
 
         $this->store(collect(json_decode($checkout->cart))->all(), $checkout->user_id, $checkout->coupon_id, $payment, $orders->getorder()->gettenders()[0]->gettransactionId());
     }
