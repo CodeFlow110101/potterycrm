@@ -31,13 +31,16 @@ mount(function ($cart, $path, $auth, $routeName) {
 
 <div x-data="{ show: false }" :class="show && 'max-lg:backdrop-blur-xl max-lg:fixed max-lg:inset-0 max-lg:z-50 relative bg-black/40'" x-resize="height = $height">
     <nav :class="show && 'w-11/12 mx-auto'" class="flex justify-between items-center max-lg:items-start max-lg:w-11/12 pt-5 mx-auto uppercase font-avenir-next-bold text-white">
-        <div class="flex-1 flex max-lg:flex-col gap-5">
-            <a :class="show && 'text-center'" href="/" wire:navigate class="text-3xl lg:mx-14 tracking-widest">ICONA</a>
-            <div :class="show ? 'flex-col gap-4' : 'max-lg:hidden'" class="flex justify-evenly items-center w-full *:underline-offset-4">
+        <div class="flex-1 flex max-lg:flex-col gap-5 lg:items-center">
+            <a :class="show && 'text-center'" href="/" wire:navigate class="text-3xl lg:mx-8 tracking-widest">ICONA</a>
+            <div :class="show ? 'flex-col gap-4' : 'max-lg:hidden'" class="flex justify-evenly max-lg:text-base lg:text-sm xl:text-base items-center w-full *:underline-offset-4">
+                @if(!$auth)
+                <a href="book-table" wire:navigate class="text-black py-2 uppercase px-6 font-avenir-next-rounded-light bg-white rounded-lg tracking-tight">Book A Table</a>
+                @endif
                 @if(!$auth)
                 <a href="/how-it-works" wire:navigate class="max-sm:hidden" :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">How it Works</a>
                 <a href="/private-groups" wire:navigate class="max-sm:hidden" :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">Private Groups</a>
-                <a href="/classes" wire:navigate class="max-sm:hidden" :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">Classes</a>
+                <!-- <a href="/classes" wire:navigate class="max-sm:hidden" :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">Classes</a> -->
                 @endif
                 <a href="/shop" wire:navigate :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">Shop</a>
                 @if($auth)
@@ -53,7 +56,6 @@ mount(function ($cart, $path, $auth, $routeName) {
                 @endcan
                 @endif
                 @if(!$auth)
-                <a href="/book-table" wire:navigate :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">Book a Table</a>
                 <a href="/log-in" wire:navigate :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">Log In</a>
                 <a href="/about-us" wire:navigate :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">About Us</a>
                 <a href="/contact-us" wire:navigate :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">Contact</a>

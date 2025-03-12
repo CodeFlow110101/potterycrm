@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Events\OrderCreated;
 use App\Events\OrderStatusUpdated;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Square\Models\Order;
 
 class PurchaseItem extends Model
 {
@@ -28,6 +30,7 @@ class PurchaseItem extends Model
     }
 
     protected $dispatchesEvents = [
-        'saved' => OrderStatusUpdated::class,
+        'created' => OrderCreated::class,
+        'updated' => OrderStatusUpdated::class,
     ];
 }

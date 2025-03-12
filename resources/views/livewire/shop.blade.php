@@ -42,7 +42,7 @@ with(fn() => [
                     </div>
                     <div class="flex flex-col">
                         <div class="font-avenir-next-rounded-regular">
-                            {{$product->description}}
+                            {{Str::limit($product->description, 20)}}
                         </div>
                         <div class="mt-auto">${{$product->price}}</div>
                     </div>

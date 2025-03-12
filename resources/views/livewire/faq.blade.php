@@ -14,7 +14,7 @@ state(['faq' => config('constants.faq')]);
                 @foreach($faq as $question => $answer)
                 <tr class="divide-x divide-white">
                     <td class="border border-white p-5 font-avenir-next-rounded-bold">{{ $question }}</td>
-                    <td class="border border-white p-5 font-avenir-next-rounded-regular text-sm">{{ $answer }}</td>
+                    <td class="border border-white p-5 font-avenir-next-rounded-regular text-sm">{!! nl2br(e($answer)) !!}</td>
                 </tr>
                 @endforeach
             </table>

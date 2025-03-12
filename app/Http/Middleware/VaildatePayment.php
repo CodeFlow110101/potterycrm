@@ -17,21 +17,10 @@ class VaildatePayment
     public function handle(Request $request, Closure $next): Response
     {
 
-        $this->checkTransactionId($request->query('com_squareup_pos_CLIENT_TRANSACTION_ID'));
-
-        if ($request->has('com_squareup_pos_CLIENT_TRANSACTION_ID') && Payment::where('transaction_id', $request->query('com_squareup_pos_CLIENT_TRANSACTION_ID'))->doesntExist() && session()->has('cart') && session()->has('checkout_user_id') && session()->has('checkout_coupon_id')) {
-            dd(session('cart'), session('checkout_user_id'), session('checkout_coupon_id'));
+        if ($request->has('com_squareup_pos_CLIENT_TRANSACTION_ID')) {
+            return $next($request);
         }
-        dd(Payment::where('transaction_id', $request->query('com_squareup_pos_CLIENT_TRANSACTION_ID'))->doesntExist());
 
-        dd($request->query('com_squareup_pos_CLIENT_TRANSACTION_ID'));
-        // session()->forget('cart');
-
-        return $next($request);
-    }
-
-    function checkTransactionId($transaction_id)
-    {
-        // dd();
+        return redirect('/checkout');
     }
 }

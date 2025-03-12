@@ -5,9 +5,13 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
-use function Livewire\Volt\{state, mount, with};
+use function Livewire\Volt\{state, mount, with, on};
 
 state(['role']);
+
+on(['echo:orders,OrderCreated' => function () {
+    $this->reset();
+}]);
 
 with(fn() => ['issuedcoupons' => IssuedCoupon::when(!Gate::allows('view-any-product'), function ($query) {
     $query->where('user_id', Auth::user()->id);
