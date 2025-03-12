@@ -64,7 +64,7 @@ $removeCart = function ($id) {
                                     </div>
                                     <div class="flex flex-col gap-2 text-left text-xl">
                                         <div>{{ $product->name }}</div>
-                                        <div>{{ $product->description }}</div>
+                                        <div>{{ Str::limit($product->description,20) }}</div>
                                         <button wire:click="removeCart({{ $product->id }} )" class="underline mt-auto text-left text-base">Remove</button>
                                     </div>
                                 </div>
