@@ -10,6 +10,7 @@ state(['path', 'auth', 'routeName', 'booking_id']);
 state(['cart'])->reactive();
 
 $count = computed(function () {
+    $this->dispatch('show-toastr', message: "Cart Updated!");
     return collect($this->cart)->sum();
 });
 

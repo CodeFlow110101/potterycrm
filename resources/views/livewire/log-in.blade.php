@@ -58,7 +58,6 @@ $trimmed_phoneno = computed(function () {
 $submit = function () {
     $this->validate();
     $this->generatedOtp = App::call([SmsController::class, 'generateOtp'], ['phoneno' => $this->trimmed_phoneno]);
-    $this->dispatch('show-toastr', type: 'success', message: 'A code has been sent to this number');
     $this->dispatch('start-countdown');
 };
 

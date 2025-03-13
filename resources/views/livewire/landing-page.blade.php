@@ -21,7 +21,6 @@ on([
         } else {
             $this->cart[$id] = $quantity;
         }
-
         session(['cart' => $this->cart]);
     },
     'update-cart' => function ($id, $quantity) {

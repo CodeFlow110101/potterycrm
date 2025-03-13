@@ -24,7 +24,6 @@ class TwilioSmsChannel
             return;
         }
 
-        return;
         $twilio = new Client(env('TWILIO_SID'), env('TWILIO_TOKEN'));
 
         $message = $twilio->messages->create(env('TWILIO_PHONE_COUNTRY_CODE') . $phoneno, [

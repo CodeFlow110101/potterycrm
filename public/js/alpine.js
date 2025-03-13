@@ -67,7 +67,6 @@ function imageUploader() {
 function toastr() {
   return {
     show: false,
-    type: "",
     message: "",
     toggle(event) {
       this.show = true;
@@ -76,7 +75,7 @@ function toastr() {
 
       setTimeout(() => {
         this.show = false;
-      }, 4000);
+      }, 2000);
     }
   };
 }
