@@ -135,7 +135,7 @@ mount(function () {
                             <div>
                                 <div class="flex flex-wrap justify-around gap-4 text-sm">
                                     @foreach($slots as $slot)
-                                    <button wire:click="toggleTimeSlot('{{$slot}}')" class="border border-black py-1 px-4 rounded-full @if(in_array($slot,$selectedTimeSlots)) bg-black text-white @endif" x-text="timeSlot('{{$slot}}')"></button>
+                                    <button type="button" wire:click="toggleTimeSlot('{{$slot}}')" class="border border-black py-1 px-4 rounded-full @if(in_array($slot,$selectedTimeSlots)) bg-black text-white @endif" x-text="timeSlot('{{$slot}}')"></button>
                                     @endforeach
                                 </div>
                             </div>
@@ -147,7 +147,7 @@ mount(function () {
                         </div>
                     </div>
                 </div>
-                <button class="text-black py-3 uppercase px-6 mx-auto bg-white rounded-lg tracking-tight">Submit</button>
+                <button type="submit" class="text-black py-3 uppercase px-6 mx-auto bg-white rounded-lg tracking-tight">Submit</button>
             </form>
         </div>
     </div>
