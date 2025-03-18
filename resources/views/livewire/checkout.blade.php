@@ -64,7 +64,7 @@ $url = computed(function () {
                 'cart' => json_encode($this->cart),
             ]
         )->id;
-        
+
         return App::call([PaymentController::class, 'hardwarePayment'], ['amount' => $this->coupon ? $this->total * $this->discount : $this->total, 'checkout_id' => $this->checkout_no]);
     }
 });
@@ -87,6 +87,7 @@ $verifyOtp = function (Request $request) {
                     'first_name' => $this->first_name,
                     'last_name' => $this->last_name,
                     'email' => $this->email,
+                    'role_id' => 2,
                     'password' => Hash::make('12345678'),
                 ]
             );
