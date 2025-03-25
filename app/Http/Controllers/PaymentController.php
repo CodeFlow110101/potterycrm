@@ -31,8 +31,9 @@ class PaymentController extends Controller
             'environment' => env('SQUARE_POS_ENVIRONMENT'),
         ]);
 
-        Log::info($request);
         $payment = $request['data']['object']['payment'];
+
+        Log::info($request['data']['object']['payment']['status']);
         return;
 
         $api_response = $client->getOrdersApi()->retrieveOrder($payment['order_id']);
