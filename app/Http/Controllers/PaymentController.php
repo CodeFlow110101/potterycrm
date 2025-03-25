@@ -31,7 +31,9 @@ class PaymentController extends Controller
             'environment' => env('SQUARE_POS_ENVIRONMENT'),
         ]);
 
+        Log::info($request);
         $payment = $request['data']['object']['payment'];
+        return;
 
         $api_response = $client->getOrdersApi()->retrieveOrder($payment['order_id']);
 
@@ -43,8 +45,6 @@ class PaymentController extends Controller
             return;
         }
 
-        Log::info($payment);
-        return;
 
         $api_response->getResult()->getorder()->getmetadata() && $this->storeOnlinePurchase($payment);
         $api_response->getResult()->getorder()->getmetadata() || $this->hardwareOnlinePurchase($payment);
