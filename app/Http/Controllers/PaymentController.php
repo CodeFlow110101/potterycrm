@@ -37,9 +37,6 @@ class PaymentController extends Controller
             return;
         }
 
-        Log::info('hi');
-        return;
-
         $api_response = $client->getOrdersApi()->retrieveOrder($payment['order_id']);
 
         if (!$api_response->isSuccess()) {
