@@ -33,7 +33,11 @@ class PaymentController extends Controller
 
         $payment = $request['data']['object']['payment'];
 
-        Log::info($request['data']['object']['payment']['status']);
+        if (!isset($payment['status']) || $payment['status'] !== 'COMPLETED') {
+            return;
+        }
+
+        Log::info('hi');
         return;
 
         $api_response = $client->getOrdersApi()->retrieveOrder($payment['order_id']);
