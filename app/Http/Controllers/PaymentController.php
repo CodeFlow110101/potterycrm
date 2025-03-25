@@ -43,6 +43,9 @@ class PaymentController extends Controller
             return;
         }
 
+        Log::info($payment);
+        return;
+
         $api_response->getResult()->getorder()->getmetadata() && $this->storeOnlinePurchase($payment);
         $api_response->getResult()->getorder()->getmetadata() || $this->hardwareOnlinePurchase($payment);
     }
@@ -199,7 +202,7 @@ class PaymentController extends Controller
 
     static function store($cart, $user_id, $coupon_id, $payment, $transaction_id)
     {
-        
+
         $purchasedItems = [];
         foreach ($cart as $id => $quantitiy) {
             for ($i = 1; $i <= $quantitiy; $i++) {
