@@ -31,7 +31,7 @@ class BookingStatus extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return $this->booking->status_id == 1  && $notifiable->role_id == 1 ? ['mail'] : [TwilioSmsChannel::class];
+        return $notifiable->role_id == 1 ? ['mail'] : [TwilioSmsChannel::class];
     }
 
     public function toTwilioSms($notifiable)

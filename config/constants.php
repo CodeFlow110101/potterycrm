@@ -34,6 +34,7 @@ return [
         "Who can I contact for additional questions or support?" => "Our customer service team is available to help with any questions or special requests. Reach out via email or phone on 0450 131 936."
     ],
 
+    'booking-1-message' => "Your booking is not confirmed yet, we will confirm it shortly!",
     'booking-2-message' => "Your booking has been successfully confirmed!",
     'booking-3-message' => "Your booking is now active!",
     'booking-4-message' => "Thank you for shopping with us!",
