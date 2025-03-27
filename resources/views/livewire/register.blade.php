@@ -21,7 +21,7 @@ rules(fn() => [
     'first_name' => ['required'],
     'last_name' => ['required'],
     'email' => ['required', 'email'],
-    'people' => ['integer', 'min:1'],
+    'people' => ['required', 'integer', 'min:1'],
     'phoneno' => [
         'required',
         function ($attribute, $value, $fail) {
@@ -107,8 +107,7 @@ $submit = function () {
                         <input wire:model="first_name" class="w-full bg-black/5 outline-none p-3" placeholder="First Name">
                         <div>
                             @error('first_name')
-                            <span wire:transition.in.duration.500ms="scale-y-100"
-                                wire:transition.out.duration.500ms="scale-y-0">{{ $message }}</span>
+                            <span>{{ $message }}</span>
                             @enderror
                         </div>
                     </div>
@@ -117,8 +116,7 @@ $submit = function () {
                         <input wire:model="last_name" class="w-full bg-black/5 outline-none p-3" placeholder="Last Name">
                         <div>
                             @error('last_name')
-                            <span wire:transition.in.duration.500ms="scale-y-100"
-                                wire:transition.out.duration.500ms="scale-y-0">{{ $message }}</span>
+                            <span>{{ $message }}</span>
                             @enderror
                         </div>
                     </div>
@@ -127,18 +125,16 @@ $submit = function () {
                         <input wire:model="email" class="w-full bg-black/5 outline-none p-3" placeholder="Email">
                         <div>
                             @error('email')
-                            <span wire:transition.in.duration.500ms="scale-y-100"
-                                wire:transition.out.duration.500ms="scale-y-0">{{ $message }}</span>
+                            <span>{{ $message }}</span>
                             @enderror
                         </div>
                     </div>
                     <div>
                         <label class="font-avenir-next-rounded-semibold text-xl">Number of People</label>
-                        <input wire:model="people" class="w-full bg-black/5 outline-none p-3" placeholder="Email">
+                        <input x-mask="99" wire:model="people" class="w-full bg-black/5 outline-none p-3" placeholder="Number of People">
                         <div>
                             @error('people')
-                            <span wire:transition.in.duration.500ms="scale-y-100"
-                                wire:transition.out.duration.500ms="scale-y-0">{{ $message }}</span>
+                            <span>{{ $message }}</span>
                             @enderror
                         </div>
                     </div>
@@ -147,8 +143,7 @@ $submit = function () {
                         <input wire:model="phoneno" x-mask="{{ env('TWILIO_PHONE_COUNTRY_CODE') }} {{ env('PHONE_NUMBER_VALIDATION_PATTERN') }}" class="w-full bg-black/5 outline-none p-3" placeholder="eg {{ env('TWILIO_PHONE_COUNTRY_CODE') }} {{Str::replace('9', 'X', env('PHONE_NUMBER_VALIDATION_PATTERN'))}}">
                         <div>
                             @error('phoneno')
-                            <span wire:transition.in.duration.500ms="scale-y-100"
-                                wire:transition.out.duration.500ms="scale-y-0">{{ $message }}</span>
+                            <span>{{ $message }}</span>
                             @enderror
                         </div>
                     </div>
@@ -157,8 +152,7 @@ $submit = function () {
                         <input @input="verifyOtp" wire:model="otp" x-mask="999999" class="@if(!$generatedOtp) pointer-events-none opacity-50 @endif w-full bg-black/5 outline-none p-3" placeholder="Confirmation Code">
                         <div class="w-1/2 mx-auto">
                             @error('otp')
-                            <span wire:transition.in.duration.500ms="scale-y-100"
-                                wire:transition.out.duration.500ms="scale-y-0">{{ $message }}</span>
+                            <span>{{ $message }}</span>
                             @enderror
                         </div>
                         @if($generatedOtp)
