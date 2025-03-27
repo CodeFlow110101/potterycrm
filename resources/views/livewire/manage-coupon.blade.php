@@ -17,22 +17,22 @@ $submit = function () {
         Coupon::find($this->id)->update([
             'name' => $this->name,
             'repeat_cycle' => $this->repeat_cycle,
-            'repeat' => $this->repeat,
+            'repeat' => (int)$this->repeat,
             'discount_type' => 'percentage',
             'discount_value' => $this->discount_percentage,
             'validity' => $this->validity,
-            'status' => $this->status,
+            'status' => (int)$this->status,
             'min_cart_value' => $this->min_cart_value,
         ]);
     } else {
         Coupon::create([
             'name' => $this->name,
             'repeat_cycle' => $this->repeat_cycle,
-            'repeat' => $this->repeat,
+            'repeat' => (int)$this->repeat,
             'discount_type' => 'percentage',
             'discount_value' => $this->discount_percentage,
             'validity' => $this->validity,
-            'status' => $this->status,
+            'status' => (int)$this->status,
             'min_cart_value' => $this->min_cart_value,
         ]);
     }
@@ -79,7 +79,7 @@ $toggleModal = function ($id = null) {
                             Name
                         </th>
                         <th class="font-normal py-2">
-                            Repeat Cycle in Days
+                            Repeat Cycle for Visits
                         </th>
                         <th class="font-normal py-2">
                             Repeat
@@ -146,7 +146,7 @@ $toggleModal = function ($id = null) {
                 </div>
                 <div class="flex gap-8">
                     <div class="flex-1">
-                        <label class="font-avenir-next-rounded-semibold text-xl">Repeat Cycle in Days</label>
+                        <label class="font-avenir-next-rounded-semibold text-xl">Repeat Cycle for Visits</label>
                         <input wire:model="repeat_cycle" x-mask="99" class="w-full bg-black/5 outline-none p-3" placeholder="Repeat Cycle in Days">
                         <div>
                             @error('repeat_cycle')

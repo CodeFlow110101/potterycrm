@@ -36,7 +36,7 @@ class BookingStatus extends Notification implements ShouldQueue
 
     public function toTwilioSms($notifiable)
     {
-        return Str::of(config('constants.booking-' . $this->booking->status_id . '-message'))->replace('{url}', str_replace("booking", "product", config('app.url')) . '/' . $this->booking->id);
+        return config('constants.booking-' . $this->booking->status_id . '-message');
     }
 
     public function toMail($notifiable)

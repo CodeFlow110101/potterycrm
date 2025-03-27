@@ -7,7 +7,7 @@ use function Livewire\Volt\{state, with, mount, rules, updated};
 
 state(['date', 'people' => 0, 'selectedTimeSlots' => [], 'startTime' => Carbon::createFromTime(0, 0, 0), 'endTime' => Carbon::createFromTime(23, 59, 59), 'interval' => 60]);
 
-rules(['date' => 'required', 'people' => 'integer|min:1', 'selectedTimeSlots' => 'required'])->messages([
+rules(['date' => 'required', 'people' => 'required|integer|min:1', 'selectedTimeSlots' => 'required'])->messages([
     'selectedTimeSlots.required' => 'Atleast one :attribute is required.',
 ])->attributes([
     'selectedTimeSlots' => 'time slot',
@@ -121,7 +121,7 @@ mount(function () {
                             <div class="text-2xl" x-text="'No of people'"></div>
                             <div>
                                 <div class="flex items-center gap-2">
-                                    <input wire:model="people" x-mask="99" @input="if ($event.target.value.trim() === '' || $event.target.value.trim() === '00' || $event.target.value.trim() === '0') $event.target.value = 1" class="bg-transparent text-xl text-center outline-none border border-black p-4 w-24" x-mask="99" />
+                                    <input wire:model="people" x-mask="99" @input="if ($wire.people.trim() === '' || $wire.people.trim() === '00' || $wire.people.trim() === '0') $wire.people = 1" class="bg-transparent text-xl text-center outline-none border border-black p-4 w-24" x-mask="99" />
                                 </div>
                             </div>
                             @error('people')

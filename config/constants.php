@@ -35,7 +35,7 @@ return [
     ],
 
     'booking-2-message' => "Your booking has been successfully confirmed!",
-    'booking-3-message' => "Your booking is now active! You can start selecting items through this link:- {url}",
+    'booking-3-message' => "Your booking is now active!",
     'booking-4-message' => "Thank you for shopping with us!",
     'booking-5-message' => "Sorry but your booking has been cancelled!",
     'coupon-issued-message' => "Here is a discount coupon for the appreciation {coupon code}.",
