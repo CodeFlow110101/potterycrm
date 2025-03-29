@@ -73,7 +73,7 @@ $submit = function () {
                         <td class="text-center font-normal capitalize">{{$user->role->name}}</td>
                         <td class="text-center font-normal">
                             <button wire:click="toggleModal({{ $user->id }})">
-                                <svg class="w-6 h-6 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <svg class="size-6 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
                                 </svg>
                             </button>
@@ -107,7 +107,7 @@ $submit = function () {
                 </div>
             </div>
             <div class="relative">
-                <select wire:model="role_id" type="text" id="floating_outlined" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-white bg-transparent rounded-lg border-2 border-white appearance-none focus:outline-none focus:ring-0 focus:border-white peer" placeholder=" ">
+                <select wire:model="role_id" type="text" id="floating_outlined" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-white bg-transparent capitalize rounded-lg border-2 border-white appearance-none focus:outline-none focus:ring-0 focus:border-white peer" placeholder=" ">
                     @foreach($roles as $role)
                     <option @if( $role->id == $selected_user->role->id ) selected @endif value={{ $role->id }}>{{ $role->name }}</option>
                     @endforeach

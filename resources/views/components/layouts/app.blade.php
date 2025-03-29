@@ -10,8 +10,8 @@
     <script src="{{asset('js/alpine.js')}}"></script>
     <script src="{{asset('js/events.js')}}"></script>
     @vite(['resources/css/app.css' , 'resources/js/app.js'])
+    <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
 
-    <!-- Trix Editor -->
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
