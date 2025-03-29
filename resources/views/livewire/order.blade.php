@@ -77,14 +77,20 @@ mount(function ($auth) {
             <div class="grow relative" x-data="{ height: 0 }" x-resize="height = $height">
                 <div class="overflow-auto hidden-scrollbar absolute inset-x-0 border border-white rounded-lg" :style="'height: ' + height + 'px;'">
                     <table class="w-full overflow-y-hidden backdrop-blur-xl">
-                        <thead class="bg-white text-black sticky top-0">
+                        <thead class="bg-white text-black sticky top-0 z-10">
                             <tr class="bg-white *:p-3">
-                                <th class="font-normal">
+                                <th class="font-normal sticky left-0 bg-white">
                                     #
                                 </th>
                                 @can('view-customer-detail-columns-order')
                                 <th class="font-normal">
                                     Customer Name
+                                </th>
+                                <th class="font-normal">
+                                    Phone No
+                                </th>
+                                <th class="font-normal">
+                                    Email
                                 </th>
                                 @endcan
                                 <th class="font-normal">
@@ -115,9 +121,11 @@ mount(function ($auth) {
                         $iteration++;
                         @endphp
                         <tr class="hover:bg-black/10 transition-colors duration-200 text-white *:p-3">
-                            <td class="text-center font-normal">{{$iteration}}</td>
+                            <td class="text-center font-normal sticky left-0 bg-white text-black">{{$iteration}}</td>
                             @can('view-customer-detail-columns-order')
                             <td class="text-center font-normal">{{$purchase->user->first_name . ' ' . $purchase->user->last_name}}</td>
+                            <td class="text-center font-normal">{{$purchase->user->phoneno}}</td>
+                            <td class="text-center font-normal">{{$purchase->user->email}}</td>
                             @endcan
                             <td class="text-center font-normal">{{$item->product->name}}</td>
                             <td class="text-center font-normal">$ {{number_format($item->product->price, 2, '.', '')}}</td>

@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\User;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 use Twilio\Rest\Client;
 
 class TwilioSmsChannel
@@ -30,5 +31,7 @@ class TwilioSmsChannel
             'from' => env('TWILIO_FROM'),
             'body' => $message,
         ]);
+
+        env('APP_ENV') == 'local' && Log::info($message);
     }
 }

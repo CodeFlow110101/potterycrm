@@ -1,8 +1,10 @@
 <?php
 
+use App\Events\PurchaseCreated;
 use App\Models\Booking;
 use App\Models\Checkout;
 use App\Models\Product;
+use App\Models\Purchase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 

@@ -13,26 +13,29 @@ with(fn() => ['coupons' => Coupon::get()]);
 $submit = function () {
     $this->validate();
 
+    $this->status = $this->status == "true" ? 1 : 0;
+    $this->repeat = $this->repeat == "true" ? 1 : 0;
+
     if ($this->id) {
         Coupon::find($this->id)->update([
             'name' => $this->name,
             'repeat_cycle' => $this->repeat_cycle,
-            'repeat' => (int)$this->repeat,
+            'repeat' => $this->repeat,
             'discount_type' => 'percentage',
             'discount_value' => $this->discount_percentage,
             'validity' => $this->validity,
-            'status' => (int)$this->status,
+            'status' => $this->status,
             'min_cart_value' => $this->min_cart_value,
         ]);
     } else {
         Coupon::create([
             'name' => $this->name,
             'repeat_cycle' => $this->repeat_cycle,
-            'repeat' => (int)$this->repeat,
+            'repeat' => $this->repeat,
             'discount_type' => 'percentage',
             'discount_value' => $this->discount_percentage,
             'validity' => $this->validity,
-            'status' => (int)$this->status,
+            'status' => $this->status,
             'min_cart_value' => $this->min_cart_value,
         ]);
     }

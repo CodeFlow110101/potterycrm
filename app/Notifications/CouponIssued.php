@@ -34,7 +34,7 @@ class CouponIssued extends Notification
 
     public function toTwilioSms($notifiable)
     {
-        return Str::of(config('constants.coupon-issued-message'))->replace('{coupon code}', $this->coupon->coupon->name);
+        return Str::of(config('constants.coupon-issued-message'))->replace('{coupon code}', $this->coupon->coupon->name)->replace('{validity}', $this->coupon->coupon->validity);
     }
 
     /**

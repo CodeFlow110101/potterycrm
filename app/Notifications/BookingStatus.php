@@ -2,7 +2,7 @@
 
 namespace App\Notifications;
 
-use App\Mail\BookingCapacityExceededMail;
+use App\Mail\BookingMail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -15,13 +15,17 @@ class BookingStatus extends Notification implements ShouldQueue
     use Queueable;
 
     protected $booking;
+    protected $event;
+    protected $subjectText;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($booking)
+    public function __construct($booking, $event)
     {
         $this->booking = $booking;
+        $this->event = $event;
+        $this->subjectText = config('constants.admin-booking-alert-mail-subject-' . $booking->status_id);
     }
 
     /**
@@ -31,7 +35,7 @@ class BookingStatus extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return $notifiable->role_id == 1 ? ['mail'] : [TwilioSmsChannel::class];
+        return $this->event == 'created' ? ['mail'] : [TwilioSmsChannel::class];
     }
 
     public function toTwilioSms($notifiable)
@@ -41,7 +45,7 @@ class BookingStatus extends Notification implements ShouldQueue
 
     public function toMail($notifiable)
     {
-        return (new BookingCapacityExceededMail($this->booking, $notifiable))->to($notifiable->email);
+        return (new BookingMail($this->booking, $notifiable, $this->subjectText))->to($notifiable->email);
     }
 
     /**

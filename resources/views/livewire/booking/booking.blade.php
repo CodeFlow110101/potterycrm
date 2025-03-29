@@ -53,13 +53,13 @@ mount(function ($url, $auth) {
         <a href="/manage-booking" wire:navigate class="text-black max-sm:hidden py-3 uppercase px-6 font-normal bg-white rounded-lg tracking-tight w-min whitespace-nowrap">Manage Booking</a>
         @endcanany
     </div>
-    <div class="grow relative whitespace-nowrap" x-data="{ height: 0 }" x-resize="height = $height">
-        <div class="overflow-auto hidden-scrollbar absolute inset-x-0 border border-white rounded-lg" :style="'height: ' + height + 'px;'">
-            <table class="w-full overflow-y-hidden backdrop-blur-xl">
-                <thead class="bg-white text-black sticky top-0">
+    <div class="grow relative whitespace-nowrap border border-white rounded-lg overflow-hidden" x-data="{ height: 0 }" x-resize="height = $height">
+        <div class="overflow-auto hidden-scrollbar absolute inset-0" :style="'height: ' + height + 'px;'">
+            <table class="w-full backdrop-blur-xl">
+                <thead class="bg-white text-black sticky top-0 z-10">
                     <tr class="bg-white *:p-3">
-                        <th class="font-normal">
-                            No
+                        <th class="font-normal sticky left-0 bg-white">
+                            #
                         </th>
                         @can('view-customer-detail-columns-booking')
                         <th class="font-normal">
@@ -70,6 +70,9 @@ mount(function ($url, $auth) {
                         </th>
                         <th class="font-normal">
                             Phone no
+                        </th>
+                        <th class="font-normal">
+                            Email
                         </th>
                         @endcan
                         <th class="font-normal">
@@ -97,11 +100,12 @@ mount(function ($url, $auth) {
                 <tbody>
                     @foreach($bookings as $booking)
                     <tr class="hover:bg-black/10 transition-colors duration-200 text-white *:p-3">
-                        <td class="text-center font-normal">{{$loop->iteration}}</td>
+                        <td class="text-center font-normal sticky left-0 bg-white text-black">{{$loop->iteration}}</td>
                         @can('view-customer-detail-columns-booking')
                         <td class="text-center font-normal">{{$booking->user->first_name}}</td>
                         <td class="text-center font-normal">{{$booking->user->last_name}}</td>
                         <td class="text-center font-normal">{{$booking->user->phoneno}}</td>
+                        <td class="text-center font-normal">{{$booking->user->email}}</td>
                         @endcan
                         <td class="text-center font-normal">{{$booking->no_of_people}}</td>
                         <td class="text-center font-normal">{{Carbon::parse($booking->created_at)->format('d M Y')}}</td>

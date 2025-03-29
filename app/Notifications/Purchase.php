@@ -2,24 +2,23 @@
 
 namespace App\Notifications;
 
-use Illuminate\Support\Str;
+use App\Mail\PurchaseMail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class OrderStatus extends Notification
+class Purchase extends Notification
 {
     use Queueable;
 
-    protected $order;
-
+    protected $purchase;
     /**
      * Create a new notification instance.
      */
-    public function __construct($order)
+    public function __construct($purchase)
     {
-        $this->order = $order;
+        $this->purchase = $purchase;
     }
 
     /**
@@ -29,12 +28,20 @@ class OrderStatus extends Notification
      */
     public function via(object $notifiable): array
     {
-        return [TwilioSmsChannel::class];
+        return $notifiable->role_id == 1 ? ['mail'] : [TwilioSmsChannel::class];
+    }
+
+    /**
+     * Get the mail representation of the notification.
+     */
+    public function toMail(object $notifiable)
+    {
+        return (new PurchaseMail($this->purchase))->to($notifiable->email);
     }
 
     public function toTwilioSms($notifiable)
     {
-        return Str::of(config('constants.order-status-message-' . $this->order->status->id))->replace('{id}', $this->order->item_id);
+        return config('constants.purchase-message');
     }
 
     /**

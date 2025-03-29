@@ -2,28 +2,32 @@
 
 namespace App\Listeners;
 
+use App\Events\BookingCreated;
 use App\Events\BookingStatusUpdated;
 use App\Models\Coupon;
+use App\Notifications\BookingStatus;
 use App\Models\User;
 use Illuminate\Support\Facades\Notification;
-use App\Notifications\BookingStatus;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Events\Dispatcher;
 
-class SendBookingStatusNotification
+class BookingEventSubscriber
 {
     /**
      * Create the event listener.
      */
+
     public function __construct()
     {
         //
     }
+    public function handleBookingCreated(BookingCreated $event): void
+    {
+        Notification::send(User::where('role_id', 1)->get(), new BookingStatus($event->booking, 'created'));
+    }
 
-    /**
-     * Handle the event.
-     */
-    public function handle(BookingStatusUpdated $event): void
+    public function handleBookingStatusUpdated(BookingStatusUpdated $event): void
     {
         $coupon = null;
         if ($event->booking->status_id == 4) {
@@ -49,13 +53,22 @@ class SendBookingStatusNotification
             }
         }
 
-        $users = $event->booking->user;
+        $event->booking->user->notify(new BookingStatus($event->booking, 'saved'));
+    }
 
-        if ($event->booking->status_id == 1) {
-            $admins = User::where('role_id', 1)->get();
-            $users = $admins->push($event->booking->user)->unique('id');
-        }
+    /**
+     * Handle the event.
+     */
+    public function subscribe(Dispatcher $events): void
+    {
+        $events->listen(
+            BookingCreated::class,
+            [BookingEventSubscriber::class, 'handleUserLogin']
+        );
 
-        Notification::send($users, new BookingStatus($event->booking));
+        $events->listen(
+            BookingStatusUpdated::class,
+            [BookingEventSubscriber::class, 'handleUserLogout']
+        );
     }
 }

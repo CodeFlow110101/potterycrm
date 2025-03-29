@@ -12,7 +12,7 @@
                 <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="background-color: #ffffff; padding: 20px; border-radius: 5px;">
                     <tr>
                         <td align="center" style="font-size: 18px; font-weight: bold; color: #333; padding: 20px 0;">
-                            The following booking is required to be attended.
+                            An {{ $payment->gateway->name }} purchase has been made!
                         </td>
                     </tr>
                     <tr>
@@ -28,15 +28,22 @@
                                     <td><strong>Phone No:</strong> {{$user->phoneno}}</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Number of People:</strong> {{$booking->no_of_people}}</td>
+                                    <td><strong>Purchase Date:</strong> {{ \Carbon\Carbon::parse($purchase->created_at)->format('d M Y') }}</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Booking Date:</strong> {{$booking_date}}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Slot:</strong> {{$time_slot}}</td>
+                                    <td><strong>Amount:</strong>$ {{$payment->amount/100}}</td>
                                 </tr>
                             </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>Orders Placed:</strong>
+                            <ul>
+                                @foreach($orders as $order)
+                                <li>{{ $order->product->name }}</li>
+                                @endforeach
+                            </ul>
                         </td>
                     </tr>
                     <tr>

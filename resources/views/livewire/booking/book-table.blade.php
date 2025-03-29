@@ -140,7 +140,7 @@ $submit = function () {
                                 <div wire:ignore x-ref="calendarContainer" class="flex justify-center"></div>
                             </div>
                             @error('date')
-                            <div wire:transition.in.scale.origin.top.duration.1000ms>
+                            <div>
                                 <span class="error">{{ $message }}</span>
                             </div>
                             @enderror
@@ -150,11 +150,11 @@ $submit = function () {
                                 <div class="text-2xl" x-text="'No of people'"></div>
                                 <div>
                                     <div class="flex items-center gap-2">
-                                        <input wire:model="people" x-mask="99" @input="if ($event.target.value.trim() === '' || $event.target.value.trim() === '00' || $event.target.value.trim() === '0') $event.target.value = 1" class="bg-transparent text-xl text-center outline-none border border-black p-4 w-24" x-mask="99" />
+                                        <input wire:model="people" x-mask="99" @input="if ($wire.people.trim() === '' || $wire.people.trim() === '00' || $wire.people.trim() === '0') $wire.people = 1" class="bg-transparent text-xl text-center outline-none border border-black p-4 w-24" />
                                     </div>
                                 </div>
                                 @error('people')
-                                <div wire:transition.in.scale.origin.top.duration.1000ms>
+                                <div>
                                     <span class="error">{{ $message }}</span>
                                 </div>
                                 @enderror
@@ -170,7 +170,7 @@ $submit = function () {
                                 </div>
                             </div>
                             @error('selectedTimeSlot')
-                            <div wire:transition.in.scale.origin.top.duration.1000ms>
+                            <div>
                                 <span class="error">{{ $message }}</span>
                             </div>
                             @enderror
@@ -233,7 +233,7 @@ $submit = function () {
                                 @enderror
                             </div>
                             @if($generatedOtp)
-                            <div :class="formattedTime == '00:00' && 'text-white'" class="mx-auto w-1/2" x-text="formattedTime == '00:00' ? 'Otp Timed Out' : formattedTime"></div>
+                            <div :class="formattedTime == '00:00' && 'text-white'" x-text="formattedTime == '00:00' ? 'Otp Timed Out' : formattedTime"></div>
                             @endif
                         </div>
                         <button type="submit" :class="interval && 'pointer-events-none opacity-50'" class="text-black py-3 uppercase px-20 bg-white rounded-lg tracking-tight w-min mx-auto whitespace-nowrap">{{$generatedOtp ? 'Resend Code' : 'Send Code'}}</button>

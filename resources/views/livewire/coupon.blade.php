@@ -32,10 +32,10 @@ mount(function ($auth) {
     <div class="grow relative whitespace-nowrap" x-data="{ height: 0 }" x-resize="height = $height">
         <div class="overflow-auto hidden-scrollbar absolute inset-x-0 border border-white rounded-lg" :style="'height: ' + height + 'px;'">
             <table class="w-full overflow-y-hidden backdrop-blur-xl">
-                <thead class="sticky top-0 text-black rounded-t-lg">
+                <thead class="sticky top-0 text-black rounded-t-lg z-10">
                     <tr class="bg-white *:p-3">
-                        <th class="font-normal">
-                            No
+                        <th class="font-normal sticky left-0 bg-white">
+                            #
                         </th>
                         @can('view-customer-detail-columns-coupon')
                         <th class="font-normal">
@@ -46,6 +46,9 @@ mount(function ($auth) {
                         </th>
                         <th class="font-normal">
                             Phone no
+                        </th>
+                        <th class="font-normal">
+                            Email
                         </th>
                         @endcan
                         <th class="font-normal">
@@ -62,11 +65,12 @@ mount(function ($auth) {
                 <tbody>
                     @foreach($issuedcoupons as $issuedcoupon)
                     <tr class="hover:bg-black/10 transition-colors duration-200 text-white *:p-3">
-                        <td class="text-center font-normal">{{$loop->iteration}}</td>
+                        <td class="text-center font-normal sticky left-0 bg-white text-black">{{$loop->iteration}}</td>
                         @can('view-customer-detail-columns-coupon')
                         <td class="text-center font-normal">{{$issuedcoupon->user->first_name}}</td>
                         <td class="text-center font-normal">{{$issuedcoupon->user->last_name}}</td>
                         <td class="text-center font-normal">{{$issuedcoupon->user->phoneno}}</td>
+                        <td class="text-center font-normal">{{$issuedcoupon->user->email}}</td>
                         @endcan
                         <td class="text-center font-normal">{{$issuedcoupon->coupon->name}}</td>
                         <td class="text-center font-normal">{{$issuedcoupon->coupon->created_at}}</td>

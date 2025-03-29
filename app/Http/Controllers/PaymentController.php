@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\TerminalPaymentEvent;
 use App\Models\Checkout;
+use App\Events\PurchaseCreated;
 use App\Models\IssuedCoupon;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -48,11 +48,11 @@ class PaymentController extends Controller
         }
 
 
-        $api_response->getResult()->getorder()->getmetadata() && $this->storeOnlinePurchase($payment);
-        $api_response->getResult()->getorder()->getmetadata() || $this->hardwareOnlinePurchase($payment);
+        $api_response->getResult()->getorder()->getmetadata() && $this->onlinePurchase($payment);
+        $api_response->getResult()->getorder()->getmetadata() || $this->hardwarePurchase($payment);
     }
 
-    public function hardwareOnlinePurchase($payment)
+    public function hardwarePurchase($payment)
     {
         $client = new SquareClient([
             'accessToken' => env('SQUARE_POS_ACCESS_TOKEN'),
@@ -69,10 +69,10 @@ class PaymentController extends Controller
 
         $checkout = Checkout::find(preg_replace('/\D/', '', collect($orders->getorder()->getlineItems())->first()->getNote()));
 
-        $this->store(collect(json_decode($checkout->cart))->all(), $checkout->user_id, $checkout->coupon_id, $payment, $orders->getorder()->gettenders()[0]->gettransactionId());
+        $this->store(collect(json_decode($checkout->cart))->all(), $checkout->user_id, $checkout->coupon_id, $payment, $orders->getorder()->gettenders()[0]->gettransactionId(), 2);
     }
 
-    public function storeOnlinePurchase($payment)
+    public function onlinePurchase($payment)
     {
         $client = new SquareClient([
             'accessToken' => env('SQUARE_POS_ACCESS_TOKEN'),
@@ -93,7 +93,7 @@ class PaymentController extends Controller
             $cart[$order->getmetadata()['id']] = $order->getquantity();
         }
 
-        $this->store($cart, $orders->getorder()->getmetadata()['user_id'], $orders->getorder()->getmetadata()['coupon_id'], $payment, $orders->getorder()->gettenders()[0]->gettransactionId());
+        $this->store($cart, $orders->getorder()->getmetadata()['user_id'], $orders->getorder()->getmetadata()['coupon_id'], $payment, $orders->getorder()->gettenders()[0]->gettransactionId(), 1);
     }
 
     static function onlinePayment($cart, $user, $coupon)
@@ -202,7 +202,7 @@ class PaymentController extends Controller
         return $url;
     }
 
-    static function store($cart, $user_id, $coupon_id, $payment, $transaction_id)
+    static function store($cart, $user_id, $coupon_id, $payment, $transaction_id, $gateway_id)
     {
 
         $purchasedItems = [];
@@ -225,6 +225,7 @@ class PaymentController extends Controller
             'receipt_url' => $payment['receipt_url'],
             'status' => $payment['status'],
             'transaction_id' => $transaction_id,
+            'gateway_id' => $gateway_id,
         ]);
 
         $purchase->items()->createMany($purchasedItems);
@@ -237,5 +238,7 @@ class PaymentController extends Controller
             'is_used' => true,
             'used_at' => Carbon::now()->format('Y-m-d H:i:s')
         ]);
+
+        PurchaseCreated::dispatch($purchase);
     }
 }

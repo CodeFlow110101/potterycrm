@@ -17,6 +17,7 @@ $toggleModal = function ($id = null) {
     $this->modal = !$this->modal;
     if ($id) {
         $this->selected_user = User::with(['role'])->find($id);
+        $this->role_id = $this->selected_user->role_id;
     } else {
         $this->reset(['selected_user', 'role_id']);
     }
@@ -24,7 +25,7 @@ $toggleModal = function ($id = null) {
 
 $submit = function () {
     User::find($this->selected_user->id)->update(['role_id' => $this->role_id]);
-    $this->modal = !$this->modal;
+    $this->toggleModal();
 };
 
 ?>
@@ -36,10 +37,10 @@ $submit = function () {
     <div class="grow relative whitespace-nowrap" x-data="{ height: 0 }" x-resize="height = $height">
         <div class="overflow-auto hidden-scrollbar absolute inset-x-0 border border-white rounded-lg" :style="'height: ' + height + 'px;'">
             <table class="w-full overflow-y-hidden backdrop-blur-xl">
-                <thead class="sticky top-0 text-black rounded-t-lg">
+                <thead class="sticky top-0 text-black rounded-t-lg z-10">
                     <tr class="bg-white *:p-3">
-                        <th class="font-normal">
-                            No
+                        <th class="font-normal sticky left-0 bg-white">
+                            #
                         </th>
                         <th class="font-normal">
                             First Name
@@ -51,7 +52,10 @@ $submit = function () {
                             Phone no
                         </th>
                         <th class="font-normal">
-                            role
+                            Email
+                        </th>
+                        <th class="font-normal">
+                            Role
                         </th>
                         <th class="font-normal">
                             Action
@@ -61,11 +65,12 @@ $submit = function () {
                 <tbody>
                     @foreach($users as $user)
                     <tr class="hover:bg-black/10 transition-colors duration-200 text-white *:p-3">
-                        <td class="text-center font-normal">{{$loop->iteration}}</td>
+                        <td class="text-center font-normal sticky left-0 bg-white text-black">{{$loop->iteration}}</td>
                         <td class="text-center font-normal">{{$user->first_name}}</td>
                         <td class="text-center font-normal">{{$user->last_name}}</td>
                         <td class="text-center font-normal">{{$user->phoneno}}</td>
-                        <td class="text-center font-normal">{{$user->role->name}}</td>
+                        <td class="text-center font-normal">{{$user->email}}</td>
+                        <td class="text-center font-normal capitalize">{{$user->role->name}}</td>
                         <td class="text-center font-normal">
                             <button wire:click="toggleModal({{ $user->id }})">
                                 <svg class="w-6 h-6 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -104,7 +109,7 @@ $submit = function () {
             <div class="relative">
                 <select wire:model="role_id" type="text" id="floating_outlined" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-white bg-transparent rounded-lg border-2 border-white appearance-none focus:outline-none focus:ring-0 focus:border-white peer" placeholder=" ">
                     @foreach($roles as $role)
-                    <option @if( $role->id == $selected_user->role->id ) selected @endif value="{{ $role->id }}">{{ $role->name }}</option>
+                    <option @if( $role->id == $selected_user->role->id ) selected @endif value={{ $role->id }}>{{ $role->name }}</option>
                     @endforeach
                 </select>
                 <label for="floating_outlined" class="absolute text-sm rounded-full text-black duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">Name</label>

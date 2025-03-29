@@ -10,7 +10,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class BookingCapacityExceededMail extends Mailable
+class BookingMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -19,11 +19,13 @@ class BookingCapacityExceededMail extends Mailable
      */
     protected $booking;
     protected $user;
+    protected $subjectText;
 
-    public function __construct($booking, $user)
+    public function __construct($booking, $user, $subjectText)
     {
         $this->booking = $booking;
         $this->user = $user;
+        $this->subjectText = $subjectText;
     }
 
     /**
@@ -32,7 +34,7 @@ class BookingCapacityExceededMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Booking Capacity Exceeded Mail',
+            subject: $this->subjectText,
         );
     }
 
@@ -42,7 +44,7 @@ class BookingCapacityExceededMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'mails.booking-capacity-exceeded-mail',
+            view: 'mails.booking-mail',
             with: [
                 'booking' => $this->booking,
                 'user' => $this->user,
