@@ -57,7 +57,7 @@ $removeCart = function ($id) {
                                         <img class="w-36 aspect-square" src="{{asset('storage/'.$product->thumbnail_path)}}">
                                     </div>
                                     <div class="flex items-center gap-4 sm:hidden">
-                                        <div class="text-xl">$ {{ $product->price }}</div>
+                                        <div class="text-xl">$ {{ $product->price / 100 }}</div>
                                         <div>
                                             <input x-mask="99" @input="if ($event.target.value.trim() === '' || $event.target.value.trim() === '00' || $event.target.value.trim() === '0') $event.target.value = 0" wire:change="updateCart({{ $product->id }} , $event.target.value)" value="{{ $cart[$product->id] }}" class="h-10 w-14 text-center border text-black outline-none">
                                         </div>
