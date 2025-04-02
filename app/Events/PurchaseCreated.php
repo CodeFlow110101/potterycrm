@@ -26,7 +26,7 @@ class PurchaseCreated
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('purchase'),
+            new Channel('purchase'),
         ];
     }
 }

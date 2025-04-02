@@ -27,7 +27,7 @@ class OrderCreated implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('orders'), // Public channel
+
         ];
     }
 }
