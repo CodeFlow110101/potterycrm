@@ -173,7 +173,7 @@ class PaymentController extends Controller
             "S.com.squareup.pos.WEB_CALLBACK_URI=" . url('/process-payment') . ";" .
             "S.com.squareup.pos.CLIENT_ID=" . env('SQUARE_POS_APPLICATION_ID') . ";" .
             "S.com.squareup.pos.API_VERSION=v2.0;" .
-            "i.com.squareup.pos.TOTAL_AMOUNT=" . $amount . ";" .
+            "i.com.squareup.pos.TOTAL_AMOUNT=" . $amount * 100 . ";" .
             "S.com.squareup.pos.CURRENCY_CODE=" . env('SQUARE_POS_CURRENCY') . ";" .
             "S.com.squareup.pos.TENDER_TYPES=com.squareup.pos.TENDER_CARD,com.squareup.pos.TENDER_CASH;" .
             "S.com.squareup.pos.NOTE=" . 'Checkout Number: ' . $checkout_id . ";" .
@@ -181,7 +181,7 @@ class PaymentController extends Controller
 
         Gate::allows('apple') && $url = "square-commerce-v1://payment/create?data=" . urlencode(json_encode([
             "amount_money" => [
-                "amount" => $amount,
+                "amount" => $amount * 100,
                 "currency_code" => env('SQUARE_POS_CURRENCY'),
             ],
             "callback_url" => url('/process-payment'),
