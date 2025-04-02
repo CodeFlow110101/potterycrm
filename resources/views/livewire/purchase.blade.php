@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Gate;
 
 state(['auth']);
 
-on(['echo:orders,OrderCreated' => function () {
+on(['echo:purchase,PurchaseCreated' => function () {
     $this->reset();
 }]);
 

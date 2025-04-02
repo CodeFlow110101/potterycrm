@@ -9,7 +9,7 @@ use function Livewire\Volt\{state, mount, with, on};
 
 state(['role']);
 
-on(['echo:orders,OrderCreated' => function () {
+on(['echo:purchase,PurchaseCreated' => function () {
     $this->reset();
 }]);
 

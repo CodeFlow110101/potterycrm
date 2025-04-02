@@ -22,7 +22,7 @@ state(['modal' => false, 'selected_item', 'item_status', 'item_id', 'statuses', 
 
 rules(['item_id' => 'required', 'item_status' => 'required'])->attributes(['item_id' => 'item id', 'item_status' => 'status']);
 
-on(['echo:orders,OrderCreated' => function () {
+on(['echo:purchase,PurchaseCreated' => function () {
     $this->reset();
 }]);
 

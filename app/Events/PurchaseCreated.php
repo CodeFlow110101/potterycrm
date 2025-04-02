@@ -22,4 +22,11 @@ class PurchaseCreated
     {
         $this->purchase = $purchase;
     }
+
+    public function broadcastOn(): array
+    {
+        return [
+            new PrivateChannel('purchase'),
+        ];
+    }
 }
