@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Gate;
 state(['auth']);
 
 on(['echo:purchase,PurchaseCreated' => function () {
+    dd('hello');
     $this->reset();
 }]);
 
