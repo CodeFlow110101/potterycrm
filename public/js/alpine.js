@@ -80,6 +80,15 @@ function toastr() {
   };
 }
 
+function validatePriceFormat(input) {
+  let formatted = input
+    .replace(/[^0-9.]/g, "") // Allow only numbers and dot
+    .replace(/(\..*)\./g, "$1") // Prevent multiple dots
+    .replace(/^(\d*\.\d{2}).*$/, "$1"); // Limit to two decimals
+
+  return formatted.includes(".") ? formatted : formatted + "."; // Ensure decimal presence
+}
+
 function flatpickrDate(tomorrow, allowedDates) {
   return {
     tomorrow: tomorrow,

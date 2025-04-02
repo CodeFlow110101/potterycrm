@@ -130,7 +130,7 @@ $submitAndPay = function () {
 
 $total = computed(function () {
     return Product::whereIn('id', $this->cart ? array_keys($this->cart) : [])->get()->map(function ($item) {
-        return $item->price * $this->cart[$item->id];
+        return $item->price * $this->cart[$item->id] / 100;
     })->sum();
 });
 
@@ -180,7 +180,6 @@ mount(function (Request $request) {
             </div>
         </a>
     </div>
-    {{$checkout_no}}
     <div class="flex max-sm:flex-col sm:justify-between gap-4 sm:gap-12 grow">
         <div class="w-full py-12 grow flex flex-col backdrop-blur-xl border border-white rounded-lg">
             <div class="w-4/5 mx-auto relative grow" x-data="{ height: 0 }" x-resize="height = $height">
@@ -331,7 +330,7 @@ mount(function (Request $request) {
                             </div>
                         </div>
                         <div>
-                            $ {{ $product->price * $cart[$product->id]}}
+                            $ {{ $product->price * $cart[$product->id] / 100}}
                         </div>
                     </div>
                     @endforeach

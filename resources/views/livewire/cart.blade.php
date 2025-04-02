@@ -69,11 +69,11 @@ $removeCart = function ($id) {
                                     </div>
                                 </div>
                             </td>
-                            <td class="py-12 max-sm:hidden">$ {{ $product->price }}</td>
+                            <td class="py-12 max-sm:hidden">$ {{ $product->price / 100}}</td>
                             <td class="py-12 max-sm:hidden">
                                 <input x-mask="99" @input="if ($event.target.value.trim() === '' || $event.target.value.trim() === '00' || $event.target.value.trim() === '0') $event.target.value = 0" wire:change="updateCart({{ $product->id }} , $event.target.value)" value="{{ $cart[$product->id] }}" class="h-14 w-20 text-center border text-black outline-none">
                             </td>
-                            <td>$ {{ $product->price * $cart[$product->id]}}</td>
+                            <td>$ {{ $product->price * $cart[$product->id] / 100}}</td>
                         </tr>
                         @endforeach
                     </tbody>

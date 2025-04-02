@@ -128,7 +128,7 @@ mount(function ($auth) {
                             <td class="text-center font-normal">{{$purchase->user->email}}</td>
                             @endcan
                             <td class="text-center font-normal">{{$item->product->name}}</td>
-                            <td class="text-center font-normal">$ {{number_format($item->product->price, 2, '.', '')}}</td>
+                            <td class="text-center font-normal">$ {{number_format($item->product->price / 100, 2, '.', '')}}</td>
                             <td class="text-center font-normal">{{$item->item_id}}</td>
                             <td class="text-center font-normal capitalize">{{$item->status ? $item->status->name : ''}}</td>
                             @can('view-customer-detail-columns-order')

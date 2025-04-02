@@ -110,7 +110,7 @@ class PaymentController extends Controller
         foreach ($cart as $id => $quantitiy) {
             $metadata = ['id' => (string)$id];
             $base_price_money = new \Square\Models\Money();
-            $base_price_money->setAmount($products->where('id', $id)->first()->price * 100);
+            $base_price_money->setAmount($products->where('id', $id)->first()->price);
             $base_price_money->setCurrency(env('SQUARE_POS_CURRENCY'));
 
             $order_line_item = new \Square\Models\OrderLineItem($quantitiy);
@@ -173,7 +173,7 @@ class PaymentController extends Controller
             "S.com.squareup.pos.WEB_CALLBACK_URI=" . url('/process-payment') . ";" .
             "S.com.squareup.pos.CLIENT_ID=" . env('SQUARE_POS_APPLICATION_ID') . ";" .
             "S.com.squareup.pos.API_VERSION=v2.0;" .
-            "i.com.squareup.pos.TOTAL_AMOUNT=" . $amount * 100 . ";" .
+            "i.com.squareup.pos.TOTAL_AMOUNT=" . $amount . ";" .
             "S.com.squareup.pos.CURRENCY_CODE=" . env('SQUARE_POS_CURRENCY') . ";" .
             "S.com.squareup.pos.TENDER_TYPES=com.squareup.pos.TENDER_CARD,com.squareup.pos.TENDER_CASH;" .
             "S.com.squareup.pos.NOTE=" . 'Checkout Number: ' . $checkout_id . ";" .
@@ -181,7 +181,7 @@ class PaymentController extends Controller
 
         Gate::allows('apple') && $url = "square-commerce-v1://payment/create?data=" . urlencode(json_encode([
             "amount_money" => [
-                "amount" => $amount * 100,
+                "amount" => $amount,
                 "currency_code" => env('SQUARE_POS_CURRENCY'),
             ],
             "callback_url" => url('/process-payment'),

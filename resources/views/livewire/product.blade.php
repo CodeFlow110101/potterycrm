@@ -45,7 +45,7 @@ mount(function (Request $request) {
                             {{ $product->description }}
                         </div>
                         <div class="text-lg font-avenir-next-regular tracking-wider">
-                            ${{ $product->price }}
+                            ${{ $product->price / 100 }}
                         </div>
                     </div>
                     <div class="flex flex-col gap-2">

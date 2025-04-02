@@ -44,7 +44,7 @@ with(fn() => [
                         <div class="font-avenir-next-rounded-regular">
                             {{Str::limit($product->description, 20)}}
                         </div>
-                        <div class="mt-auto">${{$product->price}}</div>
+                        <div class="mt-auto">${{$product->price / 100}}</div>
                     </div>
                 </a>
                 @can('update-product')
