@@ -33,7 +33,7 @@ with(fn() => [
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 text-white overflow-y-auto hidden-scrollbar absolute inset-x-0" :style="'height: ' + height + 'px;'">
             @foreach($products as $product)
             <div class="flex flex-col gap-4">
-                <a href="/product/{{ $product->id }}" wire:navigate class="flex flex-col h-min backdrop-blur-xl border border-white p-4 rounded-lg gap-2">
+                <a href="/product/{{ $product->id }}" wire:navigate class="flex flex-col backdrop-blur-xl border border-white p-4 rounded-lg gap-2">
                     <div class="font-avenir-next-rounded-bold text-center">
                         {{$product->name}}
                     </div>
