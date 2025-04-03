@@ -40,7 +40,7 @@ with(fn() => [
                     <div class="w-full aspect-square">
                         <img class="size-full rounded-lg object-cover" src="{{ asset('storage/'.$product->thumbnail_path) }}">
                     </div>
-                    <div class="flex flex-col flex-grow">
+                    <div class="flex flex-col mt-auto">
                         <div class="font-avenir-next-rounded-regular">
                             {{Str::limit($product->description, 20)}}
                         </div>
