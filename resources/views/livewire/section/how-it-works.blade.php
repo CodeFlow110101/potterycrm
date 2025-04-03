@@ -26,33 +26,40 @@ use function Livewire\Volt\{state};
         <a href="book-table" wire:navigate class="uppercase mt-auto px-6 py-2 rounded-full bg-yellow-500 mx-auto text-xl text-black">Book Now</a>
     </div>
     <div class="flex-1 grow flex flex-col gap-8">
-        <div class="text-center text-2xl py-1 font-avenir-next-rounded-semibold bg-black/60 rounded-full w-full uppercase">Paint at Home</div>
+        <div class="text-center text-2xl py-1 font-avenir-next-rounded-semibold bg-black/60 rounded-full w-full uppercase">
+            Paint at Home
+        </div>
         <div class="text-2xl">Option 1: Paint and Fire</div>
         <ol class="list-decimal list-inside space-y-6 text-xl">
             <li>
-                ⁠Order Your Kit: Visit our ‘Shop’ tab and order your DIY pottery painting kit. Be sure to select the "Fire Option" during your purchase. Each kit includes all the essentials you need to paint at home.
+                Order Your Kit: Visit our ‘Shop’ tab and order your DIY pottery painting kit. Be sure to select the "Fire Option" during your purchase. Each kit includes all the essentials you need to paint at home.
             </li>
             <li>
-                ⁠Paint at Your Leisure: At home, take your time to paint your pottery with the colors and designs you prefer.
+                Book Your Pickup: Call us on {{ env('TWILIO_PHONE_COUNTRY_CODE') . ' ' . env('ADMIN_PHONE_NO') }} to schedule a time to pick up your kit from our shop.
             </li>
             <li>
-                ⁠Drop It Off: Once you've completed your masterpiece, bring it back to our shop for firing.
+                Paint at Your Leisure: At home, take your time to paint your pottery with the colours and designs you prefer.
+            </li>
+            <li>
+                Drop It Off: Once you've completed your masterpiece, bring it back to our shop for firing.
             </li>
             <li>
                 We Fire It: We handle all the glazing and firing, ensuring your pottery turns out perfectly.
             </li>
             <li>
-                Pick Up: We’ll notify you when your pottery is ready. Stop by to pick up and enjoy your handiwork!
+                Pick Up: We’ll notify you when your pottery is ready. Call us to schedule a pickup time, then stop by to collect and enjoy your handiwork!
             </li>
         </ol>
-
-        <div class="text-2xl">Option 2: Paint and Display </div>
+        <div class="text-2xl">Option 2: Paint and Display</div>
         <ol class="list-decimal list-inside space-y-6 text-xl">
             <li>
-                Order Your Kit: Choose the 'Non-Fire' option from our ‘Shop’ tab. This kit comes with everything you need, including special paints that do not require firing.
+                Order Your Kit: Choose the 'Non-Fire' option from our ‘Shop’ tab. This kit includes everything you need, including special paints that do not require firing.
             </li>
             <li>
-                ⁠Paint at Your Leisure: Relax and enjoy painting your pottery at home with our decorative paints.
+                Book Your Pickup: Call us on {{ env('TWILIO_PHONE_COUNTRY_CODE') . ' ' . env('ADMIN_PHONE_NO') }} to schedule a time to pick up your kit from our shop.
+            </li>
+            <li>
+                Paint at Your Leisure: Relax and enjoy painting your pottery at home with our decorative paints.
             </li>
             <li>
                 Let It Dry: Allow your pottery to fully dry at home—no firing needed.
@@ -61,6 +68,8 @@ use function Livewire\Volt\{state};
                 Display It: Place your finished piece around your home or give it as a gift. Enjoy your artwork without any additional steps!
             </li>
         </ol>
-        <a href="shop" wire:navigate class="uppercase mt-auto px-6 py-2 rounded-full bg-yellow-500 mx-auto text-xl text-black">Shop Now</a>
+        <a href="shop" wire:navigate class="uppercase mt-auto px-6 py-2 rounded-full bg-yellow-500 mx-auto text-xl text-black">
+            Shop Now
+        </a>
     </div>
 </div>
