@@ -7,13 +7,19 @@ return [
     "How do the DIY pottery kits work?" => "Our DIY pottery kits come with everything you need to create your masterpiece at home. Each kit includes the pottery item, paints, brushes, and easy-to-follow instructions. Depending on the kit you choose, you can either return it to us for firing or let it dry at home to keep as is.",
 
     "How can I order a pottery kit online?" => "You have two options for ordering online:\n
-    •⁠  ⁠Option 1: Standard Kit for Firing\n
-      * Visit our 'Shop' tab and select a DIY pottery painting kit.\n
-      * Choose the 'Fire Option' if you want your piece to be glazed and fired.\n
-      * Complete your purchase, paint your pottery at home, and return it to us for firing.\n\n
-    •⁠  ⁠Option 2: Non-Fire Kit\n
-      * Choose the 'Non-Fire' kit option, which includes special paints that do not require firing.\n
-      * Paint your piece at home, let it dry completely, and it's ready to display.",
+    • Option 1: Paint and Fire\n
+      1. Order Your Kit: Visit our ‘Shop’ tab and order your DIY pottery painting kit. Be sure to select the 'Fire Option' during your purchase. Each kit includes all the essentials you need to paint at home.\n
+      2. Book Your Pickup: Call us on 0450 131 936 to schedule a time to pick up your kit from our shop.\n
+      3. Paint at Your Leisure: At home, take your time to paint your pottery with the colours and designs you prefer.\n
+      4. Drop It Off: Once you've completed your masterpiece, bring it back to our shop for firing.\n
+      5. We Fire It: We handle all the glazing and firing, ensuring your pottery turns out perfectly.\n
+      6. Pick Up: We’ll notify you when your pottery is ready. Call us to schedule a pickup time, then stop by to collect and enjoy your handiwork!\n
+    • Option 2: Paint and Display\n
+      1. Order Your Kit: Choose the 'Non-Fire' option from our ‘Shop’ tab. This kit includes everything you need, including special paints that do not require firing.\n
+      2. Book Your Pickup: Call us on 0450 131 936 to schedule a time to pick up your kit from our shop.\n
+      3. Paint at Your Leisure: Relax and enjoy painting your pottery at home with our decorative paints.\n
+      4. Let It Dry: Allow your pottery to fully dry at home—no firing needed.\n
+      5. Display It: Place your finished piece around your home or give it as a gift. Enjoy your artwork without any additional steps!",
 
     "How long does shipping take?" => "Orders are processed within 2–3 business days, with delivery typically within 8–10 business days. Delivery times may vary depending on your location.",
 
@@ -33,6 +39,7 @@ return [
 
     "Who can I contact for additional questions or support?" => "Our customer service team is available to help with any questions or special requests. Reach out via email or phone on " . env("TWILIO_PHONE_COUNTRY_CODE") . env("ADMIN_PHONE_NO") . ".",
   ],
+
 
   'booking-1-message' => "Your booking is not confirmed yet, we will confirm it shortly!",
   'booking-2-message' => "Your booking has been successfully confirmed. We look forward to welcoming you at Icona Pottery Cafe. Feel free to text or call us on " . env("TWILIO_PHONE_COUNTRY_CODE") . env("ADMIN_PHONE_NO") . " if you have any questions.",

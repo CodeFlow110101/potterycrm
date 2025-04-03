@@ -279,23 +279,14 @@ mount(function (Request $request) {
                         @endif
                         @endcan
                         @can('online-checkout-user')
-                        <ol class="list-decimal list-inside space-y-6 text-">
-                            <li>
-                                Order Your Kit: Visit our ‘Shop’ tab to order your DIY pottery painting kit. Each kit includes everything you need to paint at home.
-                            </li>
-                            <li>
-                                Paint at Your Leisure: Take your time and paint your pottery with the colors and designs of your choice.
-                            </li>
-                            <li>
-                                Drop It Off: Once you’re finished, bring your pottery back to our shop for firing.
-                            </li>
-                            <li>
-                                We Fire It: We’ll take care of the glazing and firing.
-                            </li>
-                            <li>
-                                Pick Up: We’ll let you know when your pottery is ready to be picked up. Come and collect your handiwork!
-                            </li>
-                        </ol>
+                        <div class="flex flex-col gap-2">
+                            <div>
+                                Thank you for choosing Icona Pottery Cafe! We can’t wait to see your creativity come to life.
+                            </div>
+                            <div>
+                                Please make sure to call {{ env('TWILIO_PHONE_COUNTRY_CODE') . ' ' . env('ADMIN_PHONE_NO') }} to book a time to pick up your package.
+                            </div>
+                        </div>
                         <button type="submit" class="relative uppercase text-center py-2 px-4 bg-white mx-auto text-black rounded-lg mt-auto">
                             <div wire:loading.class="invisible" wire:target="submitAndPay">Submit & Pay</div>
                             <div wire:loading.class.remove="invisible" wire:target="submitAndPay" class="invisible absolute inset-0 p-2">
