@@ -48,7 +48,7 @@ with(fn() => [
                     </div>
                 </a>
                 @can('update-product')
-                <a href="/manage-product/{{ $product->id }}" wire:navigate class="text-black py-3 px-20 bg-white rounded-lg tracking-tight text-center">Update</a>
+                <a href="/manage-product/{{ $product->id }}" wire:navigate class="text-black py-3 bg-white rounded-lg tracking-tight text-center">Update</a>
                 @endcan
             </div>
             @endforeach
