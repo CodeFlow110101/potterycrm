@@ -38,7 +38,7 @@ with(fn() => [
                         {{$product->name}}
                     </div>
                     <div class="w-full aspect-square">
-                        <img class="size-full rounded-lg aspect-square" src="{{ asset('storage/'.$product->thumbnail_path) }}">
+                        <img class="w-full h-auto rounded-lg aspect-square" src="{{ asset('storage/'.$product->thumbnail_path) }}">
                     </div>
                     <div class="flex flex-col flex-grow">
                         <div class="font-avenir-next-rounded-regular">
