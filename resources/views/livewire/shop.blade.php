@@ -37,10 +37,10 @@ with(fn() => [
                     <div class="font-avenir-next-rounded-bold text-center">
                         {{$product->name}}
                     </div>
-                    <div class="w-full aspect-square">
-                        <img class="w-full h-auto rounded-lg aspect-square" src="{{ asset('storage/'.$product->thumbnail_path) }}">
+                    <div class="w-full">
+                        <img class="size-full rounded-lg aspect-square" src="{{ asset('storage/'.$product->thumbnail_path) }}">
                     </div>
-                    <div class="flex flex-col flex-grow">
+                    <div class="flex flex-col mt-auto">
                         <div class="font-avenir-next-rounded-regular">
                             {{Str::limit($product->description, 20)}}
                         </div>
