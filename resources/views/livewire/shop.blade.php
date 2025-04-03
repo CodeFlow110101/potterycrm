@@ -30,17 +30,17 @@ with(fn() => [
         @endcanany
     </div>
     <div class="grow relative" x-data="{ height: 0 }" x-resize="height = $height">
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 text-white overflow-y-auto hidden-scrollbar absolute inset-x-0" :style="'height: ' + height + 'px;'">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 text-white overflow-y-auto hidden-scrollbar absolute inset-x-0 items-stretch">
             @foreach($products as $product)
-            <div class="flex flex-col gap-4">
-                <a href="/product/{{ $product->id }}" wire:navigate class="flex flex-col backdrop-blur-xl border border-white p-4 rounded-lg gap-2">
+            <div class="flex flex-col gap-4 h-full">
+                <a href="/product/{{ $product->id }}" wire:navigate class="grid h-full backdrop-blur-xl border border-white p-4 rounded-lg gap-2">
                     <div class="font-avenir-next-rounded-bold text-center">
                         {{$product->name}}
                     </div>
                     <div class="w-full aspect-square">
-                        <img class="size-full rounded-lg" src="{{asset('storage/'.$product->thumbnail_path)}}">
+                        <img class="size-full rounded-lg object-cover" src="{{ asset('storage/'.$product->thumbnail_path) }}">
                     </div>
-                    <div class="flex flex-col">
+                    <div class="flex flex-col flex-grow">
                         <div class="font-avenir-next-rounded-regular">
                             {{Str::limit($product->description, 20)}}
                         </div>
