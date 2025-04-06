@@ -54,29 +54,30 @@ use function Livewire\Volt\{state};
                     </div>
                 </div>
                 <div class="flex flex-col gap-4">
-                    <div class="overflow-x-hidden hidden-scrollbar pointer-events-none">
-                        <div class="aspect-square lg:rounded-full  max-lg:w-11/12 max-lg:mx-auto rounded-2xl p-4 lg:translate-x-16 lg:pl-8 lg:pr-20 flex justify-center items-center bg-indigo-800/90 text-right leading-tight">
-                            <div class="flex flex-col gap-4 max-xl:text-xs">
-                                <div class="text-center text-lg font-avenir-next-rounded-extra-bold">Walk-ins Welcome!</div>
+                    <div class="overflow-x-hidden hidden-scrollbar pointer-events-none grow flex flex-col justify-center">
+                        <div class="flex justify-end max-lg:w-11/12 max-lg:mx-auto text-right leading-tight">
+                            <div class="flex text-center flex-col gap-4 max-xl:text-xs lg:whitespace-nowrap lg:w-min relative z-10 max-lg:bg-indigo-800/90 max-lg:rounded-xl py-8">
+                                <div class="max-lg:hidden absolute -inset-10 bg-indigo-800/90 -z-10 rounded-full aspect-square"></div>
+                                <div class="text-lg font-avenir-next-rounded-extra-bold">Walk-ins Welcome!</div>
                                 <div>
                                     Welcome to the perfect place for creativity and fun!
                                 </div>
                                 <div>
                                     Our pottery painting cafe is a place where everyone
-                                    <br class="max-xl:hidden">
+                                    <br class="max-lg:hidden">
                                     can relax, unwind, and get artistic. Choose from a wide
-                                    <br class="max-xl:hidden">
+                                    <br class="max-lg:hidden">
                                     selection of pottery pieces, grab your favorite
-                                    <br class="max-xl:hidden">
+                                    <br class="max-lg:hidden">
                                     colours, and let your imagination run wild.
                                 </div>
                                 <div>
                                     No experience necessary – we provide all the supplies
-                                    <br class="max-xl:hidden">
+                                    <br class="max-lg:hidden">
                                     and guidance you need to create a masterpiece. Great
-                                    <br class="max-xl:hidden">
+                                    <br class="max-lg:hidden">
                                     for families, friends, parties, Date Nights or just a solo
-                                    <br class="max-xl:hidden">
+                                    <br class="max-lg:hidden">
                                     art therapy session.
                                 </div>
                                 <div>
@@ -89,8 +90,13 @@ use function Livewire\Volt\{state};
                         </div>
                     </div>
                     <div class="flex justify-end">
-                        <div class="border-t pt-4 pr-4">
+                        <div class="border-t pt-4 pr-4 flex flex-col gap-1">
                             <a href="book-table" wire:navigate class="text-black py-3 uppercase px-20 bg-white rounded-lg tracking-tight">Book Now</a>
+                        </div>
+                    </div>
+                    <div class="text-xs flex justify-end w-1/2 ml-auto">
+                        <div class="text-end">
+                            &copy; 2025 <span class="font-semibold">Icona Pottery Cafe</span>. All rights reserved. No part of this website may be reproduced or transmitted in any form without prior written permission.
                         </div>
                     </div>
                 </div>

@@ -42,4 +42,4 @@ Route::middleware(['auth'])->group(function () {
 Route::post('/square-webhook', [PaymentController::class, 'webhook']);
 
 // OTP Page
-Volt::route('/otp', 'otp')->name('otp');
+// Volt::route('/otp', 'otp')->name('otp');
