@@ -56,7 +56,7 @@ use function Livewire\Volt\{state};
                 <div class="flex flex-col gap-4">
                     <div class="overflow-x-hidden hidden-scrollbar pointer-events-none grow flex flex-col justify-center">
                         <div class="flex justify-end max-lg:w-11/12 max-lg:mx-auto text-right leading-tight">
-                            <div class="flex text-center flex-col gap-4 max-xl:text-xs lg:whitespace-nowrap lg:w-min relative z-10 max-lg:bg-indigo-800/90 max-lg:rounded-xl py-8">
+                            <div class="flex text-center flex-col gap-4 max-xl:text-xs lg:whitespace-nowrap lg:w-min relative z-10 max-lg:bg-indigo-800/90 max-lg:rounded-xl py-8 max-lg:px-4">
                                 <div class="max-lg:hidden absolute -inset-10 bg-indigo-800/90 -z-10 rounded-full aspect-square"></div>
                                 <div class="text-lg font-avenir-next-rounded-extra-bold">Walk-ins Welcome!</div>
                                 <div>
