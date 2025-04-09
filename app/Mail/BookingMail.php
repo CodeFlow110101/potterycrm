@@ -18,13 +18,11 @@ class BookingMail extends Mailable
      * Create a new message instance.
      */
     protected $booking;
-    protected $user;
     protected $subjectText;
 
-    public function __construct($booking, $user, $subjectText)
+    public function __construct($booking, $subjectText)
     {
         $this->booking = $booking;
-        $this->user = $user;
         $this->subjectText = $subjectText;
     }
 
@@ -47,7 +45,7 @@ class BookingMail extends Mailable
             view: 'mails.booking-mail',
             with: [
                 'booking' => $this->booking,
-                'user' => $this->user,
+                'user' => $this->booking->user,
                 'time_slot' => Carbon::createFromFormat('H:i:s', $this->booking->timeSlot->start_time)->format('h:i A') . ' - ' . Carbon::createFromFormat('H:i:s', $this->booking->timeSlot->end_time)->format('h:i A'),
                 'booking_date' =>  Carbon::parse($this->booking->timeSlot->date->date)->format('d M Y'),
             ],

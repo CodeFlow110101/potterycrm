@@ -45,7 +45,7 @@ class BookingStatus extends Notification implements ShouldQueue
 
     public function toMail($notifiable)
     {
-        return (new BookingMail($this->booking, $notifiable, $this->subjectText))->to($notifiable->email);
+        return (new BookingMail($this->booking, $this->subjectText))->to($notifiable->email);
     }
 
     /**

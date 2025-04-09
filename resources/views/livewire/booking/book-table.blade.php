@@ -70,7 +70,7 @@ $verifyOtp = function () {
         ]
     );
 
-    $isBookingCreated = $user->whereHas('bookings.timeSlot.date', function ($query) {
+    $isBookingCreated = $user->bookings()->whereHas('timeSlot.date', function ($query) {
         $query->where('date', $this->date);
     })->doesntExist() && $user->bookings()->create([
         'status_id' => $status_id,
@@ -78,7 +78,7 @@ $verifyOtp = function () {
         'time_slot_id' => $timeslot->id,
     ]);
 
-    $this->summary = $isBookingCreated ? 'Your booking has been successfully registered' : 'You already have a booking for this date';
+    $this->summary = $isBookingCreated ? 'Your booking has been successfully registered.' : 'You already have a booking for this date.';
 
     $this->currentForm = 'summary';
 };

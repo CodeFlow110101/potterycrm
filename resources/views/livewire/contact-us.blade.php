@@ -178,7 +178,7 @@ $submit = function () {
                     </div>
                 </form>
                 @else
-                <div class="m-auto w-4/5 text-center">Thank you for contacting us we will get back to you shortly.</div>
+                <div class="m-auto w-4/5 text-center py-12">Thank you for contacting us we will get back to you shortly.</div>
                 @endif
             </div>
         </div>
