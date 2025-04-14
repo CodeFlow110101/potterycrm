@@ -63,15 +63,8 @@ mount(function ($cart, $path, $auth, $routeName) {
                 <a href="/faq" wire:navigate :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">FAQ</a>
                 @endif
                 @if($auth)
-                <div class="flex justify-between items-center relative group">
-                    <div class="sm:relative sm:group">
-                        <svg class="size-7 text-white max-sm:hidden" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                            <path fill-rule="evenodd" d="M12 20a7.966 7.966 0 0 1-5.002-1.756l.002.001v-.683c0-1.794 1.492-3.25 3.333-3.25h3.334c1.84 0 3.333 1.456 3.333 3.25v.683A7.966 7.966 0 0 1 12 20ZM2 12C2 6.477 6.477 2 12 2s10 4.477 10 10c0 5.5-4.44 9.963-9.932 10h-.138C6.438 21.962 2 17.5 2 12Zm10-5c-1.84 0-3.333 1.455-3.333 3.25S10.159 13.5 12 13.5c1.84 0 3.333-1.455 3.333-3.25S13.841 7 12 7Z" clip-rule="evenodd" />
-                        </svg>
-                        <div class="sm:absolute sm:hidden sm:group-hover:block sm:inset-x-0 sm:z-20 sm:-mx-16 sm:pt-2 font-avenir-next-regular text-black flex flex-col gap-12">
-                            <button wire:click="logOut" class="flex items-center mx-auto gap-2 outline-none rounded-md bg-white py-2 px-6 shadow border">Log Out </button>
-                        </div>
-                    </div>
+                <div class="flex justify-between items-center">
+                    <button wire:click="logOut" class="flex items-center mx-auto gap-2 outline-none rounded-md bg-white py-2 px-6 shadow border font-avenir-next-regular text-black text-base">Log Out</button>
                 </div>
                 @endif
                 <a href="/cart" wire:navigate class="relative rounded-full hover:bg-black/10">
