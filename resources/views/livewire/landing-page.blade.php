@@ -49,6 +49,8 @@ mount(function () {
     $this->url = request()->url();
     $this->auth = Auth::user();
     $this->routeName = Route::currentRouteName();
+
+    !in_array($this->path, ["/", "book-table"]) && $this->js('stopAudio');
 });
 ?>
 

@@ -152,3 +152,57 @@ function flatpickrDate(tomorrow, allowedDates) {
     }
   };
 }
+
+window.globalAudio = null;
+window.globalIsPlaying = false;
+
+window.audioPlayer = function(audioUrl) {
+  if (!globalAudio || globalAudio.src !== audioUrl) {
+    if (globalAudio) globalAudio.pause();
+    globalAudio = new Audio(audioUrl);
+  }
+
+  return {
+    isPlaying: window.globalIsPlaying, // local reactive variable Alpine can track
+    audio: globalAudio,
+
+    init() {
+      // Keep Alpine UI in sync with global state on load
+      this.isPlaying = window.globalIsPlaying;
+
+      Livewire.hook("element.removed", () => {
+        if (this.audio) {
+          this.audio.pause();
+          this.audio.currentTime = 0;
+          this.isPlaying = false;
+          window.globalIsPlaying = false;
+        }
+      });
+    },
+
+    toggle() {
+      if (this.isPlaying) {
+        this.audio.pause();
+        this.isPlaying = false;
+        window.globalIsPlaying = false;
+      } else {
+        this.audio.play();
+        this.isPlaying = true;
+        window.globalIsPlaying = true;
+
+        this.audio.onended = () => {
+          this.isPlaying = false;
+          window.globalIsPlaying = false;
+        };
+      }
+    }
+  };
+};
+
+function stopAudio() {
+  if (window.globalAudio) {
+    window.globalAudio.pause();
+    window.globalAudio.currentTime = 0;
+  }
+  window.globalIsPlaying = false;
+}

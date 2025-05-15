@@ -105,7 +105,10 @@ $submit = function () {
 ?>
 
 <div class="grow flex flex-col gap-4 lg:gap-8 py-4 lg:py-8 text-white w-11/12 mx-auto">
-    <div class="text-5xl lg:text-7xl font-avenir-next-bold text-white">Book a Table</div>
+    <div class="flex max-sm:flex-col sm:justify-between gap-2 items-center">
+        <div class="text-5xl lg:text-7xl font-avenir-next-bold text-white">Book a Table</div>
+        <livewire:audio-player />
+    </div>
     <div class="grow relative" x-data="{ height: 0 }" x-resize="height = $height">
         <div class="overflow-y-auto hidden-scrollbar absolute inset-x-0 flex flex-col grow backdrop-blur-xl border border-white rounded-lg p-6 gap-6" :style="'height: ' + height + 'px;'">
             <div class="flex items-center max-sm:justify-center gap-2 text-sm w-3/4 mx-auto">

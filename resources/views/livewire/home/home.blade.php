@@ -89,8 +89,11 @@ use function Livewire\Volt\{state};
                             </div>
                         </div>
                     </div>
+                    <div class="flex justify-end pr-4">
+                        <livewire:audio-player />
+                    </div>
                     <div class="flex justify-end">
-                        <div class="border-t pt-4 pr-4 flex flex-col gap-1">
+                        <div class="border-t pt-4 pr-4 flex justify-center items-center gap-1">
                             <a href="book-table" wire:navigate class="text-black py-3 uppercase px-20 bg-white rounded-lg tracking-tight">Book Now</a>
                         </div>
                     </div>
