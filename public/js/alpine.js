@@ -89,9 +89,9 @@ function validatePriceFormat(input) {
   return formatted.includes(".") ? formatted : formatted + "."; // Ensure decimal presence
 }
 
-function flatpickrDate(tomorrow, allowedDates) {
+function flatpickrDate(minDate, allowedDates) {
   return {
-    tomorrow: tomorrow,
+    minDate: minDate,
     allowedDates: allowedDates,
     init() {
       const options = {
@@ -100,18 +100,18 @@ function flatpickrDate(tomorrow, allowedDates) {
         appendTo: this.$refs.calendarContainer
       };
 
-      if (this.tomorrow) {
-        const date = new Date(this.tomorrow);
+      if (this.minDate) {
+        const date = new Date(this.minDate);
         date.setDate(date.getDate());
         const formattedDate = date.toISOString().split("T")[0];
-        options.minDate = this.tomorrow;
+        options.minDate = this.minDate;
         options.defaultDate = formattedDate;
       }
 
       if (this.allowedDates) {
         options.enable = JSON.parse(this.allowedDates);
       }
-      if (this.tomorrow || this.allowedDates) {
+      if (this.minDate || this.allowedDates) {
         flatpickr(this.$refs.dateInput, options);
       }
     },
