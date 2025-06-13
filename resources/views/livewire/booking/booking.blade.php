@@ -15,8 +15,7 @@ state(['modal' => false, 'booking', 'status', 'url', 'auth']);
 with(fn() => ['bookings' => Booking::with(['user', 'status', 'timeSlot.date'])
     ->when(!Gate::allows('view-any-booking'), function ($query) {
         $query->where('user_id', $this->auth->id);
-    })
-    ->get()]);
+    })->has('timeSlot')->get()]);
 
 on([
     'reset' => function () {

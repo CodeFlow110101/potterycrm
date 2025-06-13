@@ -9,20 +9,9 @@ use function Livewire\Volt\{state, with, mount, rules, updated};
 
 state(['date', 'people' => 0, 'selectedTimeSlots' => [], 'startTime' => Carbon::createFromTime(0, 0, 0), 'endTime' => Carbon::createFromTime(23, 59, 59), 'interval' => 60]);
 
-rules(['date' => 'required', 'people' => 'required|integer|min:1', 'selectedTimeSlots' => 'required'])->messages([
-    'selectedTimeSlots.required' => 'Atleast one :attribute is required.',
-])->attributes([
-    'selectedTimeSlots' => 'time slot',
-]);
-
 rules(fn() => [
     'date' => ['required'],
     'people' => ['integer', 'min:1'],
-    'selectedTimeSlots' => ['required'],
-])->messages([
-    'selectedTimeSlots.required' => 'At least one :attribute is required.',
-])->attributes([
-    'selectedTimeSlots' => 'time slot',
 ]);
 
 
@@ -65,7 +54,7 @@ $submit = function () {
 
     $date = Date::updateOrCreate(
         ['date' => $this->date],
-        ['max_people' => $this->people]
+        ['max_people' => collect($this->selectedTimeSlots)->isEmpty() ? 0 : $this->people]
     );
 
     $timeSlots = collect($this->selectedTimeSlots)
@@ -86,6 +75,9 @@ $isBooked = function ($timeslot) {
         ->where('start_time', explode(' - ', $timeslot)[0])
         ->where('end_time', explode(' - ', $timeslot)[1])
         ->has('bookings')
+        ->whereHas('bookings.status', function (Builder $query) {
+            $query->where('name', '!=', 'cancel');
+        })
         ->exists();
 };
 
@@ -96,6 +88,9 @@ $getPeopleCount = function ($timeslot) {
         ->where('start_time', explode(' - ', $timeslot)[0])
         ->where('end_time', explode(' - ', $timeslot)[1])
         ->has('bookings')
+        ->whereHas('bookings.status', function (Builder $query) {
+            $query->where('name', '!=', 'cancel');
+        })
         ->first()
         ->bookings
         ->count();
