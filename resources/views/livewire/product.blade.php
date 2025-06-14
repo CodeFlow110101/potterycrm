@@ -8,7 +8,7 @@ use function Livewire\Volt\{state, mount};
 state(['product', 'quantity' => 1]);
 
 $submit = function () {
-    $this->dispatch('add-cart', id: $this->product->id, quantity: $this->quantity);
+    $this->dispatch('add-cart', id: $this->product->id, quantity: $this->quantity ? $this->quantity : (string)1);
 };
 
 mount(function (Request $request) {

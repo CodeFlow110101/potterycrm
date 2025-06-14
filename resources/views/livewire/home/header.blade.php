@@ -11,7 +11,11 @@ state(['cart'])->reactive();
 
 $count = computed(function () {
     $this->dispatch('show-toastr', message: "Cart Updated!");
-    return collect($this->cart)->sum();
+
+    return collect($this->cart)->reject(function ($items) {
+        $items || session()->forget('cart');
+        return !$items;
+    })->sum();
 });
 
 $logOut = function (Request $request) {
