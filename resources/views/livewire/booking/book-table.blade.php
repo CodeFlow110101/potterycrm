@@ -32,7 +32,7 @@ rules(fn() => [
 ]);
 
 with(fn() => [
-    'allowedDates' => Date::whereDate('date', '>', Carbon::today())->whereHas('timeslots')->get()->map(fn($date) => $date->date),
+    'allowedDates' => Date::whereDate('date', '>=', Carbon::today())->whereHas('timeslots')->get()->map(fn($date) => $date->date),
     'slots' => (optional(Date::when($this->date, function ($query) {
         return $query->where('date', $this->date);
     }, function ($query) {
