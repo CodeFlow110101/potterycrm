@@ -20,7 +20,7 @@ use function Livewire\Volt\{state, with, computed, rules, mount, on, updated};
 
 state(['cart'])->reactive();
 
-state(['first_name', 'last_name', 'email', 'phoneno', 'otp', 'generatedOtp', 'auth', 'coupon_code', 'booking_id', 'coupon', 'checkout_for', 'checkout_no']);
+state(['first_name', 'last_name', 'email', 'phoneno', 'otp', 'generatedOtp', 'auth', 'coupon_code', 'booking_id', 'coupon', 'checkout_for', 'checkout_no', 'device_id']);
 
 with(fn() => [
     'products' => Product::whereIn('id', $this->cart ? array_keys($this->cart) : [])->get(),
@@ -35,6 +35,16 @@ rules(fn() => [
     'email' => $this->auth ? ['exclude'] : ['required', 'email'],
     'phoneno' => $this->auth ? ['exclude'] : ['required', function ($attribute, $value, $fail) {
         Gate::allows('valid-phone-number', $this->phoneno) || $fail('The :attribute must be in this format ' . env('TWILIO_PHONE_COUNTRY_CODE') . ' ' . Str::replace('9', 'X', env('PHONE_NUMBER_VALIDATION_PATTERN')));
+    }, function ($attribute, $value, $fail) {
+        $user = User::where('phoneno', $this->trimmed_phoneno)->first();
+
+        if (!$user || $user->role->name !== 'staff') {
+            return;
+        }
+
+        if ($user->role->name === 'staff' && $this->device_id !== env('POS_DEVICE_ID')) {
+            $fail('Staff users are restricted to login only from the authorized POS device.');
+        }
     }],
     'checkout_for' => $this->auth && Gate::allows('hardware-checkout-user') ? ['required'] : ['exclude'],
     'booking_id' => $this->auth && $this->checkout_for == 1 && Gate::allows('hardware-checkout-user') ? ['required'] : ['exclude'],
@@ -96,7 +106,7 @@ $verifyOtp = function (Request $request) {
             Auth::attempt([
                 'email' => $this->email,
                 'password' => '12345678',
-            ])
+            ], $this->device_id !== env('POS_DEVICE_ID'))
         ) {
             $request->session()->regenerate();
             $this->dispatch('reload');
@@ -354,3 +364,13 @@ mount(function (Request $request) {
         </div>
     </div>
 </div>
+
+@script
+<script>
+    FingerprintJS.load().then(fp => {
+        fp.get().then(result => {
+            $wire.device_id = result.visitorId;
+        });
+    });
+</script>
+@endscript

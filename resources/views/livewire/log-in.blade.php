@@ -12,13 +12,24 @@ use Illuminate\Support\Str;
 
 use function Livewire\Volt\{state, rules, computed, mount};
 
-state(['phoneno', 'otp', 'generatedOtp']);
+state(['phoneno', 'otp', 'generatedOtp', 'device_id']);
 
 rules(fn() => [
     'phoneno' => [
         'required',
         function ($attribute, $value, $fail) {
             Gate::allows('valid-phone-number', $this->phoneno) || $fail('The :attribute must be in this format ' . env('TWILIO_PHONE_COUNTRY_CODE') . ' ' . Str::replace('9', 'X', env('PHONE_NUMBER_VALIDATION_PATTERN')));
+        },
+        function ($attribute, $value, $fail) {
+            $user = User::where('phoneno', $this->trimmed_phoneno)->first();
+
+            if (!$user || $user->role->name !== 'staff') {
+                return;
+            }
+
+            if ($user->role->name === 'staff' && $this->device_id !== env('POS_DEVICE_ID')) {
+                $fail('Staff users are restricted to login only from the authorized POS device.');
+            }
         }
     ],
 ])->messages([
@@ -38,7 +49,7 @@ $verifyOtp = function (Request $request) {
                 Auth::attempt([
                     'email' => $user->email,
                     'password' => '12345678',
-                ])
+                ], $this->device_id !== env('POS_DEVICE_ID'))
             ) {
                 $request->session()->regenerate();
                 $this->redirect('/shop', navigate: true);
@@ -91,8 +102,17 @@ $submit = function () {
                 <div :class="formattedTime == '00:00' && 'text-red-500'" class="" x-text="formattedTime == '00:00' ? 'Otp Timed Out' : formattedTime"></div>
                 @endif
             </div>
-
             <button type="submit" :class="interval && 'pointer-events-none opacity-50'" class="text-black py-3 uppercase px-20 bg-white rounded-lg tracking-tight w-min mx-auto">{{$generatedOtp ? 'Resend' : 'Send'}}</button>
         </div>
     </form>
 </div>
+
+@script
+<script>
+    FingerprintJS.load().then(fp => {
+        fp.get().then(result => {
+            $wire.device_id = result.visitorId;
+        });
+    });
+</script>
+@endscript
