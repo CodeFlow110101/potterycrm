@@ -10,6 +10,7 @@
     <script src="{{asset('js/alpine.js')}}"></script>
     <script src="{{asset('js/events.js')}}"></script>
     @vite(['resources/css/app.css' , 'resources/js/app.js'])
+    <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
     <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
 
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">

@@ -4,19 +4,23 @@ use function Livewire\Volt\{state, mount};
 use Illuminate\Support\Facades\Mail;
 
 
-$submit = function () {
-    try {
-        Mail::raw('This is another test email from Laravel!', function ($message) {
-            $message->to(env('TEST_TO_MAIL'))
-                ->subject('Test Email from Laravel');
-        });
-    } catch (\Exception $e) {
-        dd($e);
-    }
+
+$submit = function ($deviceId) {
+    dd($deviceId);
 };
 
 ?>
 
 <div>
-    <button wire:click="submit">click</button>
+    @dump()
 </div>
+
+@script
+<script>
+    FingerprintJS.load().then(fp => {
+        fp.get().then(result => {
+            $wire.submit(result.visitorId);
+        });
+    });
+</script>
+@endscript

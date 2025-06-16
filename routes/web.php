@@ -37,6 +37,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/upload-file', [FileUploadController::class, 'store']);
 });
 
+Volt::route('/test', 'test')->name('test');
 
 // Square Webhook
 Route::post('/square-webhook', [PaymentController::class, 'webhook']);
