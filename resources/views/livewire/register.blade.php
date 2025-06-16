@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Gate;
 
 use function Livewire\Volt\{state, rules, computed};
 
-state(['first_name', 'last_name', 'email', 'phoneno', 'otp', 'generatedOtp', 'people' => 1, 'date' => Carbon::today()->toDateString(), 'form' => 'register', 'summary']);
+state(['first_name', 'last_name', 'email', 'phoneno', 'people' => 1, 'date' => Carbon::today()->toDateString(), 'form' => 'register', 'summary']);
 
 rules(fn() => [
     'first_name' => ['required'],
@@ -39,47 +39,10 @@ $trimmed_phoneno = computed(function () {
     return trim(Str::replaceFirst(env('TWILIO_PHONE_COUNTRY_CODE'), '', $this->phoneno));
 });
 
-$verifyOtp = function () {
+$submit = function () {
 
     $this->validate();
     $this->resetValidation();
-
-    if (App::call([SmsController::class, 'verifyOtp'], ['id' => $this->generatedOtp->id, 'userOtp' => $this->otp])) {
-
-        $user = User::firstOrCreate(
-            ['phoneno' => $this->trimmed_phoneno],
-            [
-                'email' => $this->email,
-                'first_name' => $this->first_name,
-                'last_name' => $this->last_name,
-                'role_id' => 2,
-                'password' => Hash::make('12345678'),
-            ]
-        );
-
-        $timeslot = TimeSlot::where('start_time', Carbon::now()->copy()->startOfHour()->format('H:i:s'))->where('end_time', Carbon::now()->copy()->addHour()->startOfHour()->format('H:i:s'))->wherehas('date', function (Builder $query) {
-            $query->where('date', $this->date);
-        })->first();
-
-        $isBookingCreated = $user->whereHas('bookings.timeSlot.date', function ($query) {
-            $query->where('date', $this->date);
-        })->doesntExist();
-
-        $isBookingCreated && $user->bookings()->create([
-            'status_id' => 2,
-            'no_of_people' => $this->people,
-            'time_slot_id' => $timeslot->id,
-        ]);
-
-        $this->form = 'summary';
-        $this->summary = $isBookingCreated ? 'Your booking has been successfully registered' : 'You already have a booking for this date';
-    } else {
-        $this->addError('otp', 'Confirmation Code is invalid');
-    }
-};
-
-$submit = function () {
-    $this->validate();
 
     if (User::where('phoneno', $this->trimmed_phoneno)->exists() && User::where('phoneno', $this->trimmed_phoneno)->first()->email != $this->email) {
         $this->addError('phoneno', 'This phone no is already taken with another email.');
@@ -89,8 +52,33 @@ $submit = function () {
         return;
     }
 
-    $this->generatedOtp = App::call([SmsController::class, 'generateOtp'], ['phoneno' => $this->trimmed_phoneno]);
-    $this->dispatch('start-countdown');
+    $user = User::firstOrCreate(
+        ['phoneno' => $this->trimmed_phoneno],
+        [
+            'email' => $this->email,
+            'first_name' => $this->first_name,
+            'last_name' => $this->last_name,
+            'role_id' => 2,
+            'password' => Hash::make('12345678'),
+        ]
+    );
+
+    $timeslot = TimeSlot::where('start_time', Carbon::now()->copy()->startOfHour()->format('H:i:s'))->where('end_time', Carbon::now()->copy()->addHour()->startOfHour()->format('H:i:s'))->wherehas('date', function (Builder $query) {
+        $query->where('date', $this->date);
+    })->first();
+
+    $isBookingCreated = $user->whereHas('bookings.timeSlot.date', function ($query) {
+        $query->where('date', $this->date);
+    })->doesntExist();
+
+    $isBookingCreated && $user->bookings()->create([
+        'status_id' => 2,
+        'no_of_people' => $this->people,
+        'time_slot_id' => $timeslot->id,
+    ]);
+
+    $this->form = 'summary';
+    $this->summary = $isBookingCreated ? 'Your booking has been successfully registered' : 'You already have a booking for this date';
 };
 
 ?>
@@ -147,19 +135,7 @@ $submit = function () {
                             @enderror
                         </div>
                     </div>
-                    <div>
-                        <label class="font-avenir-next-rounded-semibold text-xl">Confirmation Code</label>
-                        <input @input="verifyOtp" wire:model="otp" x-mask="999999" class="@if(!$generatedOtp) pointer-events-none opacity-50 @endif w-full bg-black/5 outline-none p-3" placeholder="Confirmation Code">
-                        <div class="w-1/2 mx-auto">
-                            @error('otp')
-                            <span>{{ $message }}</span>
-                            @enderror
-                        </div>
-                        @if($generatedOtp)
-                        <div :class="formattedTime == '00:00' && 'text-red-500'" class="mx-auto w-1/2" x-text="formattedTime == '00:00' ? 'Otp Timed Out' : formattedTime"></div>
-                        @endif
-                    </div>
-                    <button type="submit" :class="interval && 'pointer-events-none opacity-50'" class="text-black py-3 uppercase px-6 mx-auto bg-white rounded-lg tracking-tight">{{$generatedOtp ? 'Resend Code' : 'Send Code'}}</button>
+                    <button type="submit" class="text-black py-3 uppercase px-6 mx-auto bg-white rounded-lg tracking-tight">Submit</button>
                 </div>
             </form>
             @else
