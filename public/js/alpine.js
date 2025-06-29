@@ -113,6 +113,11 @@ function flatpickrDate(minDate, allowedDates) {
       }
       if (this.minDate || this.allowedDates) {
         flatpickr(this.$refs.dateInput, options);
+      } else if (this.$refs.dateInput) {
+        flatpickr(this.$refs.dateInput, {
+          dateFormat: "d M Y",
+          defaultDate: "today"
+        });
       }
     },
     timeSlot(timeslot) {

@@ -37,12 +37,14 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('view-any-booking', [BookingPolicy::class, 'viewAny']);
         Gate::define('view-customer-detail-columns-booking', [BookingPolicy::class, 'viewCustomerDetailColumns']);
         Gate::define('update-booking', [BookingPolicy::class, 'update']);
+        Gate::define('view-booking-filters', [BookingPolicy::class, 'viewfilters']);
 
         Gate::define('update-date', [DatePolicy::class, 'update']);
         Gate::define('create-date', [DatePolicy::class, 'create']);
 
         Gate::define('view-customer-detail-columns-purchase', [PurchasePolicy::class, 'viewCustomerDetailColumns']);
         Gate::define('view-any-purchase', [PurchasePolicy::class, 'viewAny']);
+        Gate::define('view-purchase-filters', [PurchasePolicy::class, 'viewfilters']);
 
         Gate::define('view-customer-detail-columns-order', [OrderPolicy::class, 'viewCustomerDetailColumns']);
         Gate::define('view-any-order', [OrderPolicy::class, 'viewAny']);

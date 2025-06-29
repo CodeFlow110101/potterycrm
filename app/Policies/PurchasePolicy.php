@@ -78,4 +78,9 @@ class PurchasePolicy
     {
         //
     }
+
+    public function viewfilters(User $user): bool
+    {
+        return false;
+    }
 }

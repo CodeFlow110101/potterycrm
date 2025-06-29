@@ -320,7 +320,7 @@ mount(function (Request $request) {
         </div>
         <div class="flex flex-col gap-2 p-12 font-avenir-next-rounded-semibold w-full backdrop-blur-xl border border-white rounded-lg">
             <div class="max-sm:hidden grow relative" x-data="{ height: 0 }" x-resize="height = $height">
-                <div class="overflow-y-auto absolute inset-x-0 py-8 flex flex-col gap-12" :style="'height: ' + height + 'px;'">
+                <div class="overflow-y-auto hidden-scrollbar absolute inset-x-0 py-8 flex flex-col gap-12" :style="'height: ' + height + 'px;'">
                     @foreach($products as $product)
                     <div class="flex items-center gap-4">
                         <div class="flex flex-1 gap-4">

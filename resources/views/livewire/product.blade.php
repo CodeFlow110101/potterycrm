@@ -3,11 +3,14 @@
 use App\Models\Product;
 use Illuminate\Http\Request;
 
-use function Livewire\Volt\{state, mount};
+use function Livewire\Volt\{state, mount, rules};
 
 state(['product', 'quantity' => 1]);
 
+rules(['quantity' => 'required']);
+
 $submit = function () {
+    $this->validate();
     $this->dispatch('add-cart', id: $this->product->id, quantity: $this->quantity ? $this->quantity : (string)1);
 };
 
@@ -50,7 +53,10 @@ mount(function (Request $request) {
                     </div>
                     <div class="flex flex-col gap-2">
                         <label>quantity</label>
-                        <input x-mask="99" @input="if ($event.target.value.trim() === '' || $event.target.value.trim() === '00' || $event.target.value.trim() === '0') $event.target.value = 1" wire:model="quantity" class="h-14 w-20 text-center border border-white text-black outline-none">
+                        <input x-mask="99" @input="if ($event.target.value.trim() === '00' || $event.target.value.trim() === '0') $event.target.value = 1" wire:model="quantity" class="h-14 w-20 text-center border border-white text-black outline-none">
+                        @error('quantity')
+                        <div class="text-white text-sm">{{$message}}</div>
+                        @enderror
                     </div>
                     <div class="mt-auto">
                         <button class="text-black py-3 uppercase px-20 bg-white rounded-lg tracking-tight w-full">Add to Cart</button>

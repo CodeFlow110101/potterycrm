@@ -6,10 +6,17 @@ use Illuminate\Support\Facades\Auth;
 
 use function Livewire\Volt\{state, with};
 
-state(['modal' => false, 'selected_user', 'role_id']);
+state(['modal' => false, 'selected_user', 'role_id', 'search']);
 
 with(fn() => [
-    'users' => User::with(['role'])->where('id', '!=', Auth::user()->id)->get(),
+    'users' => User::with(['role'])->where('id', '!=', Auth::user()->id)
+        ->where(function ($query) {
+            $query->where('first_name', 'like', '%' . $this->search . '%')
+                ->orWhere('last_name', 'like', '%' . $this->search . '%')
+                ->orWhere('email', 'like', '%' . $this->search . '%')
+                ->orWhere('phoneno', 'like', '%' . $this->search . '%');
+        })
+        ->get(),
     'roles' => Role::get(),
 ]);
 
@@ -33,6 +40,18 @@ $submit = function () {
 <div class="grow flex flex-col gap-4 lg:gap-8 py-4 lg:py-8 text-white w-11/12 mx-auto">
     <div class="flex justify-between items-center">
         <div class="text-5xl lg:text-7xl font-avenir-next-bold text-white">Users</div>
+    </div>
+    <div class="flex justify-end">
+        <div class="sm:w-1/2 w-full">
+            <div class="flex gap-3 items-center px-2.5 py-2.5 w-full text-sm text-white font-semibold backdrop-blur-2xl bg-black/10 rounded-lg border-2 border-white">
+                <div>
+                    <svg class="w-6 h-6 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
+                    </svg>
+                </div>
+                <input wire:model.live="search" type="text" value="" id="floating_outlined" class="block size-full bg-transparent appearance-none focus:outline-none focus:ring-0 peer placeholder:text-white/70" placeholder="Search" />
+            </div>
+        </div>
     </div>
     <div class="grow relative whitespace-nowrap" x-data="{ height: 0 }" x-resize="height = $height">
         <div class="overflow-auto hidden-scrollbar absolute inset-x-0 border border-white rounded-lg" :style="'height: ' + height + 'px;'">

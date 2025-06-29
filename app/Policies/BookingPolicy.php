@@ -78,4 +78,9 @@ class BookingPolicy
     {
         //
     }
+
+    public function viewfilters(User $user): bool
+    {
+        return false;
+    }
 }

@@ -15,10 +15,11 @@ use App\Http\Controllers\SmsController;
 use App\Models\PurchaseItemStatus;
 use Livewire\Attributes\Validate;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Database\Eloquent\Builder;
 
 usesPagination();
 
-state(['modal' => false, 'selected_item', 'item_status', 'item_id', 'statuses', 'auth', 'role', 'notify' => true]);
+state(['modal' => false, 'selected_item', 'item_status', 'item_id', 'statuses', 'search', 'from' => Carbon::today()->format('d M Y'), 'to' => Carbon::today()->format('d M Y'), 'status_filter' => 'all', 'auth', 'role', 'notify' => true]);
 
 rules(['item_id' => 'required', 'item_status' => 'required'])->attributes(['item_id' => 'item id', 'item_status' => 'status']);
 
@@ -27,13 +28,31 @@ on(['echo:purchase,PurchaseCreated' => function () {
 }]);
 
 with(fn() => [
-    'purchases' => Purchase::with(['items.product' => function ($query) {
-        $query->withTrashed();
-    }, 'user'])
+    'purchases' => Purchase::with(['items.product' => fn($query) => $query->withTrashed(), 'user'])
+        ->where(function ($query) {
+            $query->whereHas('user', function ($q) {
+                $q->where('email', 'like', '%' . $this->search . '%')
+                    ->orWhere('first_name', 'like', '%' . $this->search . '%')
+                    ->orWhere('last_name', 'like', '%' . $this->search . '%')
+                    ->orWhere('phoneno', 'like', '%' . $this->search . '%');
+            })->orWhereHas('items', function ($q) {
+                $q->where('item_id', 'like', '%' . $this->search . '%');
+            })->orWhereHas('items.product', function ($q) {
+                $q->withTrashed()->where('name', 'like', '%' . $this->search . '%');
+            });
+        })
+        ->when(Gate::allows('view-purchase-filters'), fn($query) => $query->whereBetween('created_at', [Carbon::createFromFormat('d M Y', $this->from)->toDateString(), Carbon::createFromFormat('d M Y', $this->to)->toDateString()]))
+        ->when($this->status_filter != 'all', function ($query) {
+            $query->whereHas('items.status', function ($query) {
+                $query->where('name', $this->status_filter);
+            });
+        })
         ->when(!Gate::allows('view-any-order'), function ($query) {
             $query->where('user_id', Auth::user()->id);
         })
-        ->get()
+        ->latest()
+        ->get(),
+    'status_filter_options' => PurchaseItemStatus::get()
 ]);
 
 $toggleModal = function ($id = null) {
@@ -72,6 +91,48 @@ mount(function ($auth) {
 
 <div class="grow flex flex-col gap-4 lg:gap-8 py-4 lg:py-8 text-white w-11/12 mx-auto">
     <div class="text-5xl lg:text-7xl font-avenir-next-bold text-white">Orders</div>
+    @can('view-purchase-filters')
+    <div class="flex items-center gap-4 w-full max-sm:flex-col *:w-full">
+        <div>
+            <div class="flex gap-3 items-center px-2.5 py-2.5 w-full text-sm text-white font-semibold backdrop-blur-2xl bg-black/10 rounded-lg border-2 border-white">
+                <div>
+                    <svg class="w-6 h-6 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
+                    </svg>
+                </div>
+                <input wire:model.live="search" type="text" value="" id="floating_outlined" class="block size-full bg-transparent appearance-none focus:outline-none focus:ring-0 peer placeholder:text-white/70" placeholder="Search" />
+            </div>
+        </div>
+        <div class="flex items-center gap-4 max-sm:flex-col">
+            <div class="max-sm:w-full">
+                <div x-data="{ show: false }" @click="show=!show;" @click.away="show=false" class="relative cursor-pointer">
+                    <input readonly wire:model.live="status_filter" type="text" value="" id="floating_outlined" class="block cursor-pointer capitalize px-2.5 pb-2.5 pt-4 w-full text-sm text-white bg-black/10 backdrop-blur-2xl rounded-lg border-2 outline-none border-white appearance-none peer" placeholder=" " />
+                    <label for="floating_outlined" class="absolute text-sm rounded-full text-black duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">Status</label>
+                    <div x-cloak x-show="show" class="absolute z-50 top-14 block w-full text-sm text-white overflow-clip bg-black/10 backdrop-blur-2xl rounded-lg border-2 outline-none border-white appearance-none peer">
+                        <button wire:click="$set('status_filter','all')" class="py-2.5 px-2.5 capitalize hover:bg-black/20 w-full text-start">all</button>
+                        @foreach($status_filter_options as $option)
+                        <button wire:click="$set('status_filter','{{ $option->name }}')" class="py-2.5 px-2.5 capitalize hover:bg-black/20 w-full text-start">{{ $option->name }}</button>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center gap-4 w-full *:w-full">
+                <div x-data="flatpickrDate(null,null)">
+                    <div class="relative cursor-pointer">
+                        <input readonly x-ref="dateInput" wire:model.live="from" type="text" value="" id="floating_outlined" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-white bg-black/10 backdrop-blur-2xl rounded-lg border-2 outline-none border-white appearance-none peer" placeholder=" " />
+                        <label for="floating_outlined" class="absolute text-sm rounded-full text-black duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">From</label>
+                    </div>
+                </div>
+                <div x-data="flatpickrDate(null,null)">
+                    <div class="relative cursor-pointer">
+                        <input readonly x-ref="dateInput" wire:model.live="to" type="text" value="" id="floating_outlined" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-white bg-black/10 backdrop-blur-2xl rounded-lg border-2 outline-none border-white appearance-none peer" placeholder=" " />
+                        <label for="floating_outlined" class="absolute text-sm rounded-full text-black duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">To</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endcan
     <div class="grow flex flex-col w-full whitespace-nowrap">
         <div class="font-medium text-black/60 h-full flex flex-col grow">
             <div class="grow relative" x-data="{ height: 0 }" x-resize="height = $height">
