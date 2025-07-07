@@ -17,13 +17,6 @@ rules(fn() => [
         preg_match('/^\d+\.\d{2}$/', $value) || $fail('The :attribute should be in this format $ 99.99.');
     },],
     'thumbnail' => $this->product ? ['exclude'] : ['required', 'lt:100'],
-    'can_update_product' => $this->product ?  [
-        function ($attribute, $value, $fail) {
-            User::whereHas('purchases.items.product', function (Builder $query) {
-                $query->where('id', $this->product->id);
-            })->exists() && $fail('The product have some purchases please prefer to delete and add a new one.');
-        },
-    ] : ['exclude'],
     'type' => ['required'],
 ])->messages([
     'thumbnail.lt' => 'The :attribute must be less than 100kb.',
