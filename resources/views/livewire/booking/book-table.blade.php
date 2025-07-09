@@ -24,7 +24,7 @@ rules(fn() => [
     'phoneno' => $this->currentForm == 'user' ?  ['required', function ($attribute, $value, $fail) {
         Gate::allows('valid-phone-number', $this->phoneno) || $fail('The :attribute must be in this format ' . env('TWILIO_PHONE_COUNTRY_CODE') . ' ' . Str::replace('9', 'X', env('PHONE_NUMBER_VALIDATION_PATTERN')));
     }] : ['exclude'],
-    'people' => $this->currentForm == 'booking' ? ['integer', 'min:1'] : ['exclude'],
+    'people' => $this->currentForm == 'booking' ? ['required', 'integer', 'min:1'] : ['exclude'],
     'date' => $this->currentForm == 'booking' ? ['required'] : ['exclude'],
     'selectedTimeSlot' => $this->currentForm == 'booking' ? ['required'] : ['exclude'],
 ])->attributes([
@@ -33,13 +33,7 @@ rules(fn() => [
 
 with(fn() => [
     'allowedDates' => Date::whereDate('date', '>=', Carbon::today())->whereHas('timeslots')->get()->map(fn($date) => $date->date),
-    'slots' => (optional(Date::when($this->date, function ($query) {
-        return $query->where('date', $this->date);
-    }, function ($query) {
-        return $query->where('id', 0);
-    })->first())->timeSlots ?? collect([]))->mapWithKeys(function ($timeslot) {
-        return [$timeslot->id =>  $timeslot->start_time . ' - ' . $timeslot->end_time];
-    }),
+    'slots' => Date::when($this->date, fn($query) => $query->where('date', $this->date), fn($query) => $query->where('id', 0))->with(['timeSlots' => fn($query) => $query->when(Carbon::parse($this->date)->isToday(), fn($q) => $q->whereTime('start_time', '>', Carbon::now()->addHour()->format('H:i:s')))])?->first()?->timeSlots->mapWithKeys(fn($timeslot) => [$timeslot->id =>  $timeslot->start_time . ' - ' . $timeslot->end_time]) ?? collect([]),
 ]);
 
 $trimmed_phoneno = computed(function () {
@@ -60,7 +54,7 @@ $verifyOtp = function () {
     }
 
     $user = User::firstOrCreate(
-        ['phoneno' => $this->trimmed_phoneno], // Condition to check existence
+        ['phoneno' => $this->trimmed_phoneno],
         [
             'email' => $this->email,
             'first_name' => $this->first_name,
@@ -153,7 +147,7 @@ $submit = function () {
                                 <div class="text-2xl" x-text="'No of people'"></div>
                                 <div>
                                     <div class="flex items-center gap-2">
-                                        <input wire:model="people" x-mask="99" @input="if ($wire.people.trim() === '' || $wire.people.trim() === '00' || $wire.people.trim() === '0') $wire.people = 1" class="bg-transparent text-xl text-center outline-none border border-black p-4 w-24" />
+                                        <input wire:model="people" x-mask="99" @input="if ($event.target.value.trim() === '00' || $event.target.value.trim() === '0') $event.target.value = 1" class="bg-transparent text-xl text-center outline-none border border-black p-4 w-24" />
                                     </div>
                                 </div>
                                 @error('people')
@@ -170,6 +164,11 @@ $submit = function () {
                                         <button type="button" x-data="{ slot_id : {{$id}} }" @click="$wire.selectedTimeSlot = slot_id;" :class="$wire.selectedTimeSlot == slot_id && 'bg-black text-white'" class="border border-black py-1 px-4 rounded-full" x-text="timeSlot('{{$slot}}')"></button>
                                         @endforeach
                                     </div>
+                                    @if(!$date)
+                                    <div>
+                                        Please select a date
+                                    </div>
+                                    @endif
                                 </div>
                             </div>
                             @error('selectedTimeSlot')
