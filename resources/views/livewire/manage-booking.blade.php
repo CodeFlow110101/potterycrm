@@ -11,7 +11,7 @@ state(['date', 'people' => 0, 'selectedTimeSlots' => [], 'startTime' => Carbon::
 
 rules(fn() => [
     'date' => ['required'],
-    'people' => ['integer', 'min:1'],
+    'people' => ['required', 'integer', 'min:1'],
 ]);
 
 
@@ -139,7 +139,7 @@ mount(function () {
                             <div class="text-2xl" x-text="'No of people'"></div>
                             <div>
                                 <div class="flex items-center gap-2">
-                                    <input wire:model="people" x-mask="99" @input="if ($wire.people.trim() === '' || $wire.people.trim() === '00' || $wire.people.trim() === '0') $wire.people = 1" class="bg-transparent text-xl text-center outline-none border border-black p-4 w-24" x-mask="99" />
+                                    <input wire:model="people" x-mask="99" @input="if ($event.target.value.trim() === '00' || $event.target.value.trim() === '0') $event.target.value = 1" class="bg-transparent text-xl text-center outline-none border border-black p-4 w-24" x-mask="99" />
                                 </div>
                             </div>
                             @error('people')
