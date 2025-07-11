@@ -5,7 +5,9 @@ use App\Notifications\ContactUsNotification;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use App\Http\Controllers\SmsController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
 use function Livewire\Volt\{state, rules, computed};
@@ -21,7 +23,12 @@ rules(fn() => [
             (Str::startsWith(trim($this->phoneno), env('TWILIO_PHONE_COUNTRY_CODE')) && strlen(trim(Str::replaceFirst(env('TWILIO_PHONE_COUNTRY_CODE'), '', trim($this->phoneno)))) === 10) || $fail('The :attribute must be in this format ' . env('TWILIO_PHONE_COUNTRY_CODE') . ' XXXXXXXXXX.');
         }
     ],
-    'email' => ['required', 'email'],
+    'email' => [
+        'required',
+        'email',
+        fn(string $attribute, mixed $value, Closure $fail) =>
+        Gate::allows('valid-phone-number', $this->phoneno) && ((User::where('phoneno',  $this->trimmed_phoneno)->where('email', $this->email)->exists() || User::where('email', $this->email)->doesntExist()) || $fail('The email is already been taken.')),
+    ],
     'message' => ['required'],
 ]);
 
@@ -38,16 +45,14 @@ $verifyOtp = function () {
         return;
     }
 
-    $user = User::firstOrCreate(
-        ['phoneno' => $this->trimmed_phoneno],
-        [
-            'email' => $this->email,
-            'first_name' => $this->first_name,
-            'last_name' => $this->last_name,
-            'role_id' => 2,
-            'password' => Hash::make('12345678'),
-        ]
-    );
+    $credentials = collect([
+        'email' => $this->email,
+        'first_name' => $this->first_name,
+        'last_name' => $this->last_name,
+        'role_id' => 2,
+        'password' => Hash::make('12345678'),
+    ]);
+    $user = App::call([UserController::class, 'upsert'], ['phoneno' => $this->trimmed_phoneno, 'credentials' => $credentials]);
 
     $admin = User::where('role_id', '1')->get();
     Notification::send($admin, new ContactUsNotification($user, $this->message));
@@ -56,14 +61,6 @@ $verifyOtp = function () {
 
 $submit = function () {
     $this->validate();
-
-    if (User::where('phoneno', $this->trimmed_phoneno)->exists() && User::where('phoneno', $this->trimmed_phoneno)->first()->email != $this->email) {
-        $this->addError('phoneno', 'This phone no is already taken with another email.');
-        return;
-    } elseif (User::where('email', $this->email)->exists() && User::where('email', $this->email)->first()->phoneno != $this->trimmed_phoneno) {
-        $this->addError('email', 'This email is already taken with another phone no.');
-        return;
-    }
 
     $this->generatedOtp = App::call([SmsController::class, 'generateOtp'], ['phoneno' => $this->trimmed_phoneno]);
     $this->dispatch('start-countdown');

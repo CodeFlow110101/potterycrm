@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\SmsController;
+use App\Http\Controllers\UserController;
 use App\Models\Booking;
 use App\Models\Checkout;
 use App\Models\Coupon;
@@ -32,7 +33,12 @@ with(fn() => [
 rules(fn() => [
     'first_name' => $this->auth ? ['exclude'] : ['required'],
     'last_name' => $this->auth ? ['exclude'] : ['required'],
-    'email' => $this->auth ? ['exclude'] : ['required', 'email'],
+    'email' => $this->auth ? ['exclude'] : [
+        'required',
+        'email',
+        fn(string $attribute, mixed $value, Closure $fail) =>
+        Gate::allows('valid-phone-number', $this->phoneno) && ((User::where('phoneno',  $this->trimmed_phoneno)->where('email', $this->email)->exists() || User::where('email', $this->email)->doesntExist()) || $fail('The email is already been taken.')),
+    ],
     'phoneno' => $this->auth ? ['exclude'] : ['required', function ($attribute, $value, $fail) {
         Gate::allows('valid-phone-number', $this->phoneno) || $fail('The :attribute must be in this format ' . env('TWILIO_PHONE_COUNTRY_CODE') . ' ' . Str::replace('9', 'X', env('PHONE_NUMBER_VALIDATION_PATTERN')));
     }, function ($attribute, $value, $fail) {
@@ -73,7 +79,7 @@ $url = computed(function () {
     if (collect($this->cart)->isNotEmpty() && ($this->checkout_for == 2 || ($this->checkout_for == 1 && $this->booking_id)) && Gate::allows('hardware-checkout-user')) {
 
         $this->checkout_no = Checkout::updateOrCreate(
-            ['id' => $this->checkout_no], // Find by this condition
+            ['id' => $this->checkout_no],
             [
                 'user_id' => $this->booking_id ? Booking::find($this->booking_id)->user->id : $this->auth->id,
                 'coupon_id' => $this->coupon ? $this->coupon->id : 0,
@@ -95,19 +101,28 @@ $verifyOtp = function (Request $request) {
 
     if (App::call([SmsController::class, 'verifyOtp'], ['id' => $this->generatedOtp->id, 'userOtp' => $this->otp])) {
 
-        if (User::where('phoneno', $this->trimmed_phoneno)->doesntExist()) {
-            $user = User::Create(
-                [
-                    'email' => $this->email,
-                    'phoneno' => $this->trimmed_phoneno,
-                    'first_name' => $this->first_name,
-                    'last_name' => $this->last_name,
-                    'email' => $this->email,
-                    'role_id' => 2,
-                    'password' => Hash::make('12345678'),
-                ]
-            );
-        }
+        // if (User::where('phoneno', $this->trimmed_phoneno)->doesntExist()) {
+        //     $user = User::Create(
+        //         [
+        //             'email' => $this->email,
+        //             'phoneno' => $this->trimmed_phoneno,
+        //             'first_name' => $this->first_name,
+        //             'last_name' => $this->last_name,
+        //             'role_id' => 2,
+        //             'password' => Hash::make('12345678'),
+        //         ]
+        //     );
+        // }
+        $credentials = collect([
+            'email' => $this->email,
+            'first_name' => $this->first_name,
+            'last_name' => $this->last_name,
+            'role_id' => 2,
+            'password' => Hash::make('12345678'),
+        ]);
+
+        App::call([UserController::class, 'upsert'], ['phoneno' => $this->trimmed_phoneno, 'credentials' => $credentials]);
+
         if (
             Auth::attempt([
                 'email' => $this->email,

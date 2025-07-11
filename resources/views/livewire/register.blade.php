@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\SmsController;
+use App\Http\Controllers\UserController;
 use App\Models\Booking;
 use App\Models\Date;
 use App\Models\TimeSlot;
@@ -20,7 +21,12 @@ state(['first_name', 'last_name', 'email', 'phoneno', 'people' => 1, 'date' => C
 rules(fn() => [
     'first_name' => ['required'],
     'last_name' => ['required'],
-    'email' => ['required', 'email'],
+    'email' => [
+        'required',
+        'email',
+        fn(string $attribute, mixed $value, Closure $fail) =>
+        Gate::allows('valid-phone-number', $this->phoneno) && ((User::where('phoneno',  $this->trimmed_phoneno)->where('email', $this->email)->exists() || User::where('email', $this->email)->doesntExist()) || $fail('The email is already been taken.')),
+    ],
     'people' => ['required', 'integer', 'min:1'],
     'phoneno' => [
         'required',
@@ -42,26 +48,16 @@ $trimmed_phoneno = computed(function () {
 $submit = function () {
 
     $this->validate();
-    $this->resetValidation();
 
-    if (User::where('phoneno', $this->trimmed_phoneno)->exists() && User::where('phoneno', $this->trimmed_phoneno)->first()->email != $this->email) {
-        $this->addError('phoneno', 'This phone no is already taken with another email.');
-        return;
-    } elseif (User::where('email', $this->email)->exists() && User::where('email', $this->email)->first()->phoneno != $this->trimmed_phoneno) {
-        $this->addError('email', 'This email is already taken with another phone no.');
-        return;
-    }
+    $credentials = collect([
+        'email' => $this->email,
+        'first_name' => $this->first_name,
+        'last_name' => $this->last_name,
+        'role_id' => 2,
+        'password' => Hash::make('12345678'),
+    ]);
 
-    $user = User::firstOrCreate(
-        ['phoneno' => $this->trimmed_phoneno],
-        [
-            'email' => $this->email,
-            'first_name' => $this->first_name,
-            'last_name' => $this->last_name,
-            'role_id' => 2,
-            'password' => Hash::make('12345678'),
-        ]
-    );
+    $user = App::call([UserController::class, 'upsert'], ['phoneno' => $this->trimmed_phoneno, 'credentials' => $credentials]);
 
     $timeslot = TimeSlot::where('start_time', Carbon::now()->copy()->startOfHour()->format('H:i:s'))->where('end_time', Carbon::now()->copy()->addHour()->startOfHour()->format('H:i:s'))->wherehas('date', function (Builder $query) {
         $query->where('date', $this->date);

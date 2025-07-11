@@ -3,8 +3,6 @@
 use function Livewire\Volt\{state, mount};
 use Illuminate\Support\Facades\Mail;
 
-
-
 $submit = function ($deviceId) {
     dd($deviceId);
 };
