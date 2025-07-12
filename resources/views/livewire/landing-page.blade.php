@@ -67,7 +67,7 @@ mount(function () {
         @elseif($path == 'log-in')
         <livewire:log-in />
         @elseif($path == 'book-table')
-        <livewire:booking.book-table />
+        <livewire:booking.book-table :path="$path" />
         @elseif($path == 'register')
         <livewire:register />
         @elseif($path == 'about-us')
@@ -89,7 +89,7 @@ mount(function () {
         @elseif($routeName == 'how-it-works')
         <livewire:how-it-works />
         @elseif($path == 'booking')
-        <livewire:booking.booking :url="$url" :auth="$auth" />
+        <livewire:booking.booking :url="$url" :auth="$auth" :path="$path" />
         @elseif($path == 'product' || Route::currentRouteName() == 'product-booking-id')
         <livewire:product.shop />
         @elseif($routeName == 'manage-product')

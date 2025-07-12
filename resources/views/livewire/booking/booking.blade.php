@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 use function Livewire\Volt\{mount, state, with, on};
 
-state(['modal' => false, 'booking', 'status', 'url', 'auth', 'search', 'status_filter' => 'all', 'booking_from_date' => Carbon::today()->format('d M Y'), 'booking_to_date' => Carbon::today()->format('d M Y')]);
+state(['path', 'modal' => false, 'createBookingModal' => false, 'booking', 'status', 'url', 'auth', 'search', 'status_filter' => 'all', 'booking_from_date' => Carbon::today()->format('d M Y'), 'booking_to_date' => Carbon::today()->format('d M Y')]);
 
 with(fn() => [
     'bookings' => Booking::with(['user', 'status', 'timeSlot.date'])
@@ -37,7 +37,7 @@ with(fn() => [
 on([
     'reset' => function () {
         $this->reset();
-    }
+    },
 ]);
 
 $toggleModal = function ($booking = null) {
@@ -50,15 +50,20 @@ $toggleModal = function ($booking = null) {
     }
 };
 
+$toggleCreateBookingModal = function () {
+    $this->createBookingModal = !$this->createBookingModal;
+};
+
 $submit = function () {
     $this->modal = !$this->modal;
     $this->booking->update(['status_id' => $this->status]);
     $this->booking->updateQuietly(['status_id' => $this->status]);
 };
 
-mount(function ($url, $auth) {
+mount(function ($url, $auth, $path) {
     $this->url = $url;
     $this->auth = $auth;
+    $this->path = $path;
 });
 ?>
 
@@ -66,7 +71,10 @@ mount(function ($url, $auth) {
     <div class="flex justify-between items-center">
         <div class="text-5xl lg:text-7xl font-avenir-next-bold text-white">Bookings</div>
         @canany(['create-date','update-date'])
-        <a href="/manage-booking" wire:navigate class="text-black max-sm:hidden py-3 uppercase px-6 font-normal bg-white rounded-lg tracking-tight w-min whitespace-nowrap">Manage Booking</a>
+        <div class="flex items-center gap-4">
+            <button type="button" wire:click="toggleCreateBookingModal" class="text-black max-sm:hidden py-3 uppercase px-6 font-normal bg-white rounded-lg tracking-tight w-min whitespace-nowrap">Create Booking</button>
+            <a href="/manage-booking" wire:navigate class="text-black max-sm:hidden py-3 uppercase px-6 font-normal bg-white rounded-lg tracking-tight w-min whitespace-nowrap">Manage Booking</a>
+        </div>
         @endcanany
     </div>
     @can('view-booking-filters')
@@ -186,8 +194,16 @@ mount(function ($url, $auth) {
         </div>
     </div>
 
-    @if($this->modal)
-    <div class="fixed inset-0 flex justify-center items-center">
+    @if($createBookingModal)
+    <div class="fixed inset-0 flex justify-center items-center z-10">
+        <div class="size-5/6 flex flex-col bg-black/10 rounded-lg">
+            <livewire:form.booking-form :path="$path" />
+        </div>
+    </div>
+    @endif
+
+    @if($modal)
+    <div class="fixed inset-0 flex justify-center items-center z-10">
         <form wire:submit="submit" class="w-1/2 backdrop-blur-3xl shadow-lg border border-white rounded-lg flex flex-col gap-3 p-4">
             <div class="flex justify-end items-center">
                 <button type="button" wire:click="toggleModal" class="hover:bg-black/30 rounded-full p-1">
