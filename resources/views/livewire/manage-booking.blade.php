@@ -66,6 +66,7 @@ $submit = function () {
 
     $date->timeSlots->reject(fn($slot) => $this->isBooked($slot['start_time'] . ' - ' . $slot['end_time']))->each(fn($slot) => $slot->delete());
     $date->timeSlots()->createMany($timeSlots);
+    $this->dispatch('show-toastr', message: "Time Slots Updated!");
 };
 
 $isBooked = function ($timeslot) {

@@ -38,6 +38,8 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('view-customer-detail-columns-booking', [BookingPolicy::class, 'viewCustomerDetailColumns']);
         Gate::define('update-booking', [BookingPolicy::class, 'update']);
         Gate::define('view-booking-filters', [BookingPolicy::class, 'viewfilters']);
+        Gate::define('create-booking', [BookingPolicy::class, 'createBooking']);
+        Gate::define('view-all-booking-dates-while-create', [BookingPolicy::class, 'viewAllBookingDatesWhileCreate']);
 
         Gate::define('update-date', [DatePolicy::class, 'update']);
         Gate::define('create-date', [DatePolicy::class, 'create']);

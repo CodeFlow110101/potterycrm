@@ -70,12 +70,14 @@ mount(function ($url, $auth, $path) {
 <div x-data="flatpickrDate(null,null)" class="grow flex flex-col gap-4 lg:gap-8 py-4 lg:py-8 text-white w-11/12 mx-auto">
     <div class="flex justify-between items-center">
         <div class="text-5xl lg:text-7xl font-avenir-next-bold text-white">Bookings</div>
-        @canany(['create-date','update-date'])
         <div class="flex items-center gap-4">
+            @can('create-booking')
             <button type="button" wire:click="toggleCreateBookingModal" class="text-black max-sm:hidden py-3 uppercase px-6 font-normal bg-white rounded-lg tracking-tight w-min whitespace-nowrap">Create Booking</button>
+            @endcan
+            @canany(['create-date','update-date'])
             <a href="/manage-booking" wire:navigate class="text-black max-sm:hidden py-3 uppercase px-6 font-normal bg-white rounded-lg tracking-tight w-min whitespace-nowrap">Manage Booking</a>
+            @endcanany
         </div>
-        @endcanany
     </div>
     @can('view-booking-filters')
     <div class="flex items-center gap-4 w-full max-sm:flex-col *:w-full">

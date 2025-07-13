@@ -38,7 +38,7 @@ rules(fn() => [
 ]);
 
 with(fn() => [
-    'allowedDates' => Date::whereDate('date', '>=', Carbon::today())->whereHas('timeslots')->get()->map(fn($date) => $date->date),
+    'allowedDates' => Date::when((!Gate::allows('view-all-booking-dates-while-create') || $this->path != 'booking'), fn($query) => $query->whereDate('date', '>=', Carbon::today()))->whereHas('timeslots')->get()->map(fn($date) => $date->date),
     'slots' => Date::when($this->date, fn($query) => $query->where('date', $this->date), fn($query) => $query->where('id', 0))->with(['timeSlots' => fn($query) => $query->when(Carbon::parse($this->date)->isToday(), fn($q) => $q->whereTime('start_time', '>', Carbon::now()->addHour()->format('H:i:s')))->orderBy('start_time')])?->first()?->timeSlots->mapWithKeys(fn($timeslot) => [$timeslot->id =>  $timeslot->start_time . ' - ' . $timeslot->end_time]) ?? collect([]),
 ]);
 
@@ -172,6 +172,10 @@ mount(fn($path) => $this->path = $path);
                                 @if(!$date)
                                 <div>
                                     Please select a date
+                                </div>
+                                @elseif($slots->isEmpty())
+                                <div>
+                                    There are no time slots for this date
                                 </div>
                                 @endif
                             </div>

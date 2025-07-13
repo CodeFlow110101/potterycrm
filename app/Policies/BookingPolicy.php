@@ -83,4 +83,14 @@ class BookingPolicy
     {
         return false;
     }
+
+    public function createBooking(User $user): bool
+    {
+        return $user->role->name == "staff";
+    }
+
+    public function viewAllBookingDatesWhileCreate(User $user): bool
+    {
+        return false;
+    }
 }
