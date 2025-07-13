@@ -9,7 +9,7 @@ $submit = function ($deviceId) {
     dd($deviceId);
 };
 
-mount(fn() => dd(Carbon::now()->format('Y-m-d H:i:s')));
+mount(fn() => dd(Carbon::now()->format('Y-m-d H:i:s'), config('app.timezone')));
 
 ?>
 
