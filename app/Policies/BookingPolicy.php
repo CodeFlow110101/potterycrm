@@ -91,6 +91,6 @@ class BookingPolicy
 
     public function viewAllBookingDatesWhileCreate(User $user): bool
     {
-        return false;
+        return $user->role->name == "staff";
     }
 }
