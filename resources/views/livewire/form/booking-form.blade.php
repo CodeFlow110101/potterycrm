@@ -39,7 +39,7 @@ rules(fn() => [
 
 with(fn() => [
     'allowedDates' => Date::when((!Gate::allows('view-all-booking-dates-while-create') || $this->path != 'booking'), fn($query) => $query->whereDate('date', '>=', Carbon::today()))->whereHas('timeslots')->get()->map(fn($date) => $date->date),
-    'slots' => Date::when($this->date, fn($query) => $query->where('date', $this->date), fn($query) => $query->where('id', 0))->with(['timeSlots' => fn($query) => $query->when(Carbon::parse($this->date)->isToday(), fn($q) => $q->whereTime('start_time', '>', Carbon::now()->addHour()->format('H:i:s')))->orderBy('start_time')])?->first()?->timeSlots->mapWithKeys(fn($timeslot) => [$timeslot->id =>  $timeslot->start_time . ' - ' . $timeslot->end_time]) ?? collect([]),
+    'slots' => Date::when($this->date, fn($query) => $query->where('date', $this->date), fn($query) => $query->where('id', 0))->with(['timeSlots' => fn($query) => $query->when(Carbon::parse($this->date)->isToday() && (!Gate::allows('view-all-booking-dates-while-create') || $this->path != 'booking'), fn($q) => $q->whereTime('start_time', '>', Carbon::now()->addHour()->format('H:i:s')))->orderBy('start_time')])?->first()?->timeSlots->mapWithKeys(fn($timeslot) => [$timeslot->id =>  $timeslot->start_time . ' - ' . $timeslot->end_time]) ?? collect([]),
 ]);
 
 $trimmed_phoneno = computed(function () {
@@ -70,15 +70,13 @@ $verifyOtp = function () {
 
     $user = App::call([UserController::class, 'upsert'], ['phoneno' => $this->trimmed_phoneno, 'credentials' => $credentials]);
 
-    $isBookingCreated = $user->bookings()->whereHas('timeSlot.date', function ($query) {
-        $query->where('date', $this->date);
-    })->doesntExist() && $user->bookings()->create([
+    $isBookingCreated = $user->bookings()->whereHas('status', fn($query) => $query->where('name', '!=', 'cancel'))->whereHas('timeSlot.date', fn($query) => $query->where('date', $this->date))->doesntExist() && $user->bookings()->create([
         'status_id' => $status_id,
         'no_of_people' => $this->people,
         'time_slot_id' => $timeslot->id,
     ]);
 
-    $this->summary = $isBookingCreated ? ($this->path == 'booking' ? '' : 'Your' . ' Booking has been successfully registered.') : ($this->path == 'booking' ? 'The customer' : 'You' . '  already have a booking for this date.');
+    $this->summary = $isBookingCreated ? (($this->path == 'booking' ? '' : 'Your') . ' Booking has been successfully registered.') : (($this->path == 'booking' ? 'The customer' : 'You') . '  already have a booking for this date.');
 
     $this->currentForm = 'summary';
 };
