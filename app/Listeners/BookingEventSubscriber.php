@@ -7,12 +7,14 @@ use App\Events\BookingStatusUpdated;
 use App\Models\Coupon;
 use App\Notifications\BookingStatus;
 use App\Models\User;
+use App\Notifications\BookingReminder;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Events\Dispatcher;
 
-class BookingEventSubscriber
+class BookingEventSubscriber implements ShouldQueue
 {
     /**
      * Create the event listener.
@@ -25,6 +27,12 @@ class BookingEventSubscriber
     public function handleBookingCreated(BookingCreated $event): void
     {
         Notification::send(User::where('role_id', 1)->get(), new BookingStatus($event->booking, 'created'));
+
+        $dayBeforeBookingDay = Carbon::parse($event->booking->timeSlot->date->date . ' ' . $event->booking->timeSlot->start_time)->subDay();
+        $threeHoursBeforeBookingTime = Carbon::parse($event->booking->timeSlot->start_time)->subHours(3);
+
+        $dayBeforeBookingDay->isFuture() && $event->booking->user->notify((new BookingReminder($event->booking, config('constants.booking-day-before-reminder-message')))->delay($dayBeforeBookingDay));
+        $threeHoursBeforeBookingTime->isFuture() && $event->booking->user->notify((new BookingReminder($event->booking, config('constants.booking-three-hour-before-reminder-message')))->delay($dayBeforeBookingDay));
     }
 
     public function handleBookingStatusUpdated(BookingStatusUpdated $event): void
@@ -52,6 +60,8 @@ class BookingEventSubscriber
                 $coupon = $coupon[1];
             }
         }
+
+        $event->booking->status_id == 3 && $event->booking->user->notify((new BookingReminder($event->booking, config('constants.booking-day-after-reminder-message')))->delay(Carbon::now()->addDay()));
 
         $event->booking->user->notify(new BookingStatus($event->booking, 'saved'));
     }

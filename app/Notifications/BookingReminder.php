@@ -2,30 +2,27 @@
 
 namespace App\Notifications;
 
-use App\Mail\BookingMail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use App\Notifications\TwilioSmsChannel;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
-class BookingStatus extends Notification
+class BookingReminder extends Notification implements ShouldQueue
 {
     use Queueable;
 
     protected $booking;
-    protected $event;
-    protected $subjectText;
+    protected $message;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($booking, $event)
+    public function __construct($booking, $message)
     {
         $this->booking = $booking;
-        $this->event = $event;
-        $this->subjectText = config('constants.admin-booking-alert-mail-subject-' . $booking->status_id);
+        $this->message = $message;
     }
 
     /**
@@ -35,17 +32,23 @@ class BookingStatus extends Notification
      */
     public function via(object $notifiable): array
     {
-        return $this->event == 'created' ? ['mail'] : [TwilioSmsChannel::class];
+        return [TwilioSmsChannel::class];
     }
 
     public function toTwilioSms($notifiable)
     {
-        return config('constants.booking-' . $this->booking->status_id . '-message');
+        return Str::of($this->message)->replace('{first name}',  $this->booking->user->first_name)->replace('{time}',  Carbon::createFromTimeString($this->booking->timeSlot->start_time)->format('h:i A'));
     }
 
-    public function toMail($notifiable)
+    /**
+     * Get the mail representation of the notification.
+     */
+    public function toMail(object $notifiable): MailMessage
     {
-        return (new BookingMail($this->booking, $this->subjectText))->to($notifiable->email);
+        return (new MailMessage)
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', url('/'))
+            ->line('Thank you for using our application!');
     }
 
     /**

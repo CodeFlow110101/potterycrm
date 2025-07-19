@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
-class SendCouponNotification
+class SendCouponNotification implements ShouldQueue
 {
     /**
      * Create the event listener.

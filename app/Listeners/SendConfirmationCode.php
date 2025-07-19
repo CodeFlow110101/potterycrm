@@ -9,7 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Notification;
 
 
-class SendConfirmationCode
+class SendConfirmationCode implements ShouldQueue
 {
     /**
      * Create the event listener.

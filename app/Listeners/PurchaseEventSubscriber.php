@@ -10,7 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Support\Facades\Notification;
 
-class PurchaseEventSubscriber
+class PurchaseEventSubscriber implements ShouldQueue
 {
     /**
      * Create the event listener.
