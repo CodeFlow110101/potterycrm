@@ -1,8 +1,8 @@
 <?php
 
-use function Livewire\Volt\{state};
+use function Livewire\Volt\{state, mount};
 
-//
+mount(fn() => $this->dispatch('clear-cart'))
 
 ?>
 
@@ -17,8 +17,8 @@ use function Livewire\Volt\{state};
             <div class="border border-white p-4 text-xl rounded-lg flex flex-col gap-4">
                 <div class="text-center">Order Placed Successfully</div>
                 <div class="flex justify-center items-center">
-                    <a href="/purchase" class="text-black py-3 uppercase px-20 bg-white rounded-lg tracking-tight text-base flex items-center gap-4" wire:navigate>
-                        <div>Purchases</div>
+                    <a href="/shop" class="text-black py-3 uppercase px-20 bg-white rounded-lg tracking-tight text-base flex items-center gap-4" wire:navigate>
+                        <div>Shop</div>
                         <div>
                             <svg class="w-6 h-6 text-black" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m14 0-4 4m4-4-4-4" />

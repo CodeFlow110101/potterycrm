@@ -101,18 +101,6 @@ $verifyOtp = function (Request $request) {
 
     if (App::call([SmsController::class, 'verifyOtp'], ['id' => $this->generatedOtp->id, 'userOtp' => $this->otp])) {
 
-        // if (User::where('phoneno', $this->trimmed_phoneno)->doesntExist()) {
-        //     $user = User::Create(
-        //         [
-        //             'email' => $this->email,
-        //             'phoneno' => $this->trimmed_phoneno,
-        //             'first_name' => $this->first_name,
-        //             'last_name' => $this->last_name,
-        //             'role_id' => 2,
-        //             'password' => Hash::make('12345678'),
-        //         ]
-        //     );
-        // }
         $credentials = collect([
             'email' => $this->email,
             'first_name' => $this->first_name,

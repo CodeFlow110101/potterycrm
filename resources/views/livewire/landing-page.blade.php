@@ -19,23 +19,27 @@ title('Icona');
 on([
     'add-cart' => function ($id, $quantity) {
         if (isset($this->cart[$id])) {
-            $this->cart[$id] += $quantity;
+            $this->cart[$id] += (int)$quantity;
         } else {
-            $this->cart[$id] = $quantity;
+            $this->cart[$id] = (int)$quantity;
         }
         session(['cart' => $this->cart]);
     },
     'update-cart' => function ($id, $quantity) {
-        if ($quantity == 0) {
+        if ((int)$quantity == 0) {
             unset($this->cart[$id]);
         } else {
-            $this->cart[$id] = $quantity;
+            $this->cart[$id] = (int)$quantity;
         }
         session(['cart' => $this->cart]);
     },
     'remove-cart' => function ($id) {
         unset($this->cart[$id]);
         session(['cart' => $this->cart]);
+    },
+    'clear-cart' => function () {
+        $this->cart = [];
+        session(['cart' =>  $this->cart]);
     }
 ]);
 

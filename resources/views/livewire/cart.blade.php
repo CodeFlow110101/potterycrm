@@ -19,7 +19,10 @@ $removeCart = function ($id) {
 ?>
 
 <div class="grow flex flex-col gap-4 lg:gap-8 py-4 lg:py-8 text-white w-11/12 mx-auto">
-    <div class="text-5xl lg:text-7xl font-avenir-next-bold">Cart</div>
+    <div class="flex justify-between items-center">
+        <div class="text-5xl lg:text-7xl font-avenir-next-bold text-white">Cart</div>
+        <button type="button" wire:click="$dispatch('clear-cart');" class="text-black max-sm:hidden py-3 uppercase px-6 font-normal bg-white rounded-lg tracking-tight w-min whitespace-nowrap">Clear Cart</button>
+    </div>
     <div class="grow backdrop-blur-xl border border-white rounded-lg py-8 flex flex-col gap-6">
         <div class="flex flex-col gap-4 text-center my-auto">
             @if(count($cart) == 0)
@@ -59,7 +62,7 @@ $removeCart = function ($id) {
                                     <div class="flex items-center gap-4 sm:hidden">
                                         <div class="text-xl">$ {{ $product->price / 100 }}</div>
                                         <div>
-                                            <input x-mask="99" @input="if ($event.target.value.trim() === '' || $event.target.value.trim() === '00' || $event.target.value.trim() === '0') $event.target.value = 0" wire:change="updateCart({{ $product->id }} , $event.target.value)" value="{{ $cart[$product->id] }}" class="h-10 w-14 text-center border text-black outline-none">
+                                            <input x-mask="99" @input="if ($event.target.value.trim() === '00' || $event.target.value.trim() === '0') $event.target.value = 0" wire:change="updateCart({{ $product->id }} , $event.target.value)" value="{{ $cart[$product->id] }}" class="h-10 w-14 text-center border text-black outline-none">
                                         </div>
                                     </div>
                                     <div class="flex flex-col gap-2 text-left text-xl">
@@ -71,7 +74,7 @@ $removeCart = function ($id) {
                             </td>
                             <td class="py-12 max-sm:hidden">$ {{ $product->price / 100}}</td>
                             <td class="py-12 max-sm:hidden">
-                                <input x-mask="99" @input="if ($event.target.value.trim() === '' || $event.target.value.trim() === '00' || $event.target.value.trim() === '0') $event.target.value = 0" wire:change="updateCart({{ $product->id }} , $event.target.value)" value="{{ $cart[$product->id] }}" class="h-14 w-20 text-center border text-black outline-none">
+                                <input x-mask="99" @input="if ($event.target.value.trim() === '00' || $event.target.value.trim() === '0') $event.target.value = 0" wire:change="updateCart({{ $product->id }} , $event.target.value)" value="{{ $cart[$product->id] }}" class="h-14 w-20 text-center border text-black outline-none">
                             </td>
                             <td>$ {{ $product->price * $cart[$product->id] / 100}}</td>
                         </tr>
