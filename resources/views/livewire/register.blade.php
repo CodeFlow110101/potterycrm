@@ -68,7 +68,7 @@ $submit = function () {
     })->doesntExist();
 
     $isBookingCreated && $user->bookings()->create([
-        'status_id' => 2,
+        'status_id' => 3,
         'no_of_people' => $this->people,
         'time_slot_id' => $timeslot->id,
     ]);
