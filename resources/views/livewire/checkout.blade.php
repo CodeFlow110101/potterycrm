@@ -21,13 +21,15 @@ use function Livewire\Volt\{state, with, computed, rules, mount, on, updated};
 
 state(['cart'])->reactive();
 
-state(['first_name', 'last_name', 'email', 'phoneno', 'otp', 'generatedOtp', 'auth', 'coupon_code', 'booking_id', 'coupon', 'checkout_for', 'checkout_no', 'device_id', 'product_discount']);
+state(['first_name', 'last_name', 'email', 'phoneno', 'otp', 'generatedOtp', 'auth', 'coupon_code', 'booking_id', 'coupon', 'checkout_for', 'checkout_no', 'device_id', 'product_discount', 'apply_service_charge' => session('apply_service_charge', true)]);
 
 with(fn() => [
     'products' => $this->mountProducts(),
     'bookings' => Booking::with(['user'])->where('status_id', 3)->whereHas('timeSlot.date', function (Builder $query) {
         $query->where('date', Carbon::today()->format('Y-m-d'));
     })->get(),
+    'subTotal' => $this->mountProducts()->map(fn($item) => $item->price * ($this->cart[$item->id] / 100))->sum(),
+    'discountAmount' => $this->mountProducts()->map(fn($item) => $item->price * ($this->cart[$item->id] / 100) * ($this->product_discount[$item->id] / 100))->when($this->coupon, fn($products) => $products->sum() * ($this->coupon->discount_value * 0.01), fn($products) => $products->sum())
 ]);
 
 rules(fn() => [
@@ -71,7 +73,7 @@ updated(['checkout_for' => fn() => $this->checkout_for == "1" && $this->reset('b
 $mountProducts = fn() => Product::whereIn('id', $this->cart ? array_keys($this->cart) : [])->get();
 
 $updateProductDiscount = function ($id, $discount) {
-    $this->product_discount[$id] =  $discount;
+    $this->product_discount[$id] =  (int)$discount;
 };
 
 $url = computed(function () {
@@ -94,6 +96,11 @@ $url = computed(function () {
 $trimmed_phoneno = computed(function () {
     return trim(Str::replaceFirst(env('TWILIO_PHONE_COUNTRY_CODE'), '', $this->phoneno));
 });
+
+$toggleAppyServiceCharge = function () {
+    $this->apply_service_charge = !$this->apply_service_charge;
+    session(['apply_service_charge' => $this->apply_service_charge]);
+};
 
 $verifyOtp = function (Request $request) {
     $this->validate();
@@ -148,10 +155,12 @@ $submitAndPay = function () {
 };
 
 $total = computed(function () {
-    return $this->mountProducts()->map(fn($item) => $item->price * ($this->cart[$item->id] / 100) * (1 - ($this->product_discount[$item->id]) / 100))->when($this->coupon, fn($products) => $products->sum() * ((100 - $this->coupon->discount_value) * 0.01), fn($products) => $products->sum());
+    return $this->mountProducts()->map(fn($item) => $item->price * ($this->cart[$item->id] / 100) * (1 - ($this->product_discount[$item->id]) / 100))->when($this->coupon, fn($products) => $products->sum() * ((100 - $this->coupon->discount_value) * 0.01), fn($products) => $products->sum()) + $this->serviceCharge;
 });
 
-$haveAnyDiscount = computed(fn() => $this->product_discount->every(fn($discount) => $discount != 0) || $this->coupon);
+$haveAnyDiscount = computed(fn() => $this->product_discount->contains(fn($discount) => (int)$discount != 0) || $this->coupon);
+
+$serviceCharge = computed(fn() => $this->apply_service_charge && Gate::allows('hardware-checkout-user') ? $this->mountProducts()->pipe(fn($products) => round($products->sum('price') * 0.016 / 100, 2)) : 0);
 
 $validateCouponCode = function () {
     $total = $this->total;
@@ -338,7 +347,7 @@ mount(function (Request $request) {
                         </div>
                         @can('hardware-checkout-user')
                         <div>
-                            Discount <input x-mask="99" @input="if ($event.target.value.trim() === '' || $event.target.value.trim() === '00' || $event.target.value.trim() === '0') $event.target.value = 0" wire:change="updateProductDiscount({{ $product->id }} , $event.target.value)" value="{{ $product_discount[$product->id] }}" class="h-10 w-14 text-center border text-black outline-none"> %
+                            Discount <input x-mask="99" @input="if ($event.target.value.trim() === '00' || $event.target.value.trim() === '0') $event.target.value = 0" wire:change="updateProductDiscount({{ $product->id }} , $event.target.value)" value="{{ $product_discount[$product->id] }}" class="h-10 w-14 text-center border text-black outline-none" placeholder="0"> %
                         </div>
                         @endcan
 
@@ -372,14 +381,44 @@ mount(function (Request $request) {
                         wire:transition.out.duration.500ms="scale-y-0" class="text-white">{{ $message }}</span>
                     @enderror
                 </div>
+                @can('hardware-checkout-user')
+                <div class="flex items-center justify-between">
+                    <div>Apply Service Charge</div>
+                    <button wire:click="toggleAppyServiceCharge" class="bg-black/5 outline-none p-3 font-avenir-next-rounded-semibold">{{ $apply_service_charge ? 'Remove' : 'Apply' }}</button>
+                </div>
+                @endcan
                 @endif
-                <div class="flex justify-between text-xl">
+                <div class="flex justify-between">
+                    <div>Sub Total</div>
+                    <div class="flex gap-2">
+                        <div class="flex justify-end">$ {{ $subTotal }}</div>
+                    </div>
+                </div>
+                @if($this->haveAnyDiscount)
+                <div class="flex justify-between">
+                    <div>Discount</div>
+                    <div class="flex gap-2">
+                        <div class="flex justify-end">- $ {{ $discountAmount }}</div>
+                    </div>
+                </div>
+                @endif
+                @if($apply_service_charge)
+                <div class="flex justify-between">
+                    <div>Service Charge</div>
+                    <div class="flex gap-2">
+                        <div class="flex justify-end">$ {{ $this->serviceCharge }}</div>
+                    </div>
+                </div>
+                @endif
+                <div class="flex gap-1">
+                    <template x-for="i in 40">
+                        <div class="h-0.5 rounded-full bg-white grow"></div>
+                    </template>
+                </div>
+                <div class="flex justify-between">
                     <div>Total</div>
                     <div class="flex gap-2">
-                        @if($this->haveAnyDiscount)
                         <div class="flex justify-end">$ {{ $this->total }}</div>
-                        @endif
-                        <div class="flex justify-end  @if($this->haveAnyDiscount) line-through @endif">$ {{ $products->map(fn($item) => $item->price * ($this->cart[$item->id] / 100))->sum() }}</div>
                     </div>
                 </div>
             </div>
