@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Mail\BookingMail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -32,7 +33,7 @@ class BookingReminder extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return [TwilioSmsChannel::class];
+        return collect(['administrator', 'staff'])->contains($notifiable->role->name) ? ['mail'] : [TwilioSmsChannel::class];
     }
 
     public function toTwilioSms($notifiable)
@@ -43,12 +44,9 @@ class BookingReminder extends Notification implements ShouldQueue
     /**
      * Get the mail representation of the notification.
      */
-    public function toMail(object $notifiable): MailMessage
+    public function toMail(object $notifiable)
     {
-        return (new MailMessage)
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'))
-            ->line('Thank you for using our application!');
+        return (new BookingMail($this->booking, $this->message))->to($notifiable->email);
     }
 
     /**

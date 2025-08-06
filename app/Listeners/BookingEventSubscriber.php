@@ -29,10 +29,31 @@ class BookingEventSubscriber implements ShouldQueue
         Notification::send(User::where('role_id', 1)->get(), new BookingStatus($event->booking, 'created'));
 
         $dayBeforeBookingDay = Carbon::parse($event->booking->timeSlot->date->date . ' ' . $event->booking->timeSlot->start_time)->subDay();
-        $threeHoursBeforeBookingTime = Carbon::parse($event->booking->timeSlot->start_time)->subHours(3);
+        $hourBeforeBookingTime = Carbon::parse($event->booking->timeSlot->date->date . ' ' . $event->booking->timeSlot->start_time)->subHour();
 
-        $dayBeforeBookingDay->isFuture() && $event->booking->user->notify((new BookingReminder($event->booking, config('constants.booking-day-before-reminder-message')))->delay($dayBeforeBookingDay));
-        $threeHoursBeforeBookingTime->isFuture() && $event->booking->user->notify((new BookingReminder($event->booking, config('constants.booking-three-hour-before-reminder-message')))->delay($dayBeforeBookingDay));
+        $adminAndStaff = User::whereHas('role', fn($query) => $query->whereIn('name', ['administrator', 'staff']))->get();
+
+        if ($dayBeforeBookingDay->isFuture()) {
+            $event->booking->user->notify((new BookingReminder($event->booking, config('constants.booking-day-before-reminder-message')))
+                    ->delay($dayBeforeBookingDay)
+            );
+            Notification::send(
+                $adminAndStaff,
+                (new BookingReminder($event->booking, config('constants.admin-booking-1-day-before-alert-mail-subject')))
+                    ->delay($dayBeforeBookingDay)
+            );
+        }
+
+        if ($hourBeforeBookingTime->isFuture()) {
+            $event->booking->user->notify((new BookingReminder($event->booking, config('constants.booking-hour-before-reminder-message')))
+                    ->delay($hourBeforeBookingTime)
+            );
+            Notification::send(
+                $adminAndStaff,
+                (new BookingReminder($event->booking, config('constants.admin-booking-1-hour-before-alert-mail-subject')))
+                    ->delay($hourBeforeBookingTime)
+            );
+        }
     }
 
     public function handleBookingStatusUpdated(BookingStatusUpdated $event): void

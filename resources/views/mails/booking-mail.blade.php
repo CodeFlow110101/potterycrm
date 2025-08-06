@@ -12,7 +12,7 @@
                 <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="background-color: #ffffff; padding: 20px; border-radius: 5px;">
                     <tr>
                         <td align="center" style="font-size: 18px; font-weight: bold; color: #333; padding: 20px 0;">
-                            {{ $booking->status_id == 1 ? 'The following booking is required to be attended!' : 'New Booking!' }}
+                            {{$heading}}
                         </td>
                     </tr>
                     <tr>

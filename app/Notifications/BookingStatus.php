@@ -10,7 +10,7 @@ use Illuminate\Notifications\Notification;
 use App\Notifications\TwilioSmsChannel;
 use Illuminate\Support\Str;
 
-class BookingStatus extends Notification
+class BookingStatus extends Notification implements ShouldQueue
 {
     use Queueable;
 
