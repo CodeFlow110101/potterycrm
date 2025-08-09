@@ -33,21 +33,18 @@ class BookingReminder extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return collect(['administrator', 'staff'])->contains($notifiable->role->name) ? ['mail'] : [TwilioSmsChannel::class];
+        return [TwilioSmsChannel::class];
     }
 
     public function toTwilioSms($notifiable)
     {
-        return Str::of($this->message)->replace('{first name}',  $this->booking->user->first_name)->replace('{time}',  Carbon::createFromTimeString($this->booking->timeSlot->start_time)->format('h:i A'));
+        return Str::of($this->message)->replace('{first name}',  $this->booking->user->first_name)->replace('{time}',  Carbon::createFromTimeString($this->booking->timeSlot->start_time)->format('h:i A'))->replace('{full name}', $this->booking->user->fullName);
     }
 
     /**
      * Get the mail representation of the notification.
      */
-    public function toMail(object $notifiable)
-    {
-        return (new BookingMail($this->booking, $this->message))->to($notifiable->email);
-    }
+    public function toMail(object $notifiable) {}
 
     /**
      * Get the array representation of the notification.

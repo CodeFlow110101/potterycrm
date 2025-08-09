@@ -39,7 +39,7 @@ class BookingEventSubscriber implements ShouldQueue
             );
             Notification::send(
                 $adminAndStaff,
-                (new BookingReminder($event->booking, config('constants.admin-booking-1-day-before-alert-mail-subject')))
+                (new BookingReminder($event->booking, config('constants.admin-booking-1-day-before-alert-message')))
                     ->delay($dayBeforeBookingDay)
             );
         }
@@ -50,7 +50,7 @@ class BookingEventSubscriber implements ShouldQueue
             );
             Notification::send(
                 $adminAndStaff,
-                (new BookingReminder($event->booking, config('constants.admin-booking-1-hour-before-alert-mail-subject')))
+                (new BookingReminder($event->booking, config('constants.admin-booking-1-hour-before-alert-message')))
                     ->delay($hourBeforeBookingTime)
             );
         }
