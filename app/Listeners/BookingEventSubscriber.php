@@ -28,8 +28,8 @@ class BookingEventSubscriber implements ShouldQueue
     {
         Notification::send(User::where('role_id', 1)->get(), new BookingStatus($event->booking, 'created'));
 
-        $dayBeforeBookingDay = Carbon::parse($event->booking->timeSlot->date->date . ' ' . $event->booking->timeSlot->start_time)->subDay();
-        $hourBeforeBookingTime = Carbon::parse($event->booking->timeSlot->date->date . ' ' . $event->booking->timeSlot->start_time)->subHour();
+        $dayBeforeBookingDay = Carbon::parse($event->booking->date->date . ' ' . $event->booking->timeSlot->start_time)->subDay();
+        $hourBeforeBookingTime = Carbon::parse($event->booking->date->date . ' ' . $event->booking->timeSlot->start_time)->subHour();
 
         $adminAndStaff = User::whereHas('role', fn($query) => $query->whereIn('name', ['administrator', 'staff']))->get();
 

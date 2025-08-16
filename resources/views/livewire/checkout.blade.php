@@ -25,7 +25,7 @@ state(['first_name', 'last_name', 'email', 'phoneno', 'otp', 'generatedOtp', 'au
 
 with(fn() => [
     'products' => $this->mountProducts(),
-    'bookings' => Booking::with(['user'])->where('status_id', 3)->whereHas('timeSlot.date', function (Builder $query) {
+    'bookings' => Booking::with(['user'])->where('status_id', 3)->whereHas('date', function (Builder $query) {
         $query->where('date', Carbon::today()->format('Y-m-d'));
     })->get(),
     'subTotal' => $this->mountProducts()->map(fn($item) => $item->price * ($this->cart[$item->id] / 100))->sum(),

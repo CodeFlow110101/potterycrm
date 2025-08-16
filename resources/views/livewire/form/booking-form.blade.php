@@ -3,6 +3,7 @@
 use App\Http\Controllers\SmsController;
 use App\Http\Controllers\UserController;
 use App\Models\Booking;
+use App\Models\BookingSchedule;
 use App\Models\Date;
 use App\Models\TimeSlot;
 use App\Models\User;
@@ -38,8 +39,8 @@ rules(fn() => [
 ]);
 
 with(fn() => [
-    'allowedDates' => Date::when((!Gate::allows('view-all-booking-dates-while-create') || $this->path != 'booking'), fn($query) => $query->whereDate('date', '>=', Carbon::today()))->whereHas('timeslots')->get()->map(fn($date) => $date->date),
-    'slots' => Date::when($this->date, fn($query) => $query->where('date', $this->date), fn($query) => $query->where('id', 0))->with(['timeSlots' => fn($query) => $query->when(Carbon::parse($this->date)->isToday() && (!Gate::allows('view-all-booking-dates-while-create') || $this->path != 'booking'), fn($q) => $q->whereTime('start_time', '>', Carbon::now()->addHour()->format('H:i:s')))->orderBy('start_time')])?->first()?->timeSlots->mapWithKeys(fn($timeslot) => [$timeslot->id =>  $timeslot->start_time . ' - ' . $timeslot->end_time]) ?? collect([]),
+    'allowedDates' => Date::when((!Gate::allows('view-all-booking-dates-while-create') || $this->path != 'booking'), fn($query) => $query->whereDate('date', '>=', Carbon::today()))->has('timeslots')->get()->map(fn($date) => $date->date),
+    'slots' => Date::when($this->date, fn($query) => $query->where('date', $this->date), fn($query) => $query->where('id', 0))->with(['timeSlots' => fn($query) => $query->when(Carbon::parse($this->date)->isToday() && (!Gate::allows('view-all-booking-dates-while-create') || $this->path != 'booking'), fn($q) => $q->whereTime('start_time', '>', Carbon::now()->addHour()->format('H:i:s')))->orderBy('start_time')])->with('bookingSchedules.timeSlot')?->first()?->bookingSchedules->mapWithKeys(fn($bookingSchedules) => [$bookingSchedules->id =>  $bookingSchedules->timeSlot->start_time . ' - ' . $bookingSchedules->timeSlot->end_time]) ?? collect([]),
 ]);
 
 $trimmed_phoneno = computed(function () {
@@ -49,9 +50,9 @@ $trimmed_phoneno = computed(function () {
 $verifyOtp = function () {
     $this->validate();
 
-    $timeslot = TimeSlot::find($this->selectedTimeSlot);
+    $bookingSchedule = BookingSchedule::find($this->selectedTimeSlot);
 
-    $status_id = ($timeslot->bookings->sum('no_of_people') + $this->people) > $timeslot->date->max_people ? 1 : 2;
+    $status_id = ($bookingSchedule->bookings->sum('no_of_people') + $this->people) > $bookingSchedule->date->max_people ? 1 : 2;
 
     if ($this->path != 'booking') {
         if (!App::call([SmsController::class, 'verifyOtp'], ['id' => $this->generatedOtp->id, 'userOtp' => $this->otp])) {
@@ -70,10 +71,10 @@ $verifyOtp = function () {
 
     $user = App::call([UserController::class, 'upsert'], ['phoneno' => $this->trimmed_phoneno, 'credentials' => $credentials]);
 
-    $isBookingCreated = $user->bookings()->whereHas('status', fn($query) => $query->where('name', '!=', 'cancel'))->whereHas('timeSlot.date', fn($query) => $query->where('date', $this->date))->doesntExist() && $user->bookings()->create([
+    $isBookingCreated = $user->bookings()->whereHas('status', fn($query) => $query->where('name', '!=', 'cancel'))->whereHas('date', fn($query) => $query->where('date', $this->date))->doesntExist() && $user->bookings()->create([
         'status_id' => $status_id,
         'no_of_people' => $this->people,
-        'time_slot_id' => $timeslot->id,
+        'booking_schedule_id' => $bookingSchedule->id,
     ]);
 
     $this->summary = $isBookingCreated ? (($this->path == 'booking' ? '' : 'Your') . ' Booking has been successfully registered.') : (($this->path == 'booking' ? 'The customer' : 'You') . '  already have a booking for this date.');
@@ -116,7 +117,7 @@ mount(fn($path) => $this->path = $path);
             <div class="grow border-2 border-white rounded-full max-sm:hidden"></div>
             <div :class="$wire.currentForm != 'user' && 'max-sm:hidden'" class="flex gap-2 items-center ">
                 <div class="@if($currentForm == 'user') bg-white @else bg-white/50 @endif text-black rounded-full size-6 flex justify-center items-centeruser">2</div>
-                <div>Your Details</div>
+                <div>{{ $this->path == 'booking' ? 'Customer' : 'Your' }} Details</div>
             </div>
             <div class="grow border-2 border-white rounded-full max-sm:hidden"></div>
             <div :class="$wire.currentForm != 'summary' && 'max-sm:hidden'" class="flex gap-2 items-center">

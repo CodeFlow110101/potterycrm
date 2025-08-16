@@ -3,6 +3,7 @@
 use App\Http\Controllers\SmsController;
 use App\Http\Controllers\UserController;
 use App\Models\Booking;
+use App\Models\BookingSchedule;
 use App\Models\Date;
 use App\Models\TimeSlot;
 use App\Models\User;
@@ -35,7 +36,7 @@ rules(fn() => [
         },
         function ($attribute, $value, $fail) {
             Date::where('date', $this->date)->whereHas('timeSlots', function (Builder $query) {
-                $query->where('start_time', Carbon::now()->copy()->startOfHour()->format('H:i:s'))->where('end_time', Carbon::now()->copy()->addHour()->startOfHour()->format('H:i:s'));
+                $query->where('time_slots.start_time', Carbon::now()->copy()->startOfHour()->format('H:i:s'))->where('time_slots.end_time', Carbon::now()->copy()->addHour()->startOfHour()->format('H:i:s'));
             })->doesntExist() && $fail('It seems the store is closed because there are no open time slots at this time.');
         }
     ],
@@ -59,18 +60,18 @@ $submit = function () {
 
     $user = App::call([UserController::class, 'upsert'], ['phoneno' => $this->trimmed_phoneno, 'credentials' => $credentials]);
 
-    $timeslot = TimeSlot::where('start_time', Carbon::now()->copy()->startOfHour()->format('H:i:s'))->where('end_time', Carbon::now()->copy()->addHour()->startOfHour()->format('H:i:s'))->wherehas('date', function (Builder $query) {
-        $query->where('date', $this->date);
-    })->first();
+    $bookingSchedule =  BookingSchedule::whereHas('timeSlot', fn($query) => $query->where('time_slots.start_time', Carbon::now()->copy()->startOfHour()->format('H:i:s'))->where('time_slots.end_time', Carbon::now()->copy()->addHour()->startOfHour()->format('H:i:s')))
+        ->wherehas('date', fn(Builder $query) => $query->where('date', $this->date))
+        ->first();
 
-    $isBookingCreated = $user->whereHas('bookings.timeSlot.date', function ($query) {
-        $query->where('date', $this->date);
-    })->doesntExist();
+    $isBookingCreated = $user->bookings()->whereHas('date', fn($query) => $query->where('date', $this->date))
+        ->whereHas('status', fn(Builder $query) => $query->where('name', '!=', 'cancel'))
+        ->doesntExist();
 
     $isBookingCreated && $user->bookings()->create([
         'status_id' => 3,
         'no_of_people' => $this->people,
-        'time_slot_id' => $timeslot->id,
+        'booking_schedule_id' => $bookingSchedule->id,
     ]);
 
     $this->form = 'summary';

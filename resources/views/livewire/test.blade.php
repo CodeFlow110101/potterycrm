@@ -3,6 +3,9 @@
 use function Livewire\Volt\{state, mount};
 
 use App\Models\Booking;
+use App\Models\BookingSchedule;
+use App\Models\Date;
+use App\Models\TimeSlot;
 use App\Models\User;
 use App\Notifications\BookingReminder;
 use Illuminate\Support\Carbon;
@@ -13,10 +16,7 @@ $submit = function ($deviceId) {
 };
 
 mount(function () {
-    // $booking = Booking::get()->last();
-    // $booking->user->notify((new BookingReminder($booking, config('constants.booking-day-before-reminder-message')))->delay(Carbon::now()->addMinutes(2)));
-    // dd(Carbon::now()->addHour(2)->format('h:i A'));
-    dd(User::first()->fullName);
+    dd(Date::with('bookingSchedules.timeSlot')->first());
 });
 
 ?>

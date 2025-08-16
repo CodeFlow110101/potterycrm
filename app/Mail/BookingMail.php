@@ -48,7 +48,7 @@ class BookingMail extends Mailable
                 'user' => $this->booking->user,
                 'heading' => $this->subjectText,
                 'time_slot' => Carbon::createFromFormat('H:i:s', $this->booking->timeSlot->start_time)->format('h:i A') . ' - ' . Carbon::createFromFormat('H:i:s', $this->booking->timeSlot->end_time)->format('h:i A'),
-                'booking_date' =>  Carbon::parse($this->booking->timeSlot->date->date)->format('d M Y'),
+                'booking_date' =>  Carbon::parse($this->booking->date->date)->format('d M Y'),
             ],
         );
     }

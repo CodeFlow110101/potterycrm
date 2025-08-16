@@ -16,7 +16,7 @@ use function Livewire\Volt\{mount, state, with, on};
 state(['path', 'modal' => false, 'createBookingModal' => false, 'booking', 'status', 'url', 'auth', 'search', 'status_filter' => 'all', 'booking_from_date' => Carbon::today()->format('d M Y'), 'booking_to_date' => Carbon::today()->format('d M Y')]);
 
 with(fn() => [
-    'bookings' => Booking::with(['user', 'status', 'timeSlot.date'])
+    'bookings' => Booking::with(['user', 'status', 'date', 'timeSlot'])
         ->when(!Gate::allows('view-any-booking'), function ($query) {
             $query->where('user_id', $this->auth->id);
         })->whereHas('user', function (Builder $query) {
@@ -25,7 +25,7 @@ with(fn() => [
                 ->orWhere('last_name', 'like', '%' . $this->search . '%')
                 ->orWhere('phoneno', 'like', '%' . $this->search . '%');
         })
-        ->when(Gate::allows('view-booking-filters'), fn($query) => $query->whereHas('timeSlot.date', fn(Builder $query) => $query->whereBetween('date', [Carbon::createFromFormat('d M Y', $this->booking_from_date)->toDateString(), Carbon::createFromFormat('d M Y', $this->booking_to_date)->toDateString()])))
+        ->when(Gate::allows('view-booking-filters'), fn($query) => $query->whereHas('date', fn(Builder $query) => $query->whereBetween('date', [Carbon::createFromFormat('d M Y', $this->booking_from_date)->toDateString(), Carbon::createFromFormat('d M Y', $this->booking_to_date)->toDateString()])))
         ->when($this->status_filter != 'all', function ($query) {
             $query->whereHas('status', function ($query) {
                 $query->where('name', $this->status_filter);
@@ -177,7 +177,7 @@ mount(function ($url, $auth, $path) {
                         @endcan
                         <td class="text-center font-normal">{{$booking->no_of_people}}</td>
                         <td class="text-center font-normal">{{Carbon::parse($booking->created_at)->format('d M Y')}}</td>
-                        <td class="text-center font-normal">{{Carbon::parse($booking->timeSlot->date->date)->format('d M Y')}}</td>
+                        <td class="text-center font-normal">{{Carbon::parse($booking->date->date)->format('d M Y')}}</td>
                         <td class="text-center font-normal" x-text="timeSlot('{{ $booking->timeSlot->start_time . ' - ' . $booking->timeSlot->end_time }}')"></td>
                         <td class="text-center font-normal capitalize">{{$booking->status->name}}</td>
                         @can('update-booking')
@@ -269,7 +269,7 @@ mount(function ($url, $auth, $path) {
                     <label for="floating_outlined" class="absolute text-sm rounded-full text-black duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-primary peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">No of People</label>
                 </div>
                 <div class="relative">
-                    <input disabled type="text" value="{{ Carbon::parse($booking->timeSlot->date->date)->format('d M Y') }}" id="floating_outlined" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-white bg-transparent rounded-lg border-2 border-white appearance-none focus:outline-none focus:ring-0 focus:border-primary peer" placeholder=" " />
+                    <input disabled type="text" value="{{ Carbon::parse($booking->date->date)->format('d M Y') }}" id="floating_outlined" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-white bg-transparent rounded-lg border-2 border-white appearance-none focus:outline-none focus:ring-0 focus:border-primary peer" placeholder=" " />
                     <label for="floating_outlined" class="absolute text-sm rounded-full text-black duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-primary peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">Booking Data</label>
                 </div>
                 <div class="relative">

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\BookingSchedule;
 use App\Models\Date;
 use App\Models\TimeSlot;
 use Carbon\Carbon;
@@ -7,7 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use function Livewire\Volt\{state, with, mount, rules, updated};
 
-state(['date', 'people' => 0, 'selectedTimeSlots' => [], 'startTime' => Carbon::createFromTime(0, 0, 0), 'endTime' => Carbon::createFromTime(23, 59, 59), 'interval' => 60]);
+state(['date', 'people' => 0, 'selectedTimeSlots' => []]);
 
 rules(fn() => [
     'date' => ['required'],
@@ -17,18 +18,9 @@ rules(fn() => [
 
 with(fn() => [
     'today' => Carbon::today()->format('Y-m-d'),
-    'slots' => collect()->when($this->date, function () {
-        return Collection::times(
-            $this->startTime->diffInMinutes($this->endTime) / $this->interval,
-            function ($index) {
-                $slotStart = $this->startTime->copy()->addMinutes($index * $this->interval);
-                $slotEnd = $slotStart->copy()->addMinutes($this->interval);
-                return $slotStart->format('H:i:s') . ' - ' . $slotEnd->format('H:i:s');
-            }
-        );
-    }, function () {
-        return collect([]);
-    })
+    'slots' => TimeSlot::withExists(['bookings' => fn($query) => $query->whereHas('status', fn(Builder $statusQuery) => $statusQuery->where('name', '!=', 'cancel'))->whereHas('date', fn($query) => $query->where('date', $this->date))])
+        ->withCount(['bookings' => fn($query) => $query->whereHas('status', fn(Builder $statusQuery) => $statusQuery->where('name', '!=', 'cancel'))->whereHas('date', fn($query) => $query->where('date', $this->date))])
+        ->get()
 ]);
 
 
@@ -36,9 +28,7 @@ updated(['date' => function () {
     if (Date::where('date', $this->date)->exists()) {
         $date = Date::where('date', $this->date)->with(['timeSlots'])->first();
         $this->people = $date->max_people;
-        $this->selectedTimeSlots = $date->timeSlots->map(function ($value) {
-            return $value->start_time . ' - ' . $value->end_time;
-        })->all();
+        $this->selectedTimeSlots = $date->timeSlots->pluck('id')->all();
     } else {
         $this->people = 0;
         $this->selectedTimeSlots = [];
@@ -57,44 +47,13 @@ $submit = function () {
         ['max_people' => collect($this->selectedTimeSlots)->isEmpty() ? 0 : $this->people]
     );
 
-    $timeSlots = collect($this->selectedTimeSlots)
-        ->reject(function ($slot) {
-            return $this->isBooked($slot);
-        })->map(function ($slot) {
-            return ['start_time' => explode(' - ', $slot)[0], 'end_time' => explode(' - ', $slot)[1]];
-        });
+    $date->bookingSchedules()->whereDoesntHave('bookings', fn($query) => $query->whereHas('status', fn($statusQuery) => $statusQuery->where('name', '!=', 'cancel')))->delete();
 
-    $date->timeSlots->reject(fn($slot) => $this->isBooked($slot['start_time'] . ' - ' . $slot['end_time']))->each(fn($slot) => $slot->delete());
-    $date->timeSlots()->createMany($timeSlots);
+    $bookedTimeSlots = $date->timeSlots()->whereHas('bookings.status', fn(Builder $query) => $query->where('name', '!=', 'cancel'))->pluck('time_slots.id');
+    $timeSlots = collect($this->selectedTimeSlots)->diff($bookedTimeSlots)->values();
+    $date->bookingSchedules()->createMany($timeSlots->map(fn($timeSlot) => ['time_slot_id' => $timeSlot]));
+
     $this->dispatch('show-toastr', message: "Time Slots Updated!");
-};
-
-$isBooked = function ($timeslot) {
-    return TimeSlot::whereHas('date', function (Builder $query) {
-        $query->where('date', $this->date);
-    })
-        ->where('start_time', explode(' - ', $timeslot)[0])
-        ->where('end_time', explode(' - ', $timeslot)[1])
-        ->has('bookings')
-        ->whereHas('bookings.status', function (Builder $query) {
-            $query->where('name', '!=', 'cancel');
-        })
-        ->exists();
-};
-
-$getPeopleCount = function ($timeslot) {
-    return TimeSlot::whereHas('date', function (Builder $query) {
-        $query->where('date', $this->date);
-    })
-        ->where('start_time', explode(' - ', $timeslot)[0])
-        ->where('end_time', explode(' - ', $timeslot)[1])
-        ->has('bookings')
-        ->whereHas('bookings.status', function (Builder $query) {
-            $query->where('name', '!=', 'cancel');
-        })
-        ->first()
-        ->bookings
-        ->count();
 };
 
 mount(function () {
@@ -102,9 +61,7 @@ mount(function () {
         $date = Date::where('date', Carbon::today()->format('Y-m-d'))->with(['timeSlots'])->first();
         $this->date = $date->date;
         $this->people = $date->max_people;
-        $this->selectedTimeSlots = $date->timeSlots->map(function ($value) {
-            return $value->start_time . ' - ' . $value->end_time;
-        })->all();
+        $this->selectedTimeSlots = $date->timeSlots->pluck('id')->all();
     } else {
         $this->date = Carbon::today()->format('Y-m-d');
     }
@@ -155,11 +112,11 @@ mount(function () {
                                 <div class="flex flex-wrap justify-around gap-4 text-sm">
                                     @foreach($slots as $slot)
                                     <div class="relative">
-                                        <button type="button" @if(!$this->isBooked($slot)) wire:click="toggleTimeSlot('{{$slot}}')" @endif class="border peer border-black py-1 px-4 rounded-full @if(in_array($slot,$selectedTimeSlots)) @if($this->isBooked($slot)) bg-red-700 cursor-not-allowed @else bg-black @endif text-white @endif" x-text="timeSlot('{{$slot}}')"></button>
-                                        @if($this->isBooked($slot))
+                                        <button type="button" @if(!$slot->bookings_exists) wire:click="toggleTimeSlot('{{$slot->id}}')" @endif class="border peer border-black py-1 px-4 rounded-full @if(in_array($slot->id,$selectedTimeSlots)) @if($slot->bookings_exists) bg-red-700 cursor-not-allowed @else bg-black @endif text-white @endif">{{$slot->timeSlot}}</button>
+                                        @if($slot->bookings_exists)
                                         <div class="absolute inset-0 -translate-y-10 invisible peer-hover:visible flex flex-col items-center gap-0">
                                             <div class="text-center bg-black text-white border rounded-lg py-1 w-1/2 ">
-                                                {{ $this->getPeopleCount($slot) }}
+                                                {{ $slot->bookings_count }}
                                             </div>
                                             <div class="-mt-3">
                                                 <svg class="text-black" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
