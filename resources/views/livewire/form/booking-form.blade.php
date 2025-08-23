@@ -63,7 +63,13 @@ updated([
 ]);
 
 $packages = computed(function () {
-    return Package::whereHas('dates', fn($query) => $query->where('date', $this->date))->get();
+    return Package::whereHas('bookingSchedules', function ($query) {
+        $query->whereHas('date', fn($query) => $query->where('date', $this->date))
+            ->when(
+                Carbon::parse($this->date)->isToday() && (!Gate::allows('view-all-booking-dates-while-create') || $this->path != 'booking'),
+                fn($query) => $query->whereHas('timeSlot', fn($q) => $q->whereTime('start_time', '>', Carbon::now()->addHour()->format('H:i:s')))
+            );
+    })->get();
 });
 
 $trimmed_phoneno = computed(function () {
