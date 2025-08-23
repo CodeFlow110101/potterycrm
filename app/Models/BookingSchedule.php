@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BookingSchedule extends Model
 {
-    protected $fillable = ['date_id', 'start_time', 'end_time', 'time_slot_id'];
+    protected $fillable = ['date_id', 'time_slot_id', 'package_id'];
 
     public function date(): BelongsTo
     {
@@ -23,5 +23,10 @@ class BookingSchedule extends Model
     public function bookings(): HasMany
     {
         return $this->hasMany(Booking::class, 'booking_schedule_id', 'id');
+    }
+
+    public function package(): BelongsTo
+    {
+        return $this->belongsTo(Package::class, 'package_id', 'id');
     }
 }

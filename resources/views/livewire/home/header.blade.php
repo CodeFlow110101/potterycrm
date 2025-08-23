@@ -56,6 +56,9 @@ mount(function ($cart, $path, $auth, $routeName) {
                 <a href="/purchase" wire:navigate :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">Purchase</a>
                 <a href="/order" wire:navigate :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">Order</a>
                 <a href="/coupon" wire:navigate :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">Coupon</a>
+                @can('view-any-package')
+                <a href="/package" wire:navigate :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">Package</a>
+                @endcan
                 @can('update-user')
                 <a href="/user" wire:navigate :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">User</a>
                 @endcan

@@ -5,6 +5,7 @@ use App\Http\Controllers\UserController;
 use App\Models\Booking;
 use App\Models\BookingSchedule;
 use App\Models\Date;
+use App\Models\Package;
 use App\Models\TimeSlot;
 use App\Models\User;
 use Illuminate\Support\Facades\App;
@@ -15,9 +16,9 @@ use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
 
-use function Livewire\Volt\{state, rules, with, computed, mount};
+use function Livewire\Volt\{state, rules, with, computed, mount, updated};
 
-state(['path', 'first_name', 'last_name', 'email', 'phoneno', 'otp', 'generatedOtp', 'date' => null, 'people' => 1, 'selectedTimeSlot' => null, 'validateBooking', 'currentForm' => 'booking', 'summary']);
+state(['path', 'first_name', 'last_name', 'email', 'phoneno', 'otp', 'generatedOtp', 'date' => null, 'people' => 1, 'selectedTimeSlot' => null, 'validateBooking', 'currentForm' => 'booking', 'summary', 'package']);
 
 rules(fn() => [
     'first_name' => $this->currentForm == 'user' ?  ['required'] : ['exclude'],
@@ -40,8 +41,30 @@ rules(fn() => [
 
 with(fn() => [
     'allowedDates' => Date::when((!Gate::allows('view-all-booking-dates-while-create') || $this->path != 'booking'), fn($query) => $query->whereDate('date', '>=', Carbon::today()))->has('timeslots')->get()->map(fn($date) => $date->date),
-    'slots' => Date::when($this->date, fn($query) => $query->where('date', $this->date), fn($query) => $query->where('id', 0))->with(['timeSlots' => fn($query) => $query->when(Carbon::parse($this->date)->isToday() && (!Gate::allows('view-all-booking-dates-while-create') || $this->path != 'booking'), fn($q) => $q->whereTime('start_time', '>', Carbon::now()->addHour()->format('H:i:s')))->orderBy('start_time')])->with('bookingSchedules.timeSlot')?->first()?->bookingSchedules->mapWithKeys(fn($bookingSchedules) => [$bookingSchedules->id =>  $bookingSchedules->timeSlot->start_time . ' - ' . $bookingSchedules->timeSlot->end_time]) ?? collect([]),
+    'bookingSchedules' => BookingSchedule::with('timeSlot')
+        ->whereHas('package', fn($query) => $query->where('packages.id', $this->package))
+        ->whereHas('date', fn($query) => $query->where('date', $this->date))
+        ->whereHas('timeSlot', fn($query) => $query->whereHas('packages', fn($q) => $q->where('packages.id', $this->package)))
+        ->when(
+            Carbon::parse($this->date)->isToday() && (!Gate::allows('view-all-booking-dates-while-create') || $this->path != 'booking'),
+            fn($query) => $query->whereHas('timeSlot', fn($q) => $q->whereTime('start_time', '>', Carbon::now()->addHour()->format('H:i:s')))
+        )
+        ->get()
 ]);
+
+updated([
+    'date' => function () {
+        $this->package = $this->packages->first()?->id;
+        $this->reset('selectedTimeSlot');
+    },
+    'package' => function () {
+        $this->reset('selectedTimeSlot');
+    },
+]);
+
+$packages = computed(function () {
+    return Package::whereHas('dates', fn($query) => $query->where('date', $this->date))->get();
+});
 
 $trimmed_phoneno = computed(function () {
     return trim(Str::replaceFirst(env('TWILIO_PHONE_COUNTRY_CODE'), '', $this->phoneno));
@@ -129,22 +152,53 @@ mount(fn($path) => $this->path = $path);
         <div id="booking" class="grow flex flex-col">
             <form x-on:reset="reset()" wire:submit="submitBooking" class="grow flex flex-col gap-8">
                 <div x-data="flatpickrDate(null,'{{$allowedDates}}')" class="grow flex max-sm:flex-col gap-12">
-                    <div class="flex-1">
-                        <input type="text" x-ref="dateInput" wire:model.live="date" class="hidden" placeholder="Select a date">
-                        <div class="w-full flex justify-center overflow-hidden rounded-lg sm:justify-end">
-                            <div class="sm:border-y sm:border-l w-full rounded-l-lg flex">
-                                <div class="mx-auto w-4/5 h-4/5 my-auto max-sm:hidden">
-                                    <div class="text-2xl" x-text="year('{{$date}}')"></div>
-                                    <div x-text="date('{{$date}}')"></div>
+                    <div class="flex-1 flex flex-col gap-4">
+                        <div>
+                            <input type="text" x-ref="dateInput" wire:model.live="date" class="hidden" placeholder="Select a date">
+                            <div class="w-full flex justify-center overflow-hidden rounded-lg sm:justify-end">
+                                <div class="sm:border-y sm:border-l w-full rounded-l-lg flex">
+                                    <div class="mx-auto w-4/5 h-4/5 my-auto max-sm:hidden">
+                                        <div class="text-2xl" x-text="year('{{$date}}')"></div>
+                                        <div x-text="date('{{$date}}')"></div>
+                                    </div>
+                                </div>
+                                <div wire:ignore x-ref="calendarContainer" class="flex justify-center"></div>
+                            </div>
+                            @error('date')
+                            <div>
+                                <span class="error">{{ $message }}</span>
+                            </div>
+                            @enderror
+                        </div>
+                        <div class="flex flex-col gap-4 bg-white text-black rounded-lg p-4">
+                            <div class="text-2xl">Package</div>
+                            @foreach($this->packages as $package)
+                            <div wire:key="{{ $package->id }}" @click="$refs.radio{{ $package->id }}.click()" class="border border-black text-black rounded-md w-full flex p-4 gap-4 items-center cursor-pointer">
+                                <div>
+                                    <input wire:model.live="package" x-ref="radio{{ $package->id }}" type="radio" value="{{ $package->id }}" class="size-4 accent-black">
+                                </div>
+                                <div class="flex max-sm:flex-col gap-4 flex-1">
+                                    <div class="size-full sm:size-24">
+                                        <img class="size-full rounded-xl" src="{{ asset('storage/'.$package->image_path) }}">
+                                    </div>
+                                    <div class="flex-1 flex flex-col">
+                                        <div class="border-b border-black w-full text-lg font-semibold">
+                                            {{ $package->name }}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div wire:ignore x-ref="calendarContainer" class="flex justify-center"></div>
+                            @endforeach
+                            @if(!$date)
+                            <div>
+                                Please select a date
+                            </div>
+                            @elseif($bookingSchedules->isEmpty())
+                            <div>
+                                There are no packages for this date
+                            </div>
+                            @endif
                         </div>
-                        @error('date')
-                        <div>
-                            <span class="error">{{ $message }}</span>
-                        </div>
-                        @enderror
                     </div>
                     <div class="flex-1 flex flex-col gap-4">
                         <div class="flex flex-col gap-4 bg-white text-black p-4 rounded-lg">
@@ -164,15 +218,15 @@ mount(fn($path) => $this->path = $path);
                             <div class="text-2xl" x-text="'Time'"></div>
                             <div>
                                 <div class="flex flex-wrap justify-around gap-4 text-sm">
-                                    @foreach($slots as $id => $slot)
-                                    <button type="button" x-data="{ slot_id : {{$id}} }" @click="$wire.selectedTimeSlot = slot_id;" :class="$wire.selectedTimeSlot == slot_id && 'bg-black text-white'" class="border border-black py-1 px-4 rounded-full" x-text="timeSlot('{{$slot}}')"></button>
+                                    @foreach($bookingSchedules as $schedules)
+                                    <button wire:key="{{ $schedules->id }}" type="button" x-data="{ slot_id : {{$schedules->id}} }" @click="$wire.selectedTimeSlot = slot_id;" :class="$wire.selectedTimeSlot == slot_id && 'bg-black text-white'" class="border border-black py-1 px-4 rounded-full">{{ $schedules->timeSlot->timeSlot }}</button>
                                     @endforeach
                                 </div>
                                 @if(!$date)
                                 <div>
                                     Please select a date
                                 </div>
-                                @elseif($slots->isEmpty())
+                                @elseif($bookingSchedules->isEmpty())
                                 <div>
                                     There are no time slots for this date
                                 </div>

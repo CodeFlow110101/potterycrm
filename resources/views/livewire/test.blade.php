@@ -5,6 +5,7 @@ use function Livewire\Volt\{state, mount};
 use App\Models\Booking;
 use App\Models\BookingSchedule;
 use App\Models\Date;
+use App\Models\Package;
 use App\Models\TimeSlot;
 use App\Models\User;
 use App\Notifications\BookingReminder;
@@ -16,7 +17,7 @@ $submit = function ($deviceId) {
 };
 
 mount(function () {
-    dd(Date::with('bookingSchedules.timeSlot')->first());
+    dd(TimeSlot::find(1)->bookingSchedules);
 });
 
 ?>

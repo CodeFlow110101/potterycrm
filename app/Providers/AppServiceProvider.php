@@ -7,6 +7,7 @@ use App\Policies\BookingPolicy;
 use App\Policies\CouponPolicy;
 use App\Policies\DatePolicy;
 use App\Policies\OrderPolicy;
+use App\Policies\PackagePolicy;
 use App\Policies\ProductPolicy;
 use App\Policies\PurchasePolicy;
 use App\Policies\UserPolicy;
@@ -60,6 +61,8 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('update-user', [UserPolicy::class, 'update']);
         Gate::define('hardware-checkout-user', [UserPolicy::class, 'terminalCheckout']);
         Gate::define('online-checkout-user', [UserPolicy::class, 'onlineCheckout']);
+
+        Gate::define('view-any-package', [PackagePolicy::class, 'viewAny']);
 
         Gate::define('valid-phone-number', function (?User $user, $number) {
             return Str::startsWith(trim($number), env('TWILIO_PHONE_COUNTRY_CODE')) && strlen(trim(Str::replaceFirst(env('TWILIO_PHONE_COUNTRY_CODE'), '', trim($number)))) === strlen(trim(env('PHONE_NUMBER_VALIDATION_PATTERN')));

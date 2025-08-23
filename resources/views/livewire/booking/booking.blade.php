@@ -16,7 +16,7 @@ use function Livewire\Volt\{mount, state, with, on};
 state(['path', 'modal' => false, 'createBookingModal' => false, 'booking', 'status', 'url', 'auth', 'search', 'status_filter' => 'all', 'booking_from_date' => Carbon::today()->format('d M Y'), 'booking_to_date' => Carbon::today()->format('d M Y')]);
 
 with(fn() => [
-    'bookings' => Booking::with(['user', 'status', 'date', 'timeSlot'])
+    'bookings' => Booking::with(['user', 'status', 'date', 'timeSlot', 'package'])
         ->when(!Gate::allows('view-any-booking'), function ($query) {
             $query->where('user_id', $this->auth->id);
         })->whereHas('user', function (Builder $query) {
@@ -156,6 +156,9 @@ mount(function ($url, $auth, $path) {
                             Time Slot
                         </th>
                         <th class="font-normal">
+                            Package
+                        </th>
+                        <th class="font-normal">
                             Status
                         </th>
                         @can('update-booking')
@@ -178,7 +181,8 @@ mount(function ($url, $auth, $path) {
                         <td class="text-center font-normal">{{$booking->no_of_people}}</td>
                         <td class="text-center font-normal">{{Carbon::parse($booking->created_at)->format('d M Y')}}</td>
                         <td class="text-center font-normal">{{Carbon::parse($booking->date->date)->format('d M Y')}}</td>
-                        <td class="text-center font-normal" x-text="timeSlot('{{ $booking->timeSlot->start_time . ' - ' . $booking->timeSlot->end_time }}')"></td>
+                        <td class="text-center font-normal">{{ $booking->timeSlot->timeSlot }}</td>
+                        <td class="text-center font-normal">{{ $booking->package->name }}</td>
                         <td class="text-center font-normal capitalize">{{$booking->status->name}}</td>
                         @can('update-booking')
                         <td class="text-center font-normal capitalize flex justify-center max-sm:hidden">

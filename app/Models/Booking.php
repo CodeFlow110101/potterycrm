@@ -53,6 +53,18 @@ class Booking extends Model
         );
     }
 
+    public function package()
+    {
+        return $this->hasOneThrough(
+            Package::class,        // Final model
+            BookingSchedule::class, // Intermediate model
+            'id',                   // FK on booking_schedules (id) - local key for bookings
+            'id',                   // PK on time_slots
+            'booking_schedule_id',         // FK on bookings to booking_schedules.id
+            'package_id'          // FK on booking_schedules to time_slots.id
+        );
+    }
+
     protected $dispatchesEvents = [
         'created' => BookingCreated::class,
         'saved' => BookingStatusUpdated::class,

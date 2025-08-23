@@ -120,26 +120,6 @@ function flatpickrDate(minDate, allowedDates) {
         });
       }
     },
-    timeSlot(timeslot) {
-      const [start, end] = timeslot.split(" - ");
-      const formatTime = time => {
-        const [hours, minutes, seconds] = time.split(":");
-        return new Date(
-          0,
-          0,
-          0,
-          hours,
-          minutes,
-          seconds
-        ).toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-          hour12: true
-        });
-      };
-
-      return formatTime(start) + " - " + formatTime(end);
-    },
     year(year) {
       return year ? year.split("-")[0] : "Select a date";
     },

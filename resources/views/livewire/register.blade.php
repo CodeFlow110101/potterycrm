@@ -5,6 +5,7 @@ use App\Http\Controllers\UserController;
 use App\Models\Booking;
 use App\Models\BookingSchedule;
 use App\Models\Date;
+use App\Models\Package;
 use App\Models\TimeSlot;
 use App\Models\User;
 use Illuminate\Support\Facades\App;
@@ -15,9 +16,18 @@ use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Gate;
 
-use function Livewire\Volt\{state, rules, computed};
+use function Livewire\Volt\{state, rules, computed, with};
 
-state(['first_name', 'last_name', 'email', 'phoneno', 'people' => 1, 'date' => Carbon::today()->toDateString(), 'form' => 'register', 'summary']);
+state(['first_name', 'last_name', 'email', 'phoneno', 'people' => 1, 'date' => Carbon::today()->toDateString(), 'form' => 'register', 'summary', 'start_time' => Carbon::now()->copy()->startOfHour()->format('H:i:s'), 'end_time' => Carbon::now()->copy()->addHour()->startOfHour()->format('H:i:s'), 'package']);
+
+with(fn() => [
+    'is_booking_shedule_present' => BookingSchedule::whereHas('date', fn($query) => $query->where('date', $this->date))
+        ->whereHas('timeSlot', fn($query) => $query->where('start_time', $this->start_time)->where('end_time', $this->end_time))
+        ->exists(),
+    'packages' => Package::whereHas('dates', fn($query) => $query->where('date', $this->date))
+        ->whereHas('bookingSchedules.timeSlot', fn($query) => $query->where('start_time', $this->start_time)->where('end_time', $this->end_time))
+        ->get()
+]);
 
 rules(fn() => [
     'first_name' => ['required'],
@@ -36,10 +46,11 @@ rules(fn() => [
         },
         function ($attribute, $value, $fail) {
             Date::where('date', $this->date)->whereHas('timeSlots', function (Builder $query) {
-                $query->where('time_slots.start_time', Carbon::now()->copy()->startOfHour()->format('H:i:s'))->where('time_slots.end_time', Carbon::now()->copy()->addHour()->startOfHour()->format('H:i:s'));
+                $query->where('start_time', $this->start_time)->where('end_time', $this->end_time);
             })->doesntExist() && $fail('It seems the store is closed because there are no open time slots at this time.');
         }
     ],
+    'package' => ['required']
 ]);
 
 $trimmed_phoneno = computed(function () {
@@ -60,7 +71,8 @@ $submit = function () {
 
     $user = App::call([UserController::class, 'upsert'], ['phoneno' => $this->trimmed_phoneno, 'credentials' => $credentials]);
 
-    $bookingSchedule =  BookingSchedule::whereHas('timeSlot', fn($query) => $query->where('time_slots.start_time', Carbon::now()->copy()->startOfHour()->format('H:i:s'))->where('time_slots.end_time', Carbon::now()->copy()->addHour()->startOfHour()->format('H:i:s')))
+    $bookingSchedule =  BookingSchedule::whereHas('package', fn($query) => $query->where('packages.id', $this->package))
+        ->whereHas('timeSlot', fn($query) => $query->where('start_time', $this->start_time)->where('end_time', $this->end_time))
         ->wherehas('date', fn(Builder $query) => $query->where('date', $this->date))
         ->first();
 
@@ -75,7 +87,7 @@ $submit = function () {
     ]);
 
     $this->form = 'summary';
-    $this->summary = $isBookingCreated ? 'Your booking has been successfully registered' : 'You already have a booking for this date';
+    $this->summary = $isBookingCreated ? 'The booking has been successfully registered' : 'The customer already have a booking today';
 };
 
 ?>
@@ -84,7 +96,9 @@ $submit = function () {
     <div class="text-5xl lg:text-7xl font-avenir-next-bold">Register</div>
     <div class="grow relative" x-data="{ height: 0 }" x-resize="height = $height">
         <div class="overflow-y-auto hidden-scrollbar absolute inset-x-0 flex mx-auto backdrop-blur-xl border border-white rounded-lg" :style="'height: ' + height + 'px;'">
-            @if($form == 'register')
+            @if(!$is_booking_shedule_present)
+            <div class="flex justify-center items-center grow">There are no timeslots availaible for this time.</div>
+            @elseif($form == 'register')
             <form x-data="otp" x-on:reset="reset()" x-on:start-countdown.window="startCountdown()" wire:submit="submit" class="w-full">
                 <div class="h-min grid grid-cols-1 gap-8 w-4/5 mx-auto font-avenir-next-rounded-light py-12">
                     <div>
@@ -119,6 +133,20 @@ $submit = function () {
                         <input x-mask="99" wire:model="people" class="w-full bg-black/5 outline-none p-3" placeholder="Number of People">
                         <div>
                             @error('people')
+                            <span>{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <label class="font-avenir-next-rounded-semibold text-xl">Package</label>
+                        <select wire:model="package" class="w-full bg-black/5 outline-none p-3">
+                            <option value="">Select a Package</option>
+                            @foreach($packages as $package)
+                            <option value="{{ $package->id }}">{{ $package->name }}</option>
+                            @endforeach
+                        </select>
+                        <div>
+                            @error('package')
                             <span>{{ $message }}</span>
                             @enderror
                         </div>
