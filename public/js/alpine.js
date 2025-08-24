@@ -138,6 +138,20 @@ function flatpickrDate(minDate, allowedDates) {
   };
 }
 
+function flatpickrTime(time) {
+  return {
+    init() {
+      flatpickr(this.$refs.timefield, {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "h:i:K", // 24-hour format, e.g. 14:30
+        time_24hr: false, // optional, to force 24-hour
+        defaultDate: time
+      });
+    }
+  };
+}
+
 window.globalAudio = null;
 window.globalIsPlaying = false;
 

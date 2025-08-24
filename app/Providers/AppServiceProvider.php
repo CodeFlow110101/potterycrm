@@ -10,6 +10,7 @@ use App\Policies\OrderPolicy;
 use App\Policies\PackagePolicy;
 use App\Policies\ProductPolicy;
 use App\Policies\PurchasePolicy;
+use App\Policies\TimeSlotPolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Gate;
@@ -63,6 +64,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('online-checkout-user', [UserPolicy::class, 'onlineCheckout']);
 
         Gate::define('view-any-package', [PackagePolicy::class, 'viewAny']);
+        Gate::define('view-any-timeslot', [TimeSlotPolicy::class, 'viewAny']);
 
         Gate::define('valid-phone-number', function (?User $user, $number) {
             return Str::startsWith(trim($number), env('TWILIO_PHONE_COUNTRY_CODE')) && strlen(trim(Str::replaceFirst(env('TWILIO_PHONE_COUNTRY_CODE'), '', trim($number)))) === strlen(trim(env('PHONE_NUMBER_VALIDATION_PATTERN')));

@@ -30,7 +30,8 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('/purchase', 'landing-page')->name('purchase');
     Volt::route('/order', 'landing-page')->name('order');
     Volt::route('/coupon', 'landing-page')->name('coupon');
-    Volt::route('/package', 'landing-page')->name('package');
+    Volt::route('/package', 'landing-page')->name('package')->can('view-any-package');
+    Volt::route('/time-slot', 'landing-page')->name('time-slot')->can('view-any-timeslot');
     Volt::route('/booking', 'landing-page')->name('booking');
     Volt::route('/process-payment', 'landing-page')->name('process-payment')->middleware('validate-payment');
 
