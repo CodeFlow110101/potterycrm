@@ -89,7 +89,7 @@ function validatePriceFormat(input) {
   return formatted.includes(".") ? formatted : formatted + "."; // Ensure decimal presence
 }
 
-function flatpickrDate(minDate, allowedDates) {
+function flatpickrDate(minDate, allowedDates, mode = null) {
   return {
     minDate: minDate,
     allowedDates: allowedDates,
@@ -99,6 +99,10 @@ function flatpickrDate(minDate, allowedDates) {
         inline: true,
         appendTo: this.$refs.calendarContainer
       };
+
+      if (mode) {
+        options.mode = "range";
+      }
 
       if (this.minDate) {
         const date = new Date(this.minDate);
