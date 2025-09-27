@@ -38,7 +38,7 @@ class BookingReminder extends Notification implements ShouldQueue
 
     public function toTwilioSms($notifiable)
     {
-        return Str::of($this->message)->replace('{first name}',  $this->booking->user->first_name)->replace('{time}',  Carbon::createFromTimeString($this->booking->timeSlot->start_time)->format('h:i A'))->replace('{full name}', $this->booking->user->fullName);
+        return Str::of($this->message)->replace('{first name}',  $this->booking->user->first_name)->replace('{time}',  Carbon::createFromTimeString($this->booking->timeSlot->start_time)->format('h:i A'))->replace('{full name}', $this->booking->user->fullName)->replace('{no of people}', $this->booking->no_of_people);
     }
 
     /**
