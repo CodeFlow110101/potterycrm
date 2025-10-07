@@ -67,7 +67,9 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('view-any-timeslot', [TimeSlotPolicy::class, 'viewAny']);
 
         Gate::define('valid-phone-number', function (?User $user, $number) {
-            return Str::startsWith(trim($number), env('TWILIO_PHONE_COUNTRY_CODE')) && strlen(trim(Str::replaceFirst(env('TWILIO_PHONE_COUNTRY_CODE'), '', trim($number)))) === strlen(trim(env('PHONE_NUMBER_VALIDATION_PATTERN')));
+            $trimmedNumber = trim($number);
+            $numberWithoutCountryCode = trim(Str::replaceFirst(env('TWILIO_PHONE_COUNTRY_CODE'), '', $trimmedNumber));
+            return Str::startsWith($trimmedNumber, env('TWILIO_PHONE_COUNTRY_CODE')) && strlen($numberWithoutCountryCode) === strlen(trim(env('PHONE_NUMBER_VALIDATION_PATTERN'))) && !Str::startsWith($numberWithoutCountryCode, 0);
         });
 
         Gate::define('android', function (?User $user) {
