@@ -11,6 +11,7 @@ Volt::route('/', 'landing-page')->name('home');
 Volt::route('/log-in', 'landing-page')->name('log-in')->middleware('not-auth');
 Volt::route('/book-table', 'landing-page')->name('book-table');
 Volt::route('/about-us', 'landing-page')->name('about-us');
+Volt::route('/our-locations', 'landing-page')->name('our-locations');
 Volt::route('/contact-us', 'landing-page')->name('contact-us');
 Volt::route('/how-it-works', 'landing-page')->name('how-it-works');
 Volt::route('/shop', 'landing-page')->name('shop');

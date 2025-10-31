@@ -76,6 +76,8 @@ mount(function () {
         <livewire:register />
         @elseif($path == 'about-us')
         <livewire:home.about-us />
+        @elseif($path == 'our-locations')
+        <livewire:home.our-locations />
         @elseif($path == 'contact-us')
         <livewire:contact-us />
         @elseif($path == 'user')

@@ -68,6 +68,7 @@ mount(function ($cart, $path, $auth, $routeName) {
                 @endif
                 @if(!$auth)
                 <a href="/log-in" wire:navigate :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">Log In</a>
+                <a href="/our-locations" wire:navigate :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">Our Locations</a>
                 <a href="/about-us" wire:navigate :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">About Us</a>
                 <a href="/contact-us" wire:navigate :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">Contact</a>
                 <a href="/faq" wire:navigate :class="$wire.routeName === $el.getAttribute('href').replace(/^\/+/, '') && 'underline'">FAQ</a>
